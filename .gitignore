@@ -1,0 +1,21 @@
+/reference/
+/work/
+/.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+/build/
+/dist/
+.DS_Store
+
+# Retired generated imports; the directory now contains only a redirect README.
+/validation-experiments/*/
+/validation-experiments/*.zip
+/validation-experiments/*.zip.sha256
+
+# Generated synthetic CT import candidates and human review data.
+/validation-experiments/ct-*/
+
+# Regenerated native candidates and private returned evidence.
+/validation/generated/
+/validation/results/history/

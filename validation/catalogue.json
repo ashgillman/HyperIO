@@ -1,0 +1,451 @@
+{
+  "schema_version": 1,
+  "suite_id": "hyperio-tps",
+  "catalogue_revision": 2,
+  "patient_id": "zzzInputOutputAGsuite",
+  "patient_name": "zzPHYS^Ash",
+  "policy": "Stable test IDs are never reused; changes to an expectation increment its revision; run results append to the event log rather than replacing prior observations.",
+  "combination_policy": "One native patient restore, seven coexisting plans, three studysets; initial checks combined by plan. Coupled settings require recording all affected controls; use a focused follow-up only when attribution is ambiguous.",
+  "profiles": [
+    {
+      "id": "reference",
+      "plan": "Reference",
+      "studyset": "Phantom",
+      "settings": {},
+      "density": {},
+      "aperture": null,
+      "purpose": "Plan association and baseline settings; source beam aperture records retained."
+    },
+    {
+      "id": "calculation-a",
+      "plan": "Calculation-A",
+      "studyset": "Phantom",
+      "settings": {
+        "DOSEGRIDSIZE": 2,
+        "MCVARIANCE": 0.02,
+        "MCSEGMENTVARIANCE": 0.03,
+        "MCVARPERPLAN": false,
+        "DOSETOMEDIUM": false,
+        "FORCEWATER": false
+      },
+      "density": {
+        "mode": 2,
+        "uniform_ed": 1.1
+      },
+      "aperture": null,
+      "purpose": "Compare distinct MC fields in flag-0 mode, 2 mm grid, water deposition and forced ED 1.1 in one plan."
+    },
+    {
+      "id": "calculation-b",
+      "plan": "Calculation-B",
+      "studyset": "Phantom",
+      "settings": {
+        "DOSEGRIDSIZE": 3,
+        "MCVARIANCE": 0.04,
+        "MCSEGMENTVARIANCE": 0.05,
+        "MCVARPERPLAN": true,
+        "DOSETOMEDIUM": true,
+        "FORCEWATER": true
+      },
+      "density": {},
+      "aperture": null,
+      "purpose": "Compare distinct MC fields in flag-1 mode, 3 mm grid, medium deposition and force-water in one plan."
+    },
+    {
+      "id": "aperture-headers",
+      "plan": "Aperture-Headers",
+      "studyset": "Phantom",
+      "settings": {},
+      "density": {
+        "mode": 3,
+        "fill_ed": 0.8
+      },
+      "aperture": "rectangle-header",
+      "purpose": "8x6 cm candidate header aperture plus plan fill ED 0.8; force-water stays off."
+    },
+    {
+      "id": "aperture-leaves",
+      "plan": "Aperture-Leaves",
+      "studyset": "Phantom",
+      "settings": {},
+      "density": {
+        "mode": 1
+      },
+      "aperture": "leaf-notch",
+      "purpose": "Eight central second-bank leaf tips at +10 mm plus disabled Insert plan override."
+    },
+    {
+      "id": "density-conflict",
+      "plan": "Density-Conflict",
+      "studyset": "Density",
+      "settings": {},
+      "density": {
+        "mode": 2,
+        "uniform_ed": 1.1
+      },
+      "aperture": null,
+      "purpose": "Plan Insert ED 1.1 against studyset ED 1.2; compare with Density-Aligned."
+    },
+    {
+      "id": "density-aligned",
+      "plan": "Density-Aligned",
+      "studyset": "Density",
+      "settings": {},
+      "density": {
+        "mode": 2,
+        "uniform_ed": 1.2
+      },
+      "aperture": null,
+      "purpose": "Both Insert density representations at 1.2, using the same beam/settings as Density-Conflict."
+    }
+  ],
+  "tests": [
+    {
+      "id": "CT-IMPORT",
+      "revision": 1,
+      "title": "CT import through a complete DICOM depot",
+      "group": "historical",
+      "phase": "import",
+      "profiles": [],
+      "expected": "Generated zero CT is listed and imports; complete working depot structure required.",
+      "dependency": null,
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "CT-GEOMETRY",
+      "revision": 1,
+      "title": "CT geometry survives import",
+      "group": "core",
+      "phase": "initial",
+      "profiles": [],
+      "expected": "CT1: 100 slices, 100x100 matrix, 5 mm isotropic spacing, 500 mm outer-voxel extent.",
+      "dependency": null,
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "CT-ZERO",
+      "revision": 1,
+      "title": "Zero pixels and HU survive import",
+      "group": "core",
+      "phase": "initial",
+      "profiles": [],
+      "expected": "Stored pixels and HU are zero; record UI cursor values separately from cached-DICOM checks.",
+      "dependency": null,
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "NATIVE-RESTORE",
+      "revision": 1,
+      "title": "Native patient restoration",
+      "group": "core",
+      "phase": "initial",
+      "profiles": [],
+      "expected": "zzzInputOutputAGsuite opens as zzPHYS, Ash without replacing AG or AG2.",
+      "dependency": null,
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "STRUCT-TRANSFER",
+      "revision": 1,
+      "title": "Transferred phantom contours",
+      "group": "core",
+      "phase": "initial",
+      "profiles": [
+        "reference"
+      ],
+      "expected": "Phantom/Density show Patient and Insert at the same physical coordinates as sampled source contours; 5 mm slice sampling is new.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "PLAN-LINK",
+      "revision": 1,
+      "title": "Independent plan identities and studyset associations",
+      "group": "core",
+      "phase": "initial",
+      "profiles": [
+        "reference",
+        "calculation-a",
+        "calculation-b",
+        "aperture-headers",
+        "aperture-leaves",
+        "density-conflict",
+        "density-aligned"
+      ],
+      "expected": "All seven named plans coexist; first five reference Phantom, last two reference Density. No plan is associated with CT1. The .hyp filename matches the suite PatientID in every plan folder.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "PLAN-BASELINE",
+      "revision": 1,
+      "title": "Reference plan opens",
+      "group": "core",
+      "phase": "initial",
+      "profiles": [
+        "reference"
+      ],
+      "expected": "Three baseline beams labelled 3x3, 5x5, 10x10; source calculation values retained; new patient/studyset associations are explicit.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "CALC-GRID",
+      "revision": 1,
+      "title": "Stored dose-grid scale",
+      "group": "settings",
+      "phase": "initial",
+      "profiles": [
+        "reference",
+        "calculation-a",
+        "calculation-b"
+      ],
+      "expected": "Reference 1, A 2, B 3; candidate UI expectations 0.10, 0.20, 0.30 cm. Record actual units.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "CALC-UNCERTAINTY",
+      "revision": 1,
+      "title": "MC uncertainty field selection",
+      "group": "settings",
+      "phase": "initial",
+      "profiles": [
+        "reference",
+        "calculation-a",
+        "calculation-b"
+      ],
+      "expected": "Reference .01/.01; A .02/.03; B .04/.05. Record which value appears, any coupling, rejection or normalization.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "CALC-MODE",
+      "revision": 1,
+      "title": "MC mode polarity and absence",
+      "group": "settings",
+      "phase": "initial",
+      "profiles": [
+        "reference",
+        "calculation-a",
+        "calculation-b"
+      ],
+      "expected": "Reference flag absent; A flag 0; B flag 1. Record Per Control Point/Per Calculation mapping without assuming absence means false.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "CALC-DEPOSITION",
+      "revision": 1,
+      "title": "Dose deposition setting",
+      "group": "settings",
+      "phase": "initial",
+      "profiles": [
+        "reference",
+        "calculation-a",
+        "calculation-b"
+      ],
+      "expected": "Reference and B medium flag 1; A water flag 0. Record exact selection and automatic companion changes.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "CALC-FORCE-WATER",
+      "revision": 1,
+      "title": "Force-water flag and interaction",
+      "group": "settings",
+      "phase": "initial",
+      "profiles": [
+        "reference",
+        "calculation-b"
+      ],
+      "expected": "Reference FORCEWATER=0; B=1. Record UI state and interaction with deposition/fill settings.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "ED-FORCE",
+      "revision": 1,
+      "title": "Plan forced density value",
+      "group": "density",
+      "phase": "initial",
+      "profiles": [
+        "calculation-a"
+      ],
+      "expected": "Plan Insert forced ED 1.1; studyset default 1.0. Record both layers and plan views.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "ED-FILL",
+      "revision": 1,
+      "title": "Plan fill density value and mode",
+      "group": "density",
+      "phase": "initial",
+      "profiles": [
+        "aperture-headers"
+      ],
+      "expected": "Plan Insert fill mode 3, fill ED 0.8, inactive uniform ED 1.0; studyset still forced 1.0.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "ED-DISABLED",
+      "revision": 1,
+      "title": "Plan override disabled",
+      "group": "density",
+      "phase": "initial",
+      "profiles": [
+        "aperture-leaves"
+      ],
+      "expected": "Plan Insert mode 1; stored values and studyset defaults remain 1.0. Record effective/displayed flags.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "ED-PRECEDENCE",
+      "revision": 1,
+      "title": "Plan/studyset density precedence",
+      "group": "density",
+      "phase": "initial",
+      "profiles": [
+        "density-conflict",
+        "density-aligned"
+      ],
+      "expected": "Density studyset ED 1.2; conflict plan ED 1.1; aligned plan ED 1.2. Other numerical plan settings/beam data match.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "BEAM-HEADERS",
+      "revision": 1,
+      "title": "Aperture-header representation",
+      "group": "geometry",
+      "phase": "initial",
+      "profiles": [
+        "reference",
+        "aperture-headers"
+      ],
+      "expected": "10x10-labelled beam header pair changes to 80,60,0,0. Leaves/compact shape remain baseline; candidate aperture 8x6 cm.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "BEAM-LEAVES",
+      "revision": 1,
+      "title": "MLC leaf-table representation",
+      "group": "geometry",
+      "phase": "initial",
+      "profiles": [
+        "reference",
+        "aperture-leaves"
+      ],
+      "expected": "10x10-labelled beam: leaf pairs 37-44 second-bank tips change from +50 to +10 mm. Headers/compact shape remain baseline.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "PLAN-NO-DOSE",
+      "revision": 1,
+      "title": "No-dose load state",
+      "group": "lifecycle",
+      "phase": "initial",
+      "profiles": [
+        "reference",
+        "calculation-a",
+        "calculation-b",
+        "aperture-headers",
+        "aperture-leaves",
+        "density-conflict",
+        "density-aligned"
+      ],
+      "expected": "No dose payload or historical calculation log supplied. Record warnings/stored dose state; source checksum/status fields remain unverified.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "PLAN-PERSISTENCE",
+      "revision": 1,
+      "title": "Settings persist on save/reopen",
+      "group": "lifecycle",
+      "phase": "save_reopen",
+      "profiles": [
+        "reference",
+        "calculation-a",
+        "calculation-b",
+        "aperture-headers",
+        "aperture-leaves",
+        "density-conflict",
+        "density-aligned"
+      ],
+      "expected": "After initial observations, save/close/reopen and retain returned native files; compare each recorded setting.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "PLAN-INDEPENDENCE",
+      "revision": 1,
+      "title": "Saving one plan preserves sibling candidates",
+      "group": "lifecycle",
+      "phase": "save_reopen",
+      "profiles": [
+        "calculation-a",
+        "calculation-b"
+      ],
+      "expected": "After saving A, B retains its independent settings/geometry. Shared-studyset changes are assessed separately.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "CALC-EXECUTION",
+      "revision": 1,
+      "title": "Calculation accepts the generated plan",
+      "group": "calculation",
+      "phase": "recalculate",
+      "profiles": [
+        "reference"
+      ],
+      "expected": "After load/geometry review, calculate Reference and retain completion/state evidence and separate returned files. Do not infer dose validity from completion alone.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "EXPORT-DOSE",
+      "revision": 2,
+      "title": "Independent exported-dose geometry/settings",
+      "group": "calculation",
+      "phase": "export",
+      "profiles": [
+        "reference",
+        "calculation-a",
+        "calculation-b",
+        "aperture-headers",
+        "aperture-leaves",
+        "density-conflict",
+        "density-aligned"
+      ],
+      "expected": "For a calculated named profile, export DICOM RT Plan/RT Dose for independent geometry, units, grid and association checks; numerical dose validation remains separate.",
+      "dependency": "NATIVE-RESTORE and relevant studyset/plan load",
+      "scope": "TPS observation required; local read-back alone is insufficient"
+    },
+    {
+      "id": "CALC-RETURN",
+      "revision": 1,
+      "title": "Returned native calculation evidence",
+      "group": "calculation",
+      "phase": "returned_file_checks",
+      "profiles": [
+        "reference",
+        "calculation-a",
+        "calculation-b",
+        "aperture-headers",
+        "aperture-leaves",
+        "density-conflict",
+        "density-aligned"
+      ],
+      "expected": "Returned named plan contains newly added native plan/beam dose payloads and its own calculation-completion log relative to the no-dose generated baseline. Record settings normalization; completion does not establish numerical dose validity or dose freshness after subsequent edits.",
+      "dependency": "Named generated plan and exact baseline manifest identified",
+      "scope": "Returned native-file evidence; independent DICOM and numerical checks remain separate"
+    }
+  ]
+}

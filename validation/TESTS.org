@@ -1,0 +1,187 @@
+#+title: HyperIO perpetual TPS validation list
+
+Test identities are stable; the result history is in results/events.jsonl.
+A fresh generated review is a run worksheet, not a reset of that history.
+Tests can share a patient, studyset and plan; each observation still has its own result.
+
+* Import once; inspect these locations
+
+| Profile | Plan | Studyset | Purpose |
+|---+---+---+---|
+| reference | Reference | Phantom | Plan association and baseline settings; source beam aperture records retained. |
+| calculation-a | Calculation-A | Phantom | Compare distinct MC fields in flag-0 mode, 2 mm grid, water deposition and forced ED 1.1 in one plan. |
+| calculation-b | Calculation-B | Phantom | Compare distinct MC fields in flag-1 mode, 3 mm grid, medium deposition and force-water in one plan. |
+| aperture-headers | Aperture-Headers | Phantom | 8x6 cm candidate header aperture plus plan fill ED 0.8; force-water stays off. |
+| aperture-leaves | Aperture-Leaves | Phantom | Eight central second-bank leaf tips at +10 mm plus disabled Insert plan override. |
+| density-conflict | Density-Conflict | Density | Plan Insert ED 1.1 against studyset ED 1.2; compare with Density-Aligned. |
+| density-aligned | Density-Aligned | Density | Both Insert density representations at 1.2, using the same beam/settings as Density-Conflict. |
+
+* CT-IMPORT: CT import through a complete DICOM depot
+Revision: 1.
+Phase: import.
+Profiles: patient/studyset or historical import evidence.
+Generated zero CT is listed and imports; complete working depot structure required.
+TPS observation required; local read-back alone is insufficient.
+
+* CT-GEOMETRY: CT geometry survives import
+Revision: 1.
+Phase: initial.
+Profiles: patient/studyset or historical import evidence.
+CT1: 100 slices, 100x100 matrix, 5 mm isotropic spacing, 500 mm outer-voxel extent.
+TPS observation required; local read-back alone is insufficient.
+
+* CT-ZERO: Zero pixels and HU survive import
+Revision: 1.
+Phase: initial.
+Profiles: patient/studyset or historical import evidence.
+Stored pixels and HU are zero; record UI cursor values separately from cached-DICOM checks.
+TPS observation required; local read-back alone is insufficient.
+
+* NATIVE-RESTORE: Native patient restoration
+Revision: 1.
+Phase: initial.
+Profiles: patient/studyset or historical import evidence.
+zzzInputOutputAGsuite opens as zzPHYS, Ash without replacing AG or AG2.
+TPS observation required; local read-back alone is insufficient.
+
+* STRUCT-TRANSFER: Transferred phantom contours
+Revision: 1.
+Phase: initial.
+Profiles: reference.
+Phantom/Density show Patient and Insert at the same physical coordinates as sampled source contours; 5 mm slice sampling is new.
+TPS observation required; local read-back alone is insufficient.
+
+* PLAN-LINK: Independent plan identities and studyset associations
+Revision: 1.
+Phase: initial.
+Profiles: reference, calculation-a, calculation-b, aperture-headers, aperture-leaves, density-conflict, density-aligned.
+All seven named plans coexist; first five reference Phantom, last two reference Density. No plan is associated with CT1. The .hyp filename matches the suite PatientID in every plan folder.
+TPS observation required; local read-back alone is insufficient.
+
+* PLAN-BASELINE: Reference plan opens
+Revision: 1.
+Phase: initial.
+Profiles: reference.
+Three baseline beams labelled 3x3, 5x5, 10x10; source calculation values retained; new patient/studyset associations are explicit.
+TPS observation required; local read-back alone is insufficient.
+
+* CALC-GRID: Stored dose-grid scale
+Revision: 1.
+Phase: initial.
+Profiles: reference, calculation-a, calculation-b.
+Reference 1, A 2, B 3; candidate UI expectations 0.10, 0.20, 0.30 cm. Record actual units.
+TPS observation required; local read-back alone is insufficient.
+
+* CALC-UNCERTAINTY: MC uncertainty field selection
+Revision: 1.
+Phase: initial.
+Profiles: reference, calculation-a, calculation-b.
+Reference .01/.01; A .02/.03; B .04/.05. Record which value appears, any coupling, rejection or normalization.
+TPS observation required; local read-back alone is insufficient.
+
+* CALC-MODE: MC mode polarity and absence
+Revision: 1.
+Phase: initial.
+Profiles: reference, calculation-a, calculation-b.
+Reference flag absent; A flag 0; B flag 1. Record Per Control Point/Per Calculation mapping without assuming absence means false.
+TPS observation required; local read-back alone is insufficient.
+
+* CALC-DEPOSITION: Dose deposition setting
+Revision: 1.
+Phase: initial.
+Profiles: reference, calculation-a, calculation-b.
+Reference and B medium flag 1; A water flag 0. Record exact selection and automatic companion changes.
+TPS observation required; local read-back alone is insufficient.
+
+* CALC-FORCE-WATER: Force-water flag and interaction
+Revision: 1.
+Phase: initial.
+Profiles: reference, calculation-b.
+Reference FORCEWATER=0; B=1. Record UI state and interaction with deposition/fill settings.
+TPS observation required; local read-back alone is insufficient.
+
+* ED-FORCE: Plan forced density value
+Revision: 1.
+Phase: initial.
+Profiles: calculation-a.
+Plan Insert forced ED 1.1; studyset default 1.0. Record both layers and plan views.
+TPS observation required; local read-back alone is insufficient.
+
+* ED-FILL: Plan fill density value and mode
+Revision: 1.
+Phase: initial.
+Profiles: aperture-headers.
+Plan Insert fill mode 3, fill ED 0.8, inactive uniform ED 1.0; studyset still forced 1.0.
+TPS observation required; local read-back alone is insufficient.
+
+* ED-DISABLED: Plan override disabled
+Revision: 1.
+Phase: initial.
+Profiles: aperture-leaves.
+Plan Insert mode 1; stored values and studyset defaults remain 1.0. Record effective/displayed flags.
+TPS observation required; local read-back alone is insufficient.
+
+* ED-PRECEDENCE: Plan/studyset density precedence
+Revision: 1.
+Phase: initial.
+Profiles: density-conflict, density-aligned.
+Density studyset ED 1.2; conflict plan ED 1.1; aligned plan ED 1.2. Other numerical plan settings/beam data match.
+TPS observation required; local read-back alone is insufficient.
+
+* BEAM-HEADERS: Aperture-header representation
+Revision: 1.
+Phase: initial.
+Profiles: reference, aperture-headers.
+10x10-labelled beam header pair changes to 80,60,0,0. Leaves/compact shape remain baseline; candidate aperture 8x6 cm.
+TPS observation required; local read-back alone is insufficient.
+
+* BEAM-LEAVES: MLC leaf-table representation
+Revision: 1.
+Phase: initial.
+Profiles: reference, aperture-leaves.
+10x10-labelled beam: leaf pairs 37-44 second-bank tips change from +50 to +10 mm. Headers/compact shape remain baseline.
+TPS observation required; local read-back alone is insufficient.
+
+* PLAN-NO-DOSE: No-dose load state
+Revision: 1.
+Phase: initial.
+Profiles: reference, calculation-a, calculation-b, aperture-headers, aperture-leaves, density-conflict, density-aligned.
+No dose payload or historical calculation log supplied. Record warnings/stored dose state; source checksum/status fields remain unverified.
+TPS observation required; local read-back alone is insufficient.
+
+* PLAN-PERSISTENCE: Settings persist on save/reopen
+Revision: 1.
+Phase: save_reopen.
+Profiles: reference, calculation-a, calculation-b, aperture-headers, aperture-leaves, density-conflict, density-aligned.
+After initial observations, save/close/reopen and retain returned native files; compare each recorded setting.
+TPS observation required; local read-back alone is insufficient.
+
+* PLAN-INDEPENDENCE: Saving one plan preserves sibling candidates
+Revision: 1.
+Phase: save_reopen.
+Profiles: calculation-a, calculation-b.
+After saving A, B retains its independent settings/geometry. Shared-studyset changes are assessed separately.
+TPS observation required; local read-back alone is insufficient.
+
+* CALC-EXECUTION: Calculation accepts the generated plan
+Revision: 1.
+Phase: recalculate.
+Profiles: reference.
+After load/geometry review, calculate Reference and retain completion/state evidence and separate returned files. Do not infer dose validity from completion alone.
+TPS observation required; local read-back alone is insufficient.
+
+* EXPORT-DOSE: Independent exported-dose geometry/settings
+Revision: 2.
+Phase: export.
+Profiles: reference, calculation-a, calculation-b, aperture-headers, aperture-leaves, density-conflict, density-aligned.
+For a calculated named profile, export DICOM RT Plan/RT Dose for independent geometry, units, grid and association checks; numerical dose validation remains separate.
+TPS observation required; local read-back alone is insufficient.
+Revision 1 applied only to Reference; its historical observations remain scoped to that revision.
+
+* CALC-RETURN: Returned native calculation evidence
+Revision: 1.
+Phase: returned_file_checks.
+Profiles: reference, calculation-a, calculation-b, aperture-headers, aperture-leaves, density-conflict, density-aligned.
+Returned named plan contains newly added native plan/beam dose payloads and its own calculation-completion log relative to the no-dose generated baseline.
+Record settings normalization; completion does not establish numerical dose validity or dose freshness after subsequent edits.
+Returned native-file evidence; independent DICOM and numerical checks remain separate.
