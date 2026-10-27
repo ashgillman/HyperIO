@@ -1,0 +1,335 @@
+{
+  "schema_version": 1,
+  "suite_id": "hyperio-tps",
+  "run_id": "hyperio-tps-8ccb9f90b45ee0d9",
+  "reviewer": "HyperIO returned-file comparison",
+  "monaco_version_build": "6.2.3.0",
+  "observed_at": null,
+  "patient_id_as_installed": "zzzInputOutputAGsuite",
+  "run_manifest_sha256": "1a5a4437e05e15826eb2c4c28e7be1b0d38301af530f996e5ba5950f6123211f",
+  "observations": [
+    {
+      "test_id": "CALC-RETURN",
+      "test_revision": 1,
+      "profile_id": "aperture-headers",
+      "phase": "returned_file_checks",
+      "status": "pass",
+      "actual": "New plan dose and three beam-dose files relative to no-dose baseline; own log reports three calculated segments and completion at 10 26 2026 18:07:26.531. No inference of numerical dose validity/scaling or current freshness after later edits.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "PLAN-PERSISTENCE",
+      "test_revision": 1,
+      "profile_id": "aperture-headers",
+      "phase": "returned_file_checks",
+      "status": "observation",
+      "actual": "Returned calculation settings and recognized beam geometry are retained in the comparison. Numeric aperture headers/leaves persist. Named calculation settings persist; compact-shape records were regenerated. Explicit close/reopen was not independently witnessed.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "CALC-RETURN",
+      "test_revision": 1,
+      "profile_id": "aperture-leaves",
+      "phase": "returned_file_checks",
+      "status": "pass",
+      "actual": "New plan dose and three beam-dose files relative to no-dose baseline; own log reports three calculated segments and completion at 10 27 2026 08:58:17.504. No inference of numerical dose validity/scaling or current freshness after later edits.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "PLAN-PERSISTENCE",
+      "test_revision": 1,
+      "profile_id": "aperture-leaves",
+      "phase": "returned_file_checks",
+      "status": "observation",
+      "actual": "Returned calculation settings and recognized beam geometry are retained in the comparison. Numeric aperture headers/leaves persist. Named calculation settings persist; compact-shape records were regenerated. Explicit close/reopen was not independently witnessed.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "CALC-RETURN",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "returned_file_checks",
+      "status": "pass",
+      "actual": "New plan dose and three beam-dose files relative to no-dose baseline; own log reports three calculated segments and completion at 10 27 2026 11:50:46.974. No inference of numerical dose validity/scaling or current freshness after later edits.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "PLAN-PERSISTENCE",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "returned_file_checks",
+      "status": "observation",
+      "actual": "Returned calculation settings and recognized beam geometry are retained in the comparison. Numeric aperture headers/leaves persist. Main uncertainty/grid/deposition/force-water settings persist; unequal segment variance was normalized to main variance. Explicit close/reopen was not independently witnessed.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "CALC-RETURN",
+      "test_revision": 1,
+      "profile_id": "calculation-b",
+      "phase": "returned_file_checks",
+      "status": "pass",
+      "actual": "New plan dose and three beam-dose files relative to no-dose baseline; own log reports three calculated segments and completion at 10 27 2026 15:54:25.666. No inference of numerical dose validity/scaling or current freshness after later edits.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "PLAN-PERSISTENCE",
+      "test_revision": 1,
+      "profile_id": "calculation-b",
+      "phase": "returned_file_checks",
+      "status": "observation",
+      "actual": "Returned calculation settings and recognized beam geometry are retained in the comparison. Numeric aperture headers/leaves persist. Main uncertainty/grid/deposition/force-water settings persist; unequal segment variance was normalized to main variance. Explicit close/reopen was not independently witnessed.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "CALC-UNCERTAINTY",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "returned_file_checks",
+      "status": "observation",
+      "actual": "Segment variance 0.03 became 0.02, equal to main variance. All three mcStdDev entries match main variance. Log entire/per-control-point uncertainty: 1.4% / 2.0%. Exact normalization stage unisolated.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "CALC-MODE",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "returned_file_checks",
+      "status": "observation",
+      "actual": "Explicit false mode became absent; previous UI showed Per Control Point. No universal absent-key default inferred.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "CALC-UNCERTAINTY",
+      "test_revision": 1,
+      "profile_id": "calculation-b",
+      "phase": "returned_file_checks",
+      "status": "observation",
+      "actual": "Segment variance 0.05 became 0.04, equal to main variance. All three mcStdDev entries match main variance. Log entire/per-control-point uncertainty: 3.3% / 4.9%. Exact normalization stage unisolated.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "CALC-MODE",
+      "test_revision": 1,
+      "profile_id": "calculation-b",
+      "phase": "returned_file_checks",
+      "status": "observation",
+      "actual": "Mode true retained; previous UI showed Per Calculation. Achieved percentages remain distinct from requested uncertainty.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "BEAM-HEADERS",
+      "test_revision": 1,
+      "profile_id": "aperture-headers",
+      "phase": "returned_file_checks",
+      "status": "pass",
+      "actual": "Both field-2 80,60,0,0 headers and all generated numeric leaf pairs survive. Compact record changes 3,20 / 50,50 / 30,40,30 to 3,12 / 40,30 / 20,40,20. Own calculation completed. Independent exported/calculated aperture remains to be checked.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "BEAM-LEAVES",
+      "test_revision": 1,
+      "profile_id": "aperture-leaves",
+      "phase": "returned_file_checks",
+      "status": "pass",
+      "actual": "Both field-2 100,100,0,0 headers and edited second-bank +10 mm tips at leaf pairs 37-44 survive. Compact record changes 3,20 to 4,20 and 30,40,30 to 30,30,10,30. Own calculation completed. Independent geometry/dose check remains pending.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "ED-FORCE",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "returned_file_checks",
+      "status": "observation",
+      "actual": "Forced ED 1.1 survives. Logged total/free Insert volume: 2663.3/0 ccm. Effective material/layer precedence is not established.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "ED-FILL",
+      "test_revision": 1,
+      "profile_id": "aperture-headers",
+      "phase": "returned_file_checks",
+      "status": "observation",
+      "actual": "Filled mode, fill .8 and inactive uniform ED 1.0 survive. Logged total/free Insert volume: 2654.3/0 ccm. Effective material/layer precedence is not established.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    },
+    {
+      "test_id": "ED-DISABLED",
+      "test_revision": 1,
+      "profile_id": "aperture-leaves",
+      "phase": "returned_file_checks",
+      "status": "observation",
+      "actual": "Insert mode none survives; no Insert volume entry appears in its log. Effective material/layer precedence is not established.",
+      "evidence": [
+        "reports/native-suite-return-2026-10-27.md",
+        "reports/native-suite-return-2026-10-27.json",
+        "reference/native-suite-return/1~zzzInputOutputAGsuite.zip",
+        "sha256:48e1b57417eeb8bb3017691ec062b8e97a6c1f9f9e70d77b91fd088454fad615"
+      ],
+      "messages": [
+        "Visibility toggles are incidental user actions, not controlled interventions.",
+        "Build is from the preceding worksheet, not independently established by this ZIP. Log times have no timezone.",
+        "Reference and both Density plans intentionally uncalculated; no calculation outcome inferred for them."
+      ]
+    }
+  ]
+}

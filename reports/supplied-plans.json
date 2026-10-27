@@ -1,0 +1,3070 @@
+{
+  "schema_version": 1,
+  "source": "reference/1~ZZZELEKTAONEHETERO.zip",
+  "file_count": 5735,
+  "uncompressed_bytes": 2162402099,
+  "plans": [
+    {
+      "name": "HDHeteroSq6F",
+      "path": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F",
+      "settings": {
+        "DOSEGRIDSIZE": {
+          "value": 1.0,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 68,
+          "raw": "1",
+          "unit": "mm (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCVARIANCE": {
+          "value": 0.005,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 76,
+          "raw": "0.0050000000000000001",
+          "unit": "fraction (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCSEGMENTVARIANCE": {
+          "value": 0.005,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 75,
+          "raw": "0.0050000000000000001",
+          "unit": "fraction (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCVARPERPLAN": null,
+        "DOSETOMEDIUM": {
+          "value": true,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 77,
+          "raw": "1",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "FORCEWATER": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 78,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "STORECOUCHCOILDOSE": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 79,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "ISPHANTOMMATERIAL": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 119,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "FRACTIONS": {
+          "value": 1,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 64,
+          "raw": "1",
+          "unit": "count",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "PRESCRIPTION": {
+          "value": 2.0,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 65,
+          "raw": "2",
+          "unit": "Gy (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        }
+      },
+      "beams": [
+        {
+          "field_id": "3",
+          "description": "3x3",
+          "machine_id": "Agility6MVFFF",
+          "treatment_unit": "Agility6MVFFF",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/tel.1",
+            "line": 18,
+            "algorithm_line": 31,
+            "isocentre_line": 44
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        },
+        {
+          "field_id": "1",
+          "description": "5x5",
+          "machine_id": "Agility6MVFFF",
+          "treatment_unit": "Agility6MVFFF",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/tel.1",
+            "line": 379,
+            "algorithm_line": 392,
+            "isocentre_line": 405
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        },
+        {
+          "field_id": "2",
+          "description": "10x10",
+          "machine_id": "Agility6MVFFF",
+          "treatment_unit": "Agility6MVFFF",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/tel.1",
+            "line": 746,
+            "algorithm_line": 759,
+            "isocentre_line": 772
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        }
+      ],
+      "density_overrides": [
+        {
+          "name": "Patient",
+          "mode": "forced",
+          "mode_code": 2,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 9,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/plan",
+            "line": 261,
+            "raw": "2,2,1,1,9"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "Tumor",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 3,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/plan",
+            "line": 263,
+            "raw": "1,2,1,1,3"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 1",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 4,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/plan",
+            "line": 265,
+            "raw": "1,2,1,1,4"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 2",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 5,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/plan",
+            "line": 267,
+            "raw": "1,2,1,1,5"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 3",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 6,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/plan",
+            "line": 269,
+            "raw": "1,2,1,1,6"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 4",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 7,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/plan",
+            "line": 271,
+            "raw": "1,2,1,1,7"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 5",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 8,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/plan",
+            "line": 273,
+            "raw": "1,2,1,1,8"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "Insert",
+          "mode": "forced",
+          "mode_code": 2,
+          "uniform_ed": 1.606,
+          "fill_ed": 1.0,
+          "layer": 2,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/plan",
+            "line": 275,
+            "raw": "2,1,1.6060000000000001,1,2"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "ReducedPatient",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 1,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/plan",
+            "line": 277,
+            "raw": "1,2,1,1,1"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        }
+      ],
+      "diagnostics": [],
+      "studyset": "PinpointBone",
+      "patient_id": "ZZZELEKTAONEHETERO",
+      "identity_source": {
+        "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/plan",
+        "lines": [
+          3,
+          5,
+          7
+        ]
+      },
+      "hyp_version": "000610b6",
+      "hyp_beam_definition_count": 3,
+      "calculation_logs": [
+        {
+          "mc_stddev": [
+            {
+              "value": 0.005,
+              "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/RxA.xlog",
+              "line": 121,
+              "raw": "History density: 42107 mcStdDev: 0.005 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 13 2026 13:26:22.756"
+            },
+            {
+              "value": 0.005,
+              "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/RxA.xlog",
+              "line": 134,
+              "raw": "History density: 42107 mcStdDev: 0.005 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 13 2026 13:36:39.261"
+            },
+            {
+              "value": 0.005,
+              "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/RxA.xlog",
+              "line": 147,
+              "raw": "History density: 42107 mcStdDev: 0.005 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 13 2026 13:52:36.552"
+            }
+          ],
+          "entire_calculation_percent": [
+            {
+              "value": 0.34,
+              "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/RxA.xlog",
+              "line": 186,
+              "raw": "#  For the entire calculation:    0.34 percent #",
+              "unit": "percent (log label)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 13 2026 14:30:45.549"
+            }
+          ],
+          "per_segment_percent": [
+            {
+              "value": 0.5,
+              "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/RxA.xlog",
+              "line": 193,
+              "raw": "#  For each segment (control point):  0.5 percent #",
+              "unit": "percent (log label)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 13 2026 14:30:45.549"
+            }
+          ],
+          "completion_events": [
+            {
+              "value": "Dose Calculation Completed",
+              "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/RxA.xlog",
+              "line": 221,
+              "raw": "Dose Calculation Completed",
+              "unit": null,
+              "interpretation": "literal log event; dose freshness unverified",
+              "time_raw": "10 13 2026 14:30:45.643"
+            }
+          ],
+          "event_count": 35,
+          "interpretation": "Log observations only; association to current settings/dose is unverified"
+        }
+      ]
+    },
+    {
+      "name": "HDHeteroSq6X",
+      "path": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X",
+      "settings": {
+        "DOSEGRIDSIZE": {
+          "value": 1.0,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 68,
+          "raw": "1",
+          "unit": "mm (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCVARIANCE": {
+          "value": 0.01,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 76,
+          "raw": "0.01",
+          "unit": "fraction (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCSEGMENTVARIANCE": {
+          "value": 0.01,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 75,
+          "raw": "0.01",
+          "unit": "fraction (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCVARPERPLAN": null,
+        "DOSETOMEDIUM": {
+          "value": true,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 77,
+          "raw": "1",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "FORCEWATER": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 78,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "STORECOUCHCOILDOSE": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 79,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "ISPHANTOMMATERIAL": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 119,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "FRACTIONS": {
+          "value": 1,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 64,
+          "raw": "1",
+          "unit": "count",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "PRESCRIPTION": {
+          "value": 2.0,
+          "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 65,
+          "raw": "2",
+          "unit": "Gy (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        }
+      },
+      "beams": [
+        {
+          "field_id": "3",
+          "description": "3x3",
+          "machine_id": "Agility6MV2017",
+          "treatment_unit": "Agility2017",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/tel.1",
+            "line": 18,
+            "algorithm_line": 31,
+            "isocentre_line": 44
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        },
+        {
+          "field_id": "1",
+          "description": "5x5",
+          "machine_id": "Agility6MV2017",
+          "treatment_unit": "Agility2017",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/tel.1",
+            "line": 379,
+            "algorithm_line": 392,
+            "isocentre_line": 405
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        },
+        {
+          "field_id": "2",
+          "description": "10x10",
+          "machine_id": "Agility6MV2017",
+          "treatment_unit": "Agility2017",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/tel.1",
+            "line": 746,
+            "algorithm_line": 759,
+            "isocentre_line": 772
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        }
+      ],
+      "density_overrides": [
+        {
+          "name": "Patient",
+          "mode": "forced",
+          "mode_code": 2,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 9,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/plan",
+            "line": 261,
+            "raw": "2,2,1,1,9"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "Tumor",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 3,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/plan",
+            "line": 263,
+            "raw": "1,2,1,1,3"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 1",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 4,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/plan",
+            "line": 265,
+            "raw": "1,2,1,1,4"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 2",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 5,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/plan",
+            "line": 267,
+            "raw": "1,2,1,1,5"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 3",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 6,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/plan",
+            "line": 269,
+            "raw": "1,2,1,1,6"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 4",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 7,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/plan",
+            "line": 271,
+            "raw": "1,2,1,1,7"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 5",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 8,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/plan",
+            "line": 273,
+            "raw": "1,2,1,1,8"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "Insert",
+          "mode": "forced",
+          "mode_code": 2,
+          "uniform_ed": 1.606,
+          "fill_ed": 1.0,
+          "layer": 2,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/plan",
+            "line": 275,
+            "raw": "2,1,1.6060000000000001,1,2"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "ReducedPatient",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 1,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/plan",
+            "line": 277,
+            "raw": "1,2,1,1,1"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        }
+      ],
+      "diagnostics": [],
+      "studyset": "SemiflexBone",
+      "patient_id": "ZZZELEKTAONEHETERO",
+      "identity_source": {
+        "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/plan",
+        "lines": [
+          3,
+          5,
+          7
+        ]
+      },
+      "hyp_version": "000610b6",
+      "hyp_beam_definition_count": 3,
+      "calculation_logs": [
+        {
+          "mc_stddev": [
+            {
+              "value": 0.01,
+              "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/RxA.xlog",
+              "line": 122,
+              "raw": "History density: 10527 mcStdDev: 0.01 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 11:58:50.926"
+            },
+            {
+              "value": 0.01,
+              "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/RxA.xlog",
+              "line": 134,
+              "raw": "History density: 10527 mcStdDev: 0.01 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 12:01:23.077"
+            },
+            {
+              "value": 0.01,
+              "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/RxA.xlog",
+              "line": 147,
+              "raw": "History density: 10527 mcStdDev: 0.01 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 12:05:14.211"
+            }
+          ],
+          "entire_calculation_percent": [
+            {
+              "value": 0.67,
+              "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/RxA.xlog",
+              "line": 187,
+              "raw": "#  For the entire calculation:    0.67 percent #",
+              "unit": "percent (log label)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 12:13:35.647"
+            }
+          ],
+          "per_segment_percent": [
+            {
+              "value": 1.0,
+              "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/RxA.xlog",
+              "line": 194,
+              "raw": "#  For each segment (control point):  1 percent #",
+              "unit": "percent (log label)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 12:13:35.647"
+            }
+          ],
+          "completion_events": [
+            {
+              "value": "Dose Calculation Completed",
+              "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/RxA.xlog",
+              "line": 222,
+              "raw": "Dose Calculation Completed",
+              "unit": null,
+              "interpretation": "literal log event; dose freshness unverified",
+              "time_raw": "10 12 2026 12:13:35.647"
+            }
+          ],
+          "event_count": 35,
+          "interpretation": "Log observations only; association to current settings/dose is unverified"
+        }
+      ]
+    },
+    {
+      "name": "LDHeteroSq6F",
+      "path": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F",
+      "settings": {
+        "DOSEGRIDSIZE": {
+          "value": 1.0,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 68,
+          "raw": "1",
+          "unit": "mm (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCVARIANCE": {
+          "value": 0.005,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 76,
+          "raw": "0.0050000000000000001",
+          "unit": "fraction (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCSEGMENTVARIANCE": {
+          "value": 0.005,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 75,
+          "raw": "0.0050000000000000001",
+          "unit": "fraction (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCVARPERPLAN": null,
+        "DOSETOMEDIUM": {
+          "value": true,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 77,
+          "raw": "1",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "FORCEWATER": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 78,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "STORECOUCHCOILDOSE": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 79,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "ISPHANTOMMATERIAL": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 119,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "FRACTIONS": {
+          "value": 1,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 64,
+          "raw": "1",
+          "unit": "count",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "PRESCRIPTION": {
+          "value": 2.0,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 65,
+          "raw": "2",
+          "unit": "Gy (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        }
+      },
+      "beams": [
+        {
+          "field_id": "3",
+          "description": "3x3",
+          "machine_id": "Agility6MVFFF",
+          "treatment_unit": "Agility6MVFFF",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/tel.1",
+            "line": 18,
+            "algorithm_line": 31,
+            "isocentre_line": 44
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        },
+        {
+          "field_id": "1",
+          "description": "5x5",
+          "machine_id": "Agility6MVFFF",
+          "treatment_unit": "Agility6MVFFF",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/tel.1",
+            "line": 379,
+            "algorithm_line": 392,
+            "isocentre_line": 405
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        },
+        {
+          "field_id": "2",
+          "description": "10x10",
+          "machine_id": "Agility6MVFFF",
+          "treatment_unit": "Agility6MVFFF",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/tel.1",
+            "line": 746,
+            "algorithm_line": 759,
+            "isocentre_line": 772
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        }
+      ],
+      "density_overrides": [
+        {
+          "name": "Patient",
+          "mode": "forced",
+          "mode_code": 2,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 9,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/plan",
+            "line": 261,
+            "raw": "2,2,1,1,9"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "Tumor",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 3,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/plan",
+            "line": 263,
+            "raw": "1,2,1,1,3"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 1",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 4,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/plan",
+            "line": 265,
+            "raw": "1,2,1,1,4"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 2",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 5,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/plan",
+            "line": 267,
+            "raw": "1,2,1,1,5"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 3",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 6,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/plan",
+            "line": 269,
+            "raw": "1,2,1,1,6"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 4",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 7,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/plan",
+            "line": 271,
+            "raw": "1,2,1,1,7"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 5",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 8,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/plan",
+            "line": 273,
+            "raw": "1,2,1,1,8"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "Insert",
+          "mode": "forced",
+          "mode_code": 2,
+          "uniform_ed": 0.28300000000000003,
+          "fill_ed": 1.0,
+          "layer": 2,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/plan",
+            "line": 275,
+            "raw": "2,1,0.28300000000000003,1,2"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "ReducedPatient",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 1,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/plan",
+            "line": 277,
+            "raw": "1,2,1,1,1"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        }
+      ],
+      "diagnostics": [],
+      "studyset": "PoinpointLung",
+      "patient_id": "ZZZELEKTAONEHETERO",
+      "identity_source": {
+        "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/plan",
+        "lines": [
+          3,
+          5,
+          7
+        ]
+      },
+      "hyp_version": "000610b6",
+      "hyp_beam_definition_count": 3,
+      "calculation_logs": [
+        {
+          "mc_stddev": [
+            {
+              "value": 0.005,
+              "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/RxA.xlog",
+              "line": 122,
+              "raw": "History density: 42107 mcStdDev: 0.005 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 15 2026 14:57:47.779"
+            },
+            {
+              "value": 0.005,
+              "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/RxA.xlog",
+              "line": 135,
+              "raw": "History density: 42107 mcStdDev: 0.005 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 15 2026 15:10:24.117"
+            },
+            {
+              "value": 0.005,
+              "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/RxA.xlog",
+              "line": 148,
+              "raw": "History density: 42107 mcStdDev: 0.005 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 15 2026 15:28:55.202"
+            }
+          ],
+          "entire_calculation_percent": [
+            {
+              "value": 0.34,
+              "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/RxA.xlog",
+              "line": 187,
+              "raw": "#  For the entire calculation:    0.34 percent #",
+              "unit": "percent (log label)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 15 2026 16:15:27.093"
+            }
+          ],
+          "per_segment_percent": [
+            {
+              "value": 0.5,
+              "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/RxA.xlog",
+              "line": 194,
+              "raw": "#  For each segment (control point):  0.5 percent #",
+              "unit": "percent (log label)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 15 2026 16:15:27.093"
+            }
+          ],
+          "completion_events": [
+            {
+              "value": "Dose Calculation Completed",
+              "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/RxA.xlog",
+              "line": 222,
+              "raw": "Dose Calculation Completed",
+              "unit": null,
+              "interpretation": "literal log event; dose freshness unverified",
+              "time_raw": "10 15 2026 16:15:27.093"
+            }
+          ],
+          "event_count": 35,
+          "interpretation": "Log observations only; association to current settings/dose is unverified"
+        }
+      ]
+    },
+    {
+      "name": "LDHeteroSq6X",
+      "path": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X",
+      "settings": {
+        "DOSEGRIDSIZE": {
+          "value": 1.0,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 68,
+          "raw": "1",
+          "unit": "mm (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCVARIANCE": {
+          "value": 0.01,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 76,
+          "raw": "0.01",
+          "unit": "fraction (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCSEGMENTVARIANCE": {
+          "value": 0.01,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 75,
+          "raw": "0.01",
+          "unit": "fraction (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCVARPERPLAN": null,
+        "DOSETOMEDIUM": {
+          "value": true,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 77,
+          "raw": "1",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "FORCEWATER": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 78,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "STORECOUCHCOILDOSE": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 79,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "ISPHANTOMMATERIAL": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 119,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "FRACTIONS": {
+          "value": 1,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 64,
+          "raw": "1",
+          "unit": "count",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "PRESCRIPTION": {
+          "value": 2.0,
+          "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 65,
+          "raw": "2",
+          "unit": "Gy (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        }
+      },
+      "beams": [
+        {
+          "field_id": "3",
+          "description": "3x3",
+          "machine_id": "Agility6MV2017",
+          "treatment_unit": "Agility2017",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/tel.1",
+            "line": 18,
+            "algorithm_line": 31,
+            "isocentre_line": 44
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        },
+        {
+          "field_id": "1",
+          "description": "5x5",
+          "machine_id": "Agility6MV2017",
+          "treatment_unit": "Agility2017",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/tel.1",
+            "line": 379,
+            "algorithm_line": 392,
+            "isocentre_line": 405
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        },
+        {
+          "field_id": "2",
+          "description": "10x10",
+          "machine_id": "Agility6MV2017",
+          "treatment_unit": "Agility2017",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/tel.1",
+            "line": 746,
+            "algorithm_line": 759,
+            "isocentre_line": 772
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        }
+      ],
+      "density_overrides": [
+        {
+          "name": "Patient",
+          "mode": "forced",
+          "mode_code": 2,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 9,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/plan",
+            "line": 261,
+            "raw": "2,2,1,1,9"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "Tumor",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 3,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/plan",
+            "line": 263,
+            "raw": "1,2,1,1,3"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 1",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 4,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/plan",
+            "line": 265,
+            "raw": "1,2,1,1,4"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 2",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 5,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/plan",
+            "line": 267,
+            "raw": "1,2,1,1,5"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 3",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 6,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/plan",
+            "line": 269,
+            "raw": "1,2,1,1,6"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 4",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 7,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/plan",
+            "line": 271,
+            "raw": "1,2,1,1,7"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 5",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 8,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/plan",
+            "line": 273,
+            "raw": "1,2,1,1,8"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "Insert",
+          "mode": "forced",
+          "mode_code": 2,
+          "uniform_ed": 0.28300000000000003,
+          "fill_ed": 1.0,
+          "layer": 2,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/plan",
+            "line": 275,
+            "raw": "2,1,0.28300000000000003,1,2"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "ReducedPatient",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 1,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/plan",
+            "line": 277,
+            "raw": "1,2,1,1,1"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        }
+      ],
+      "diagnostics": [],
+      "studyset": "SemiflexLung",
+      "patient_id": "ZZZELEKTAONEHETERO",
+      "identity_source": {
+        "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/plan",
+        "lines": [
+          3,
+          5,
+          7
+        ]
+      },
+      "hyp_version": "000610b6",
+      "hyp_beam_definition_count": 3,
+      "calculation_logs": [
+        {
+          "mc_stddev": [
+            {
+              "value": 0.01,
+              "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/RxA.xlog",
+              "line": 122,
+              "raw": "History density: 10527 mcStdDev: 0.01 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 11:39:41.180"
+            },
+            {
+              "value": 0.01,
+              "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/RxA.xlog",
+              "line": 135,
+              "raw": "History density: 10527 mcStdDev: 0.01 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 11:40:54.695"
+            },
+            {
+              "value": 0.01,
+              "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/RxA.xlog",
+              "line": 148,
+              "raw": "History density: 10527 mcStdDev: 0.01 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 11:43:27.977"
+            }
+          ],
+          "entire_calculation_percent": [
+            {
+              "value": 0.69,
+              "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/RxA.xlog",
+              "line": 188,
+              "raw": "#  For the entire calculation:    0.69 percent #",
+              "unit": "percent (log label)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 11:52:05.226"
+            }
+          ],
+          "per_segment_percent": [
+            {
+              "value": 1.0,
+              "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/RxA.xlog",
+              "line": 195,
+              "raw": "#  For each segment (control point):  1 percent #",
+              "unit": "percent (log label)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 11:52:05.226"
+            }
+          ],
+          "completion_events": [
+            {
+              "value": "Dose Calculation Completed",
+              "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/RxA.xlog",
+              "line": 223,
+              "raw": "Dose Calculation Completed",
+              "unit": null,
+              "interpretation": "literal log event; dose freshness unverified",
+              "time_raw": "10 12 2026 11:52:05.226"
+            }
+          ],
+          "event_count": 35,
+          "interpretation": "Log observations only; association to current settings/dose is unverified"
+        }
+      ]
+    },
+    {
+      "name": "RefHeteroSq6F",
+      "path": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F",
+      "settings": {
+        "DOSEGRIDSIZE": {
+          "value": 1.0,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 68,
+          "raw": "1",
+          "unit": "mm (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCVARIANCE": {
+          "value": 0.005,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 76,
+          "raw": "0.0050000000000000001",
+          "unit": "fraction (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCSEGMENTVARIANCE": {
+          "value": 0.005,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 75,
+          "raw": "0.0050000000000000001",
+          "unit": "fraction (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCVARPERPLAN": null,
+        "DOSETOMEDIUM": {
+          "value": true,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 77,
+          "raw": "1",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "FORCEWATER": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 78,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "STORECOUCHCOILDOSE": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 79,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "ISPHANTOMMATERIAL": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 119,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "FRACTIONS": {
+          "value": 1,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 64,
+          "raw": "1",
+          "unit": "count",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "PRESCRIPTION": {
+          "value": 2.0,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp",
+          "line": 65,
+          "raw": "2",
+          "unit": "Gy (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        }
+      },
+      "beams": [
+        {
+          "field_id": "3",
+          "description": "3x3",
+          "machine_id": "Agility6MVFFF",
+          "treatment_unit": "Agility6MVFFF",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/tel.1",
+            "line": 18,
+            "algorithm_line": 31,
+            "isocentre_line": 44
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        },
+        {
+          "field_id": "1",
+          "description": "5x5",
+          "machine_id": "Agility6MVFFF",
+          "treatment_unit": "Agility6MVFFF",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/tel.1",
+            "line": 379,
+            "algorithm_line": 392,
+            "isocentre_line": 405
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        },
+        {
+          "field_id": "2",
+          "description": "10x10",
+          "machine_id": "Agility6MVFFF",
+          "treatment_unit": "Agility6MVFFF",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/tel.1",
+            "line": 746,
+            "algorithm_line": 759,
+            "isocentre_line": 772
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        }
+      ],
+      "density_overrides": [
+        {
+          "name": "Patient",
+          "mode": "forced",
+          "mode_code": 2,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 9,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/plan",
+            "line": 261,
+            "raw": "2,2,1,1,9"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "Tumor",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 3,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/plan",
+            "line": 263,
+            "raw": "1,2,1,1,3"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 1",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 4,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/plan",
+            "line": 265,
+            "raw": "1,2,1,1,4"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 2",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 5,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/plan",
+            "line": 267,
+            "raw": "1,2,1,1,5"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 3",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 6,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/plan",
+            "line": 269,
+            "raw": "1,2,1,1,6"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 4",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 7,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/plan",
+            "line": 271,
+            "raw": "1,2,1,1,7"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 5",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 8,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/plan",
+            "line": 273,
+            "raw": "1,2,1,1,8"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "Insert",
+          "mode": "forced",
+          "mode_code": 2,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 2,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/plan",
+            "line": 275,
+            "raw": "2,1,1,1,2"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "ReducedPatient",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 1,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/plan",
+            "line": 277,
+            "raw": "1,2,1,1,1"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        }
+      ],
+      "diagnostics": [],
+      "studyset": "PinpointWater",
+      "patient_id": "ZZZELEKTAONEHETERO",
+      "identity_source": {
+        "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/plan",
+        "lines": [
+          3,
+          5,
+          7
+        ]
+      },
+      "hyp_version": "000610b6",
+      "hyp_beam_definition_count": 3,
+      "calculation_logs": [
+        {
+          "mc_stddev": [
+            {
+              "value": 0.005,
+              "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/RxA.xlog",
+              "line": 121,
+              "raw": "History density: 42107 mcStdDev: 0.005 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 15 2026 11:17:12.173"
+            },
+            {
+              "value": 0.005,
+              "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/RxA.xlog",
+              "line": 134,
+              "raw": "History density: 42107 mcStdDev: 0.005 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 15 2026 11:31:02.180"
+            },
+            {
+              "value": 0.005,
+              "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/RxA.xlog",
+              "line": 147,
+              "raw": "History density: 42107 mcStdDev: 0.005 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 15 2026 11:51:39.393"
+            }
+          ],
+          "entire_calculation_percent": [
+            {
+              "value": 0.34,
+              "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/RxA.xlog",
+              "line": 187,
+              "raw": "#  For the entire calculation:    0.34 percent #",
+              "unit": "percent (log label)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 15 2026 12:38:54.437"
+            }
+          ],
+          "per_segment_percent": [
+            {
+              "value": 0.5,
+              "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/RxA.xlog",
+              "line": 194,
+              "raw": "#  For each segment (control point):  0.5 percent #",
+              "unit": "percent (log label)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 15 2026 12:38:54.437"
+            }
+          ],
+          "completion_events": [
+            {
+              "value": "Dose Calculation Completed",
+              "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/RxA.xlog",
+              "line": 222,
+              "raw": "Dose Calculation Completed",
+              "unit": null,
+              "interpretation": "literal log event; dose freshness unverified",
+              "time_raw": "10 15 2026 12:38:54.437"
+            }
+          ],
+          "event_count": 35,
+          "interpretation": "Log observations only; association to current settings/dose is unverified"
+        }
+      ]
+    },
+    {
+      "name": "RefHeteroSq6X",
+      "path": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X",
+      "settings": {
+        "DOSEGRIDSIZE": {
+          "value": 1.0,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 68,
+          "raw": "1",
+          "unit": "mm (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCVARIANCE": {
+          "value": 0.01,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 76,
+          "raw": "0.01",
+          "unit": "fraction (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCSEGMENTVARIANCE": {
+          "value": 0.01,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 75,
+          "raw": "0.01",
+          "unit": "fraction (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "MCVARPERPLAN": null,
+        "DOSETOMEDIUM": {
+          "value": true,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 77,
+          "raw": "1",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "FORCEWATER": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 78,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "STORECOUCHCOILDOSE": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 79,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "ISPHANTOMMATERIAL": {
+          "value": false,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 119,
+          "raw": "0",
+          "unit": null,
+          "interpretation": "literal boolean; UI mapping pending"
+        },
+        "FRACTIONS": {
+          "value": 1,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 64,
+          "raw": "1",
+          "unit": "count",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        },
+        "PRESCRIPTION": {
+          "value": 2.0,
+          "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp",
+          "line": 65,
+          "raw": "2",
+          "unit": "Gy (inferred)",
+          "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+        }
+      },
+      "beams": [
+        {
+          "field_id": "3",
+          "description": "3x3",
+          "machine_id": "Agility6MV2017",
+          "treatment_unit": "Agility2017",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/tel.1",
+            "line": 18,
+            "algorithm_line": 31,
+            "isocentre_line": 44
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        },
+        {
+          "field_id": "1",
+          "description": "5x5",
+          "machine_id": "Agility6MV2017",
+          "treatment_unit": "Agility2017",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/tel.1",
+            "line": 379,
+            "algorithm_line": 392,
+            "isocentre_line": 405
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        },
+        {
+          "field_id": "2",
+          "description": "10x10",
+          "machine_id": "Agility6MV2017",
+          "treatment_unit": "Agility2017",
+          "algorithm_code": 6,
+          "algorithm_label": "Monte Carlo Photon (PlanCheck mapping)",
+          "gantry_raw": 0.0,
+          "couch_raw": 0.0,
+          "collimator_raw": 0.0,
+          "isocentre_raw": [
+            1.0,
+            -598.5,
+            -2.0
+          ],
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/tel.1",
+            "line": 746,
+            "algorithm_line": 759,
+            "isocentre_line": 772
+          },
+          "interpretation": "positional mapping; native coordinates; no energy inference"
+        }
+      ],
+      "density_overrides": [
+        {
+          "name": "ReducedPatient",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 1,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/plan",
+            "line": 261,
+            "raw": "1,1,1,1,1"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "Patient",
+          "mode": "forced",
+          "mode_code": 2,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 2,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/plan",
+            "line": 263,
+            "raw": "2,2,1,1,2"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "Tumor",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 3,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/plan",
+            "line": 265,
+            "raw": "1,2,1,1,3"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 1",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 4,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/plan",
+            "line": 267,
+            "raw": "1,2,1,1,4"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 2",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 5,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/plan",
+            "line": 269,
+            "raw": "1,2,1,1,5"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 3",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 6,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/plan",
+            "line": 271,
+            "raw": "1,2,1,1,6"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 4",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 7,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/plan",
+            "line": 273,
+            "raw": "1,2,1,1,7"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "PTV 5",
+          "mode": "none",
+          "mode_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 8,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/plan",
+            "line": 275,
+            "raw": "1,2,1,1,8"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        },
+        {
+          "name": "Insert",
+          "mode": "forced",
+          "mode_code": 2,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 9,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/plan",
+            "line": 277,
+            "raw": "2,1,1,1,9"
+          },
+          "interpretation": "PlanCheck five-value mapping; UI confirmation pending"
+        }
+      ],
+      "diagnostics": [],
+      "studyset": "SemiflexWater",
+      "patient_id": "ZZZELEKTAONEHETERO",
+      "identity_source": {
+        "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/plan",
+        "lines": [
+          3,
+          5,
+          7
+        ]
+      },
+      "hyp_version": "000610b6",
+      "hyp_beam_definition_count": 3,
+      "calculation_logs": [
+        {
+          "mc_stddev": [
+            {
+              "value": 0.01,
+              "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/RxA.xlog",
+              "line": 122,
+              "raw": "History density: 10526.8 mcStdDev: 0.01 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 10:57:21.490"
+            },
+            {
+              "value": 0.01,
+              "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/RxA.xlog",
+              "line": 135,
+              "raw": "History density: 10526.8 mcStdDev: 0.01 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 10:58:37.672"
+            },
+            {
+              "value": 0.01,
+              "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/RxA.xlog",
+              "line": 147,
+              "raw": "History density: 10526.8 mcStdDev: 0.01 oversampling: 1",
+              "unit": "fraction (log label mcStdDev)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 11:00:32.262"
+            }
+          ],
+          "entire_calculation_percent": [
+            {
+              "value": 0.69,
+              "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/RxA.xlog",
+              "line": 187,
+              "raw": "#  For the entire calculation:    0.69 percent #",
+              "unit": "percent (log label)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 11:05:07.141"
+            }
+          ],
+          "per_segment_percent": [
+            {
+              "value": 1.0,
+              "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/RxA.xlog",
+              "line": 194,
+              "raw": "#  For each segment (control point):  1 percent #",
+              "unit": "percent (log label)",
+              "interpretation": "literal labelled log observation",
+              "time_raw": "10 12 2026 11:05:07.141"
+            }
+          ],
+          "completion_events": [
+            {
+              "value": "Dose Calculation Completed",
+              "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/RxA.xlog",
+              "line": 222,
+              "raw": "Dose Calculation Completed",
+              "unit": null,
+              "interpretation": "literal log event; dose freshness unverified",
+              "time_raw": "10 12 2026 11:05:07.141"
+            }
+          ],
+          "event_count": 35,
+          "interpretation": "Log observations only; association to current settings/dose is unverified"
+        }
+      ]
+    }
+  ],
+  "studysets": [
+    {
+      "name": "PinpointBone",
+      "path": "1~ZZZELEKTAONEHETERO/1~PinpointBone",
+      "ct_to_ed_name": {
+        "value": "RoutineSep21",
+        "file": "1~ZZZELEKTAONEHETERO/1~PinpointBone/info",
+        "line": 81,
+        "raw": "RoutineSep21",
+        "unit": null,
+        "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+      },
+      "structures": [
+        {
+          "name": "Patient",
+          "index": 1,
+          "mode": "forced",
+          "type_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 9,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointBone/contournames",
+            "line": 4,
+            "raw": "1,1.000000,2,1,19700109.031106,0,1.000000,9"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "Tumor",
+          "index": 2,
+          "mode": "none",
+          "type_code": 3,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 3,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointBone/contournames",
+            "line": 25,
+            "raw": "2,1.000000,1,3,19700109.031106,0,1.000000,3"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 1",
+          "index": 3,
+          "mode": "none",
+          "type_code": 4,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 4,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointBone/contournames",
+            "line": 46,
+            "raw": "3,1.000000,1,4,19700109.031106,0,1.000000,4"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 2",
+          "index": 4,
+          "mode": "none",
+          "type_code": 5,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 5,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointBone/contournames",
+            "line": 67,
+            "raw": "4,1.000000,1,5,19700109.031106,0,1.000000,5"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 3",
+          "index": 5,
+          "mode": "none",
+          "type_code": 6,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 6,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointBone/contournames",
+            "line": 88,
+            "raw": "5,1.000000,1,6,19700109.031106,0,1.000000,6"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 4",
+          "index": 6,
+          "mode": "none",
+          "type_code": 7,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 7,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointBone/contournames",
+            "line": 109,
+            "raw": "6,1.000000,1,7,19700109.031106,0,1.000000,7"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 5",
+          "index": 7,
+          "mode": "none",
+          "type_code": 8,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 8,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointBone/contournames",
+            "line": 130,
+            "raw": "7,1.000000,1,8,19700109.031106,0,1.000000,8"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "Insert",
+          "index": 8,
+          "mode": "forced",
+          "type_code": 1,
+          "uniform_ed": 1.606,
+          "fill_ed": 1.0,
+          "layer": 2,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointBone/contournames",
+            "line": 151,
+            "raw": "8,1.606000,2,1,19700101.100000,0,1.000000,2"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "ReducedPatient",
+          "index": 9,
+          "mode": "none",
+          "type_code": 0,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 1,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointBone/contournames",
+            "line": 172,
+            "raw": "9,1.000000,1,0,19700101.100000,0,1.000000,1"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "name": "PinpointWater",
+      "path": "1~ZZZELEKTAONEHETERO/1~PinpointWater",
+      "ct_to_ed_name": {
+        "value": "RoutineSep21",
+        "file": "1~ZZZELEKTAONEHETERO/1~PinpointWater/info",
+        "line": 81,
+        "raw": "RoutineSep21",
+        "unit": null,
+        "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+      },
+      "structures": [
+        {
+          "name": "Patient",
+          "index": 1,
+          "mode": "forced",
+          "type_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 9,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointWater/contournames",
+            "line": 4,
+            "raw": "1,1.000000,2,1,19700109.031106,0,1.000000,9"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "Tumor",
+          "index": 2,
+          "mode": "none",
+          "type_code": 3,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 3,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointWater/contournames",
+            "line": 25,
+            "raw": "2,1.000000,1,3,19700109.031106,0,1.000000,3"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 1",
+          "index": 3,
+          "mode": "none",
+          "type_code": 4,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 4,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointWater/contournames",
+            "line": 46,
+            "raw": "3,1.000000,1,4,19700109.031106,0,1.000000,4"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 2",
+          "index": 4,
+          "mode": "none",
+          "type_code": 5,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 5,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointWater/contournames",
+            "line": 67,
+            "raw": "4,1.000000,1,5,19700109.031106,0,1.000000,5"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 3",
+          "index": 5,
+          "mode": "none",
+          "type_code": 6,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 6,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointWater/contournames",
+            "line": 88,
+            "raw": "5,1.000000,1,6,19700109.031106,0,1.000000,6"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 4",
+          "index": 6,
+          "mode": "none",
+          "type_code": 7,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 7,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointWater/contournames",
+            "line": 109,
+            "raw": "6,1.000000,1,7,19700109.031106,0,1.000000,7"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 5",
+          "index": 7,
+          "mode": "none",
+          "type_code": 8,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 8,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointWater/contournames",
+            "line": 130,
+            "raw": "7,1.000000,1,8,19700109.031106,0,1.000000,8"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "Insert",
+          "index": 8,
+          "mode": "forced",
+          "type_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 2,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointWater/contournames",
+            "line": 151,
+            "raw": "8,1.000000,2,1,19700101.100000,0,1.000000,2"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "ReducedPatient",
+          "index": 9,
+          "mode": "none",
+          "type_code": 0,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 1,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PinpointWater/contournames",
+            "line": 172,
+            "raw": "9,1.000000,1,0,19700101.100000,0,1.000000,1"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "name": "PoinpointLung",
+      "path": "1~ZZZELEKTAONEHETERO/1~PoinpointLung",
+      "ct_to_ed_name": {
+        "value": "RoutineSep21",
+        "file": "1~ZZZELEKTAONEHETERO/1~PoinpointLung/info",
+        "line": 81,
+        "raw": "RoutineSep21",
+        "unit": null,
+        "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+      },
+      "structures": [
+        {
+          "name": "Patient",
+          "index": 1,
+          "mode": "forced",
+          "type_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 9,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PoinpointLung/contournames",
+            "line": 4,
+            "raw": "1,1.000000,2,1,19700109.031106,0,1.000000,9"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "Tumor",
+          "index": 2,
+          "mode": "none",
+          "type_code": 3,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 3,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PoinpointLung/contournames",
+            "line": 25,
+            "raw": "2,1.000000,1,3,19700109.031106,0,1.000000,3"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 1",
+          "index": 3,
+          "mode": "none",
+          "type_code": 4,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 4,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PoinpointLung/contournames",
+            "line": 46,
+            "raw": "3,1.000000,1,4,19700109.031106,0,1.000000,4"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 2",
+          "index": 4,
+          "mode": "none",
+          "type_code": 5,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 5,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PoinpointLung/contournames",
+            "line": 67,
+            "raw": "4,1.000000,1,5,19700109.031106,0,1.000000,5"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 3",
+          "index": 5,
+          "mode": "none",
+          "type_code": 6,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 6,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PoinpointLung/contournames",
+            "line": 88,
+            "raw": "5,1.000000,1,6,19700109.031106,0,1.000000,6"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 4",
+          "index": 6,
+          "mode": "none",
+          "type_code": 7,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 7,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PoinpointLung/contournames",
+            "line": 109,
+            "raw": "6,1.000000,1,7,19700109.031106,0,1.000000,7"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 5",
+          "index": 7,
+          "mode": "none",
+          "type_code": 8,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 8,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PoinpointLung/contournames",
+            "line": 130,
+            "raw": "7,1.000000,1,8,19700109.031106,0,1.000000,8"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "Insert",
+          "index": 8,
+          "mode": "forced",
+          "type_code": 1,
+          "uniform_ed": 0.283,
+          "fill_ed": 1.0,
+          "layer": 2,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PoinpointLung/contournames",
+            "line": 151,
+            "raw": "8,0.283000,2,1,19700101.100000,0,1.000000,2"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "ReducedPatient",
+          "index": 9,
+          "mode": "none",
+          "type_code": 0,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 1,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~PoinpointLung/contournames",
+            "line": 172,
+            "raw": "9,1.000000,1,0,19700101.100000,0,1.000000,1"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "name": "SemiflexBone",
+      "path": "1~ZZZELEKTAONEHETERO/1~SemiflexBone",
+      "ct_to_ed_name": {
+        "value": "RoutineSep21",
+        "file": "1~ZZZELEKTAONEHETERO/1~SemiflexBone/info",
+        "line": 81,
+        "raw": "RoutineSep21",
+        "unit": null,
+        "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+      },
+      "structures": [
+        {
+          "name": "Patient",
+          "index": 1,
+          "mode": "forced",
+          "type_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 9,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexBone/contournames",
+            "line": 4,
+            "raw": "1,1.000000,2,1,19700109.031106,0,1.000000,9"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "Tumor",
+          "index": 2,
+          "mode": "none",
+          "type_code": 3,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 3,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexBone/contournames",
+            "line": 25,
+            "raw": "2,1.000000,1,3,19700109.031106,0,1.000000,3"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 1",
+          "index": 3,
+          "mode": "none",
+          "type_code": 4,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 4,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexBone/contournames",
+            "line": 46,
+            "raw": "3,1.000000,1,4,19700109.031106,0,1.000000,4"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 2",
+          "index": 4,
+          "mode": "none",
+          "type_code": 5,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 5,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexBone/contournames",
+            "line": 67,
+            "raw": "4,1.000000,1,5,19700109.031106,0,1.000000,5"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 3",
+          "index": 5,
+          "mode": "none",
+          "type_code": 6,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 6,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexBone/contournames",
+            "line": 88,
+            "raw": "5,1.000000,1,6,19700109.031106,0,1.000000,6"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 4",
+          "index": 6,
+          "mode": "none",
+          "type_code": 7,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 7,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexBone/contournames",
+            "line": 109,
+            "raw": "6,1.000000,1,7,19700109.031106,0,1.000000,7"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 5",
+          "index": 7,
+          "mode": "none",
+          "type_code": 8,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 8,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexBone/contournames",
+            "line": 130,
+            "raw": "7,1.000000,1,8,19700109.031106,0,1.000000,8"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "Insert",
+          "index": 8,
+          "mode": "forced",
+          "type_code": 1,
+          "uniform_ed": 1.606,
+          "fill_ed": 1.0,
+          "layer": 2,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexBone/contournames",
+            "line": 151,
+            "raw": "8,1.606000,2,1,19700101.100000,0,1.000000,2"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "ReducedPatient",
+          "index": 9,
+          "mode": "none",
+          "type_code": 0,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 1,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexBone/contournames",
+            "line": 172,
+            "raw": "9,1.000000,1,0,19700101.100000,0,1.000000,1"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "name": "SemiflexLung",
+      "path": "1~ZZZELEKTAONEHETERO/1~SemiflexLung",
+      "ct_to_ed_name": {
+        "value": "RoutineSep21",
+        "file": "1~ZZZELEKTAONEHETERO/1~SemiflexLung/info",
+        "line": 81,
+        "raw": "RoutineSep21",
+        "unit": null,
+        "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+      },
+      "structures": [
+        {
+          "name": "Patient",
+          "index": 1,
+          "mode": "none",
+          "type_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 9,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexLung/contournames",
+            "line": 4,
+            "raw": "1,1.000000,1,1,19700109.031106,0,1.000000,9"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "Tumor",
+          "index": 2,
+          "mode": "none",
+          "type_code": 3,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 3,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexLung/contournames",
+            "line": 25,
+            "raw": "2,1.000000,1,3,19700109.031106,0,1.000000,3"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 1",
+          "index": 3,
+          "mode": "none",
+          "type_code": 4,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 4,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexLung/contournames",
+            "line": 46,
+            "raw": "3,1.000000,1,4,19700109.031106,0,1.000000,4"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 2",
+          "index": 4,
+          "mode": "none",
+          "type_code": 5,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 5,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexLung/contournames",
+            "line": 67,
+            "raw": "4,1.000000,1,5,19700109.031106,0,1.000000,5"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 3",
+          "index": 5,
+          "mode": "none",
+          "type_code": 6,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 6,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexLung/contournames",
+            "line": 88,
+            "raw": "5,1.000000,1,6,19700109.031106,0,1.000000,6"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 4",
+          "index": 6,
+          "mode": "none",
+          "type_code": 7,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 7,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexLung/contournames",
+            "line": 109,
+            "raw": "6,1.000000,1,7,19700109.031106,0,1.000000,7"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 5",
+          "index": 7,
+          "mode": "none",
+          "type_code": 8,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 8,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexLung/contournames",
+            "line": 130,
+            "raw": "7,1.000000,1,8,19700109.031106,0,1.000000,8"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "Insert",
+          "index": 8,
+          "mode": "forced",
+          "type_code": 1,
+          "uniform_ed": 0.283,
+          "fill_ed": 1.0,
+          "layer": 2,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexLung/contournames",
+            "line": 151,
+            "raw": "8,0.283000,2,1,19700101.100000,0,1.000000,2"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "ReducedPatient",
+          "index": 9,
+          "mode": "none",
+          "type_code": 0,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 1,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexLung/contournames",
+            "line": 172,
+            "raw": "9,1.000000,1,0,19700101.100000,0,1.000000,1"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "name": "SemiflexWater",
+      "path": "1~ZZZELEKTAONEHETERO/1~SemiflexWater",
+      "ct_to_ed_name": {
+        "value": "RoutineSep21",
+        "file": "1~ZZZELEKTAONEHETERO/1~SemiflexWater/info",
+        "line": 81,
+        "raw": "RoutineSep21",
+        "unit": null,
+        "interpretation": "PlanCheck mapping; controlled UI confirmation pending"
+      },
+      "structures": [
+        {
+          "name": "Tumor",
+          "index": 2,
+          "mode": "none",
+          "type_code": 3,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 3,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexWater/contournames",
+            "line": 4,
+            "raw": "2,1.000000,1,3,19700109.031106,0,1.000000,3"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 1",
+          "index": 3,
+          "mode": "none",
+          "type_code": 4,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 4,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexWater/contournames",
+            "line": 25,
+            "raw": "3,1.000000,1,4,19700109.031106,0,1.000000,4"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 2",
+          "index": 4,
+          "mode": "none",
+          "type_code": 5,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 5,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexWater/contournames",
+            "line": 46,
+            "raw": "4,1.000000,1,5,19700109.031106,0,1.000000,5"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 3",
+          "index": 5,
+          "mode": "none",
+          "type_code": 6,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 6,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexWater/contournames",
+            "line": 67,
+            "raw": "5,1.000000,1,6,19700109.031106,0,1.000000,6"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 4",
+          "index": 6,
+          "mode": "none",
+          "type_code": 7,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 7,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexWater/contournames",
+            "line": 88,
+            "raw": "6,1.000000,1,7,19700109.031106,0,1.000000,7"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "PTV 5",
+          "index": 7,
+          "mode": "none",
+          "type_code": 8,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 8,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexWater/contournames",
+            "line": 109,
+            "raw": "7,1.000000,1,8,19700109.031106,0,1.000000,8"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "Patient",
+          "index": 8,
+          "mode": "forced",
+          "type_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 2,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexWater/contournames",
+            "line": 130,
+            "raw": "8,1.000000,2,1,19700101.100000,0,1.000000,2"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "Insert",
+          "index": 10,
+          "mode": "forced",
+          "type_code": 1,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 9,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexWater/contournames",
+            "line": 151,
+            "raw": "10,1.000000,2,1,19700101.100000,0,1.000000,9"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        },
+        {
+          "name": "ReducedPatient",
+          "index": 11,
+          "mode": "none",
+          "type_code": 0,
+          "uniform_ed": 1.0,
+          "fill_ed": 1.0,
+          "layer": 1,
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/1~SemiflexWater/contournames",
+            "line": 193,
+            "raw": "11,1.000000,1,0,19700101.100000,0,1.000000,1"
+          },
+          "interpretation": "studyset defaults; use plan records for saved plan settings"
+        }
+      ],
+      "diagnostics": []
+    }
+  ],
+  "limitations": [
+    "Saved settings do not establish which settings generated saved dose.",
+    "Only supplied single-Rx text layouts are interpreted.",
+    "Absent uncertainty mode is unknown; no Monaco defaults are assumed.",
+    "Native dose, voxel density, geometry, MU and checksums are not interpreted."
+  ]
+}

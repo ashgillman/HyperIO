@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "source_archive": "reference/native-zero-ct/1~zzzInputOutputAG2.zip",
+  "archive_sha256": "08d4efd97e506d0192fb3432fc08f1dc3efc6f61165c0d658169c6f6136b9ef4",
+  "user_report": "Imported successfully; appended 2 to patient ID to avoid overwriting other data.",
+  "native_patient_id": "zzzInputOutputAG2",
+  "native_patient_name": "zzPHYS^Ash",
+  "studyset": "CT1",
+  "source_dicom_patient_id": "zzzInputOutputAG",
+  "cached_dicom_patient_ids": [
+    "zzzInputOutputAG"
+  ],
+  "identity_note": "Native directory, demographic filename, later demographic ID line and studyset reference use the user-selected AG2. An earlier demographic ID line and cached DICOM retain AG. These returned bytes are preserved without rewriting; the unlabeled demographic fields are not reinterpreted.",
+  "native_CT_count": 100,
+  "native_WC_count": 100,
+  "cached_DICOM_count": 100,
+  "shape_slices_rows_columns": [
+    100,
+    100,
+    100
+  ],
+  "voxel_spacing_mm": [
+    5,
+    5,
+    5
+  ],
+  "outer_voxel_extent_mm": [
+    500,
+    500,
+    500
+  ],
+  "slice_centre_range_mm": [
+    -847.0,
+    -352.0
+  ],
+  "all_cached_dicom_pixels_zero": true,
+  "all_cached_dicom_HU_zero": true,
+  "cached_DICOM_dataset_differences_from_generated": {},
+  "native_CT_header_geometry_matches_cached_DICOM": true,
+  "native_pixel_payload_interpreted": false,
+  "original_SOP_UIDs_preserved": true,
+  "original_study_series_frame_UIDs_preserved": true,
+  "saved_ct_to_ed_selection": "ExtendedSep21",
+  "WC_files_with_zero_geometry_counts": 100,
+  "plan_count": 0,
+  "status": "user_reported_import_success_with_returned_native_geometry_and_cached_DICOM_checks",
+  "unverified": [
+    "Monaco version/build",
+    "UI cursor HU check",
+    "explicit close/reopen test",
+    "native compressed pixel interpretation",
+    "CT-to-ED table contents",
+    "structures/plan/calculation"
+  ]
+}

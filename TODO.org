@@ -1,0 +1,111 @@
+#+title: HyperIO development tasks
+
+* Next work ranked by information value
+The partial Monaco 6.2.3.0 review is analysed in [[file:reports/tps-partial-review-analysis.md][the review analysis]].
+The [[file:reports/native-suite-return-2026-10-27.md][27 October native return]] now supplies saved/calculate evidence for Calculation-A/B and both aperture plans; Reference and both Density plans were intentionally not calculated.
+Scoped observations are retained under validation/results/ and in the append-only event register.
+Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the remaining blank duplicate rows are not all independent experiments.
+1. Obtain DICOM RT Plan/RT Dose exports for the already calculated aperture plans first, with A/B useful for independent grid/uncertainty comparison, without repeating the native import or calculation.
+2. Investigate the Insert's logged zero free volume in A, B and Aperture-Headers before interpreting override settings as effective materials or calculating the Density pair.
+   Review overlap/layer assignment and effective-density evidence; retain the original Density-Conflict/Aligned pair unchanged for later precedence tests.
+3. Resolve the regenerated compact-shape representation against exported aperture geometry before general coherent aperture writing; returned numeric headers/leaves already persist.
+4. Calculate Reference only when an unchanged-aperture numerical control is needed; four generated candidates now have their own completion logs and dose payloads.
+5. Obtain a targeted pre/post UI-save capture only if the exact stage of uncertainty normalization matters; returned A/B already show MCSEGMENTVARIANCE made equal to MCVARIANCE and A's explicit false mode omitted.
+6. Expand to nonzero rotations, asymmetric/oblique geometry, other models/energies and broader commissioning matrices after independent geometry/dose interpretation works.
+
+** Useful work while TPS review is paused
+- Implement DICOM RT Dose geometry/scaling and sampling with independent analytic-array tests, ready for the first TPS export.
+- Separate automatic filename/package/linkage checks from human UI questions, and support grouped observations with explicit observed-plan scope while retaining stable IDs and historical revisions.
+- Investigate calculation-state semantics without using the unchanged inherited checksum files as proof of current dose/settings agreement.
+- Support unique case-insensitive patient-ID .hyp lookup where needed and reject collisions; Monaco lower-cased the four calculated plans' .hyp filenames in this return.
+- Resolve the review metadata date discrepancy (literal 20260226 versus log date 2026-10-26) without changing the supplied evidence or assuming a timezone.
+
+* Commissioning plan generation and dose-analysis use case
+The software should support generating the plan data for a commissioning test suite, calculating it in Monaco, and comparing returned calculated data against measured data.
+MPPG 5.b is the first example protocol to map; the workflow should also support other explicitly defined commissioning protocols.
+Source: [[https://doi.org/10.1002/acm2.13641][AAPM MPPG 5.b (2022), Commissioning and QA of treatment planning dose calculations: megavoltage photon and electron beams]].
+- Build a source-linked coverage matrix from the guideline test list to required phantom geometry, beam configuration, calculation settings, measurements, extraction methods, and review requirements.
+- Map modeling/basic photon checks (Tables 4-6), heterogeneity (Table 7), IMRT/VMAT (Tables 8-9), electrons (Table 10), and routine QA reference plans (Section 9), recording applicability and external/manual steps for each test.
+- Generate a blank synthetic DICOM CT volume with configurable voxel/slice spacing (5 mm as the requested example), physical extent, origin, orientation, and HU/material assignments.
+- Generate the required phantom structures, density overrides, valid identifiers, and Monaco studyset/plan data from that starting volume.
+- Keep image sampling independent of dose calculation grid size; support a requested 1 mm calculation grid with configurable Monte Carlo uncertainty value and mode.
+- Generate explicit beam/test matrices covering selected machines and energies, SSDs, field sizes, depths, oblique incidence, asymmetric fields, and other protocol-specific cases.
+- Write separate, traceable Monaco plans for each test geometry, with the requested beam shapes, MU/prescription, calculation settings, and relevant density properties.
+- Read the calculated plans and dose data back into Python and associate every result with the exact generated case and calculation configuration.
+- Verify returned beam geometry, calculation settings, calculation completion, and dose freshness before interpreting the calculated dose as that case's result.
+- Extract PDDs, profiles, point-dose or detector-volume samples, and output factors using explicit coordinates, sampling rules, depth/surface definitions, and reference-field geometry.
+- Import measured data with explicit units, measurement geometry, normalization, detector information, and provenance, and compare like-for-like with the calculated results.
+- Generate comparison plots, numerical differences, configurable protocol-specific acceptance checks, and a reviewable coverage/results report.
+- Preserve guideline edition/test identifiers, Monaco version, beam-model identity, source and returned file hashes, image/dose grids, uncertainty settings, and dose/MU/fraction normalization in the result provenance.
+- Identify test requirements needing acquired images, real measurements, or external end-to-end validation rather than claiming a synthetic dataset completes the entire commissioning process.
+
+** Detailed implementation and validation requirements
+*** Phantom images and structures
+- Extend the zero-CT DICOM generator beyond its fixed 500 mm cube / 5 mm voxels to configurable geometry, HU/material assignments and structures; verify Monaco import preserves dimensions, voxel spacing, position, orientation, HU, contours and surfaces.
+- Verify known physical distances and structure boundaries independently through import/export, including image spacing different from dose-grid spacing.
+*** Independent native plans
+- Implement generation of independent patient/studyset/plan identities and consistent references so multiple commissioning cases can coexist without replacing one original plan.
+- Validate each generated plan through Monaco loading, save/reopen, calculation, and exported geometry/settings checks, including detection of records Monaco silently normalizes or rewrites.
+- Treat Python writer-to-reader agreement as a consistency check only; use Monaco observations, returned files, and independently interpreted exports to validate meaning.
+*** Beam geometry and complete aperture writing
+- Implement SSD, isocentre, gantry and collimator angles, asymmetric jaws, MLC positions, and consistent redundant aperture/compact-shape records.
+- Define whether each field dimension is specified at isocentre or the phantom surface, and validate SSD against the actual surface intersection for oblique beams.
+- Validate coordinate signs, axis and bank conventions, rotations, dimensions, and off-axis placement using labelled geometries and returned Monaco data.
+- Promote the current isolated aperture-header and leaf-table probes to coherent beam writing only after their representation precedence is established.
+*** Calculation settings and effective materials
+- Validate grid-setting persistence and residual MCSEGMENTVARIANCE/absence/calculation behavior using paired native captures; retain the partial review's observed MCVARIANCE display and MCVARPERPLAN polarity in docs/format-notes.md without generalising beyond this fixture/build.
+- Independently check grid geometry and effective deposition/force-water material behavior against exports; main uncertainty values now have calculation-log evidence and returned settings show normalization.
+- Validate CT-to-density/material conversion, forced versus fill density, layer precedence, and plan-versus-studyset precedence against the effective calculation density/material map.
+*** Calculation lifecycle and case association
+- Establish reliable evidence for missing, current, frozen, and newly recalculated dose, including settings changed after calculation and relevant checksum/status behavior.
+- Associate returned dose with the correct generated case, beam, prescription, machine/model, and calculation settings; reject ambiguous or stale associations.
+*** Dose import and coordinate mapping
+- Implement a Python importer for Monaco-exported DICOM dose as an initial return path, independently of later native compressed-dose support.
+- Validate dose units/scaling, grid origin/orientation, axis and frame ordering, spacing, and physical coordinate transforms against known synthetic arrays and independently checked exports.
+- Distinguish beam versus plan dose and per-fraction versus total dose, with explicit MU/fraction normalization and out-of-grid sampling behavior.
+*** PDD, profile, point-dose, and output-factor extraction
+- Define PDD sampling along the specified beam axis, physical depth from the phantom surface, and an explicit normalization rule.
+- Define inline/crossline or other profile directions at specified physical depths, including the coordinate transforms required for oblique and asymmetric fields.
+- Implement and validate point-dose interpolation and separate detector-volume averaging, with explicit handling of samples outside the dose grid.
+- Define output factors using explicit test/reference field geometry, SSD, depth, and dose-per-MU normalization.
+- Verify extraction against known analytic/synthetic dose arrays before comparing Monaco calculations with measured data, so extraction errors can be separated from plan-generation or calculation discrepancies.
+*** Measurements, comparisons, and coverage reporting
+- Validate measured-data import preserves raw values, units, detector metadata, measurement geometry, profile direction, normalization, and provenance, including any corrections already applied.
+- Validate case matching and comparison calculations with independently calculated examples; preserve the distinction between pointwise dose differences, distance-based measures, and other protocol-specific metrics.
+- Implement the executable protocol specification and coverage report with source-linked test identifiers, applicable criteria, required evidence, and explicit unsupported, inapplicable, or externally completed steps.
+- Validate reports reproduce the underlying curves, samples, normalization, numerical differences, and review status without implying unperformed measurement or external validation.
+- Repeat accepted mappings on held-out plans, geometries, energies/models, and supported Monaco versions before broadening their declared support.
+
+** First end-to-end commissioning milestone
+1. Establish the baseline geometry/material state using the installed suite and retain saved-file evidence; complete targeted ED/aperture questions alongside the first control calculation rather than gating it on every UI row.
+2. Generate one homogeneous phantom and one independent static square-field plan with explicit geometry and settings.
+3. Load, calculate, save/reopen, and export its dose from Monaco, retaining the calculation and case-association evidence.
+4. Recover the correct absolute dose, one PDD, and two lateral profiles in Python using independently validated coordinate and extraction code.
+5. Compare those outputs against measured data with explicit units, geometry, and normalization, and produce a reproducible review report.
+6. Expand the validated path to field-size/SSD matrices, asymmetric fields, oblique incidence, and heterogeneous phantoms.
+
+* Controlled Monaco captures
+- Continue the perpetual validation suite in validation/: initial native restoration, CT/contour checks and several grouped settings/aperture checks now have reviewer evidence; collect the prioritised remaining checks and append results without resetting history.
+- Retain labelled exports/screenshots to resolve remaining aperture precedence and effective-material questions; the first native return has already been compared.
+- Capture an unchanged save/recalculate control before interpreting incidental native differences.
+- Retain actual grid units/values and paired settings files where not yet transcribed; avoid repeating the already explicit uncertainty/mode/deposition/force-water UI observations.
+- Resolve zero effective/free Insert volume before using the current density profiles to verify plan-versus-studyset, fill and layering behavior.
+- Defer algorithm selection and multiple prescriptions until the basic calculation/dose-freshness return path works.
+- Retain clearly labelled baseline calculation-properties screenshots where useful; installed build 6.2.3.0 is already recorded in the partial review.
+
+* Reader coverage
+- Extend the selected 6X PDF comparison in reports/tps-pdf-comparison.md to native SSD, jaws, MLC leaf positions, and MU, preserving report-specific signs and static-segment conventions.
+- Resolve why the oblique PDF prints SSD 100 cm despite the user's Monaco-interface confirmation of the intended 100 cm SAD / 90 cm SSD setup; retain both sources and check plan association and report/native SSD semantics.
+- Obtain independent 6FFF and nonzero couch/collimator reference values before extending the selected 6X mapping evidence.
+- Add version profiles only after independently labelled fixtures are available.
+- Parse prescription associations for multiple Rx IDs; current positional summaries support the supplied single-Rx layout only.
+- Add independent DICOM checks for CT geometry, beam geometry, MU, and exported dose.
+- Investigate dose.1 and tel.1.dose.* payloads, compression, scaling, axes, and calculation-state evidence.
+- Resolve CT-to-ED table contents from clinic-level files; the supplied archive contains the selected name only.
+- Add validated beam/control-point and structure geometry APIs beyond the initial beam header and density records.
+
+* Editing and distribution
+- Validate generated edited copies through Monaco load/save/recalculation before promoting the experimental patches to supported native plan writing.
+- Resolve the static beam compact-shape representation using the current Aperture-Headers/Aperture-Leaves returned captures; the probes deliberately leave it unchanged.
+- Establish permission and licence terms for any future redistribution of colleague code or vendor assets.
+- Decide the project licence and distribution name before publishing.

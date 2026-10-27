@@ -1,0 +1,1131 @@
+{
+  "schema_version": 1,
+  "suite_id": "hyperio-tps",
+  "run_id": "hyperio-tps-8ccb9f90b45ee0d9",
+  "reviewer": "Ashley Gillman",
+  "monaco_version_build": "6.2.3.0",
+  "observed_at": null,
+  "patient_id_as_installed": "zzzInputOutputAGsuite",
+  "observations": [
+    {
+      "test_id": "CT-GEOMETRY",
+      "test_revision": 1,
+      "profile_id": "patient",
+      "phase": "initial",
+      "expected": "CT1: 100 slices, 100x100 matrix, 5 mm isotropic spacing, 500 mm outer-voxel extent.",
+      "status": "pass",
+      "actual": "Note that volume iso seems to be -0.01, -59.95, 0.01 - is this expected?",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:19",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "Note that volume iso seems to be -0.01, -59.95, 0.01 - is this expected?",
+      "source_section": "Patient and CT1 image control",
+      "source_line": 19
+    },
+    {
+      "test_id": "CT-ZERO",
+      "test_revision": 1,
+      "profile_id": "patient",
+      "phase": "initial",
+      "expected": "Stored pixels and HU are zero; record UI cursor values separately from cached-DICOM checks.",
+      "status": "pass",
+      "actual": "Reviewer marked pass in the Markdown worksheet; no detailed actual values were transcribed.",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Human pass attestation only; blank narrative preserved as actual_raw. No numeric values or returned-file verification inferred."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:20",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Patient and CT1 image control",
+      "source_line": 20
+    },
+    {
+      "test_id": "NATIVE-RESTORE",
+      "test_revision": 1,
+      "profile_id": "patient",
+      "phase": "initial",
+      "expected": "zzzInputOutputAGsuite opens as zzPHYS, Ash without replacing AG or AG2.",
+      "status": "pass",
+      "actual": "Reviewer marked pass in the Markdown worksheet; no detailed actual values were transcribed.",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Human pass attestation only; blank narrative preserved as actual_raw. No numeric values or returned-file verification inferred."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:21",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Patient and CT1 image control",
+      "source_line": 21
+    },
+    {
+      "test_id": "STRUCT-TRANSFER",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "initial",
+      "expected": "Phantom/Density show Patient and Insert at the same physical coordinates as sampled source contours; 5 mm slice sampling is new.",
+      "status": "pass",
+      "actual": "Centre of patient is 0.19, -59.95, -2.50",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:27",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "Centre of patient is 0.19, -59.95, -2.50",
+      "source_section": "Reference / Phantom",
+      "source_line": 27
+    },
+    {
+      "test_id": "PLAN-LINK",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "initial",
+      "expected": "All seven named plans coexist; first five reference Phantom, last two reference Density. No plan is associated with CT1. The .hyp filename matches the suite PatientID in every plan folder.",
+      "status": "pass",
+      "actual": "I can't check the .hyp filename from Monaco",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Reviewer cannot inspect .hyp filenames in Monaco. Generated-file filename consistency is checked separately; no independently returned suite file comparison is supplied."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:28",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "I can't check the .hyp filename from Monaco",
+      "source_section": "Reference / Phantom",
+      "source_line": 28
+    },
+    {
+      "test_id": "PLAN-LINK",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "initial",
+      "expected": "All seven named plans coexist; first five reference Phantom, last two reference Density. No plan is associated with CT1. The .hyp filename matches the suite PatientID in every plan folder.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Reviewer cannot inspect .hyp filenames in Monaco. Generated-file filename consistency is checked separately; no independently returned suite file comparison is supplied."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6317",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-A / Phantom",
+      "source_line": 6317
+    },
+    {
+      "test_id": "PLAN-LINK",
+      "test_revision": 1,
+      "profile_id": "calculation-b",
+      "phase": "initial",
+      "expected": "All seven named plans coexist; first five reference Phantom, last two reference Density. No plan is associated with CT1. The .hyp filename matches the suite PatientID in every plan folder.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Reviewer cannot inspect .hyp filenames in Monaco. Generated-file filename consistency is checked separately; no independently returned suite file comparison is supplied."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6331",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-B / Phantom",
+      "source_line": 6331
+    },
+    {
+      "test_id": "PLAN-LINK",
+      "test_revision": 1,
+      "profile_id": "aperture-headers",
+      "phase": "initial",
+      "expected": "All seven named plans coexist; first five reference Phantom, last two reference Density. No plan is associated with CT1. The .hyp filename matches the suite PatientID in every plan folder.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Reviewer cannot inspect .hyp filenames in Monaco. Generated-file filename consistency is checked separately; no independently returned suite file comparison is supplied."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6345",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Aperture-Headers / Phantom",
+      "source_line": 6345
+    },
+    {
+      "test_id": "PLAN-LINK",
+      "test_revision": 1,
+      "profile_id": "aperture-leaves",
+      "phase": "initial",
+      "expected": "All seven named plans coexist; first five reference Phantom, last two reference Density. No plan is associated with CT1. The .hyp filename matches the suite PatientID in every plan folder.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Reviewer cannot inspect .hyp filenames in Monaco. Generated-file filename consistency is checked separately; no independently returned suite file comparison is supplied."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6355",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Aperture-Leaves / Phantom",
+      "source_line": 6355
+    },
+    {
+      "test_id": "PLAN-LINK",
+      "test_revision": 1,
+      "profile_id": "density-conflict",
+      "phase": "initial",
+      "expected": "All seven named plans coexist; first five reference Phantom, last two reference Density. No plan is associated with CT1. The .hyp filename matches the suite PatientID in every plan folder.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Reviewer cannot inspect .hyp filenames in Monaco. Generated-file filename consistency is checked separately; no independently returned suite file comparison is supplied."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6365",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Density-Conflict / Density",
+      "source_line": 6365
+    },
+    {
+      "test_id": "PLAN-LINK",
+      "test_revision": 1,
+      "profile_id": "density-aligned",
+      "phase": "initial",
+      "expected": "All seven named plans coexist; first five reference Phantom, last two reference Density. No plan is associated with CT1. The .hyp filename matches the suite PatientID in every plan folder.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Reviewer cannot inspect .hyp filenames in Monaco. Generated-file filename consistency is checked separately; no independently returned suite file comparison is supplied."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6374",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Density-Aligned / Density",
+      "source_line": 6374
+    },
+    {
+      "test_id": "PLAN-BASELINE",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "initial",
+      "expected": "Three baseline beams labelled 3x3, 5x5, 10x10; source calculation values retained; new patient/studyset associations are explicit.",
+      "status": "observation",
+      "actual": "Density-Aligned plan. 3x3, 5x5, 10x10 plans, labelled 3 1 2 Field ID and Beam. 10x10 is not \"visible\". All: Delivery = 3D, Treatment Unit = Agility2017, Modality = Photon, Algorithm = Monte Carlo, Energy = 6.0 MV, MU/Fx = 100.00, Setup = SAD, SSD (cm) = 93.65, Isocentre Location = Arbitrary Point, X (cm) = 0.1, Y (cm) = -59.85, Z (cm) = -0.20, Gantry (deg) = 0.0, Collimator (deg) = 0.0, Couch (deg) = 0.0, Asym ticked, Width1 (cm), Width2 (cm), Length1 (cm), Length2 (cm) match each to have the FS, No wedges, No Ports, No Applicators, No Bolus, No couch structures",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Written under Reference, but the actual note explicitly identifies Density-Aligned. Do not attribute these beam observations to Reference."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:29",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "Density-Aligned plan. 3x3, 5x5, 10x10 plans, labelled 3 1 2 Field ID and Beam. 10x10 is not \"visible\". All: Delivery = 3D, Treatment Unit = Agility2017, Modality = Photon, Algorithm = Monte Carlo, Energy = 6.0 MV, MU/Fx = 100.00, Setup = SAD, SSD (cm) = 93.65, Isocentre Location = Arbitrary Point, X (cm) = 0.1, Y (cm) = -59.85, Z (cm) = -0.20, Gantry (deg) = 0.0, Collimator (deg) = 0.0, Couch (deg) = 0.0, Asym ticked, Width1 (cm), Width2 (cm), Length1 (cm), Length2 (cm) match each to have the FS, No wedges, No Ports, No Applicators, No Bolus, No couch structures",
+      "source_section": "Reference / Phantom",
+      "source_line": 29
+    },
+    {
+      "test_id": "CALC-GRID",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "initial",
+      "expected": "Reference 1, A 2, B 3; candidate UI expectations 0.10, 0.20, 0.30 cm. Record actual units.",
+      "status": "pass",
+      "actual": "Reviewer marked pass in the Markdown worksheet; no detailed actual values were transcribed.",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Human pass attestation only; blank narrative preserved as actual_raw. No numeric values or returned-file verification inferred.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:30",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Reference / Phantom",
+      "source_line": 30
+    },
+    {
+      "test_id": "CALC-GRID",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "initial",
+      "expected": "Reference 1, A 2, B 3; candidate UI expectations 0.10, 0.20, 0.30 cm. Record actual units.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6318",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-A / Phantom",
+      "source_line": 6318
+    },
+    {
+      "test_id": "CALC-GRID",
+      "test_revision": 1,
+      "profile_id": "calculation-b",
+      "phase": "initial",
+      "expected": "Reference 1, A 2, B 3; candidate UI expectations 0.10, 0.20, 0.30 cm. Record actual units.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6332",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-B / Phantom",
+      "source_line": 6332
+    },
+    {
+      "test_id": "CALC-UNCERTAINTY",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "initial",
+      "expected": "Reference .01/.01; A .02/.03; B .04/.05. Record which value appears, any coupling, rejection or normalization.",
+      "status": "observation",
+      "actual": "Reference: 1.00% Per Control Point, A: 2.00% Per Control Point, B: 4.00% Per Calculation",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:31",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "Reference: 1.00% Per Control Point, A: 2.00% Per Control Point, B: 4.00% Per Calculation",
+      "source_section": "Reference / Phantom",
+      "source_line": 31
+    },
+    {
+      "test_id": "CALC-UNCERTAINTY",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "initial",
+      "expected": "Reference .01/.01; A .02/.03; B .04/.05. Record which value appears, any coupling, rejection or normalization.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6319",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-A / Phantom",
+      "source_line": 6319
+    },
+    {
+      "test_id": "CALC-UNCERTAINTY",
+      "test_revision": 1,
+      "profile_id": "calculation-b",
+      "phase": "initial",
+      "expected": "Reference .01/.01; A .02/.03; B .04/.05. Record which value appears, any coupling, rejection or normalization.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6333",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-B / Phantom",
+      "source_line": 6333
+    },
+    {
+      "test_id": "CALC-MODE",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "initial",
+      "expected": "Reference flag absent; A flag 0; B flag 1. Record Per Control Point/Per Calculation mapping without assuming absence means false.",
+      "status": "pass",
+      "actual": "see above",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:32",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "see above",
+      "source_section": "Reference / Phantom",
+      "source_line": 32
+    },
+    {
+      "test_id": "CALC-MODE",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "initial",
+      "expected": "Reference flag absent; A flag 0; B flag 1. Record Per Control Point/Per Calculation mapping without assuming absence means false.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6320",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-A / Phantom",
+      "source_line": 6320
+    },
+    {
+      "test_id": "CALC-MODE",
+      "test_revision": 1,
+      "profile_id": "calculation-b",
+      "phase": "initial",
+      "expected": "Reference flag absent; A flag 0; B flag 1. Record Per Control Point/Per Calculation mapping without assuming absence means false.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6334",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-B / Phantom",
+      "source_line": 6334
+    },
+    {
+      "test_id": "CALC-DEPOSITION",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "initial",
+      "expected": "Reference and B medium flag 1; A water flag 0. Record exact selection and automatic companion changes.",
+      "status": "observation",
+      "actual": "\"Dose Deposition To:\" Ref: Medium, A: Water, B: Medium",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:33",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "\"Dose Deposition To:\" Ref: Medium, A: Water, B: Medium",
+      "source_section": "Reference / Phantom",
+      "source_line": 33
+    },
+    {
+      "test_id": "CALC-DEPOSITION",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "initial",
+      "expected": "Reference and B medium flag 1; A water flag 0. Record exact selection and automatic companion changes.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6321",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-A / Phantom",
+      "source_line": 6321
+    },
+    {
+      "test_id": "CALC-DEPOSITION",
+      "test_revision": 1,
+      "profile_id": "calculation-b",
+      "phase": "initial",
+      "expected": "Reference and B medium flag 1; A water flag 0. Record exact selection and automatic companion changes.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6335",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-B / Phantom",
+      "source_line": 6335
+    },
+    {
+      "test_id": "CALC-FORCE-WATER",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "initial",
+      "expected": "Reference FORCEWATER=0; B=1. Record UI state and interaction with deposition/fill settings.",
+      "status": "observation",
+      "actual": "Ref: Not forced to water, A: Not forced, B: Forced",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:34",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "Ref: Not forced to water, A: Not forced, B: Forced",
+      "source_section": "Reference / Phantom",
+      "source_line": 34
+    },
+    {
+      "test_id": "CALC-FORCE-WATER",
+      "test_revision": 1,
+      "profile_id": "calculation-b",
+      "phase": "initial",
+      "expected": "Reference FORCEWATER=0; B=1. Record UI state and interaction with deposition/fill settings.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Grouped Reference/A/B check recorded under Reference. Explicit named values are evidence for the named profiles; duplicate unreviewed worksheet rows are not separate negative results or newly passed tests."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6336",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-B / Phantom",
+      "source_line": 6336
+    },
+    {
+      "test_id": "ED-FORCE",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "initial",
+      "expected": "Plan Insert forced ED 1.1; studyset default 1.0. Record both layers and plan views.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6322",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-A / Phantom",
+      "source_line": 6322
+    },
+    {
+      "test_id": "ED-FILL",
+      "test_revision": 1,
+      "profile_id": "aperture-headers",
+      "phase": "initial",
+      "expected": "Plan Insert fill mode 3, fill ED 0.8, inactive uniform ED 1.0; studyset still forced 1.0.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6346",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Aperture-Headers / Phantom",
+      "source_line": 6346
+    },
+    {
+      "test_id": "ED-DISABLED",
+      "test_revision": 1,
+      "profile_id": "aperture-leaves",
+      "phase": "initial",
+      "expected": "Plan Insert mode 1; stored values and studyset defaults remain 1.0. Record effective/displayed flags.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6356",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Aperture-Leaves / Phantom",
+      "source_line": 6356
+    },
+    {
+      "test_id": "ED-PRECEDENCE",
+      "test_revision": 1,
+      "profile_id": "density-conflict",
+      "phase": "initial",
+      "expected": "Density studyset ED 1.2; conflict plan ED 1.1; aligned plan ED 1.2. Other numerical plan settings/beam data match.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6366",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Density-Conflict / Density",
+      "source_line": 6366
+    },
+    {
+      "test_id": "ED-PRECEDENCE",
+      "test_revision": 1,
+      "profile_id": "density-aligned",
+      "phase": "initial",
+      "expected": "Density studyset ED 1.2; conflict plan ED 1.1; aligned plan ED 1.2. Other numerical plan settings/beam data match.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6375",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Density-Aligned / Density",
+      "source_line": 6375
+    },
+    {
+      "test_id": "BEAM-HEADERS",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "initial",
+      "expected": "10x10-labelled beam header pair changes to 80,60,0,0. Leaves/compact shape remain baseline; candidate aperture 8x6 cm.",
+      "status": "pass",
+      "actual": "20x10 Width1 4, Width2 4, Length1 3, Length2 3. BEV shows rectangular field",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Aperture observation written under Reference; intended target inferred from test definition, not an explicitly named observed plan. Preserve that uncertainty. Quantitative per-leaf and calculated aperture validation remain pending.",
+        "Actual field label says 20x10 although candidate target is the 10x10-labelled beam; retain the discrepancy. Reported paired dimensions imply an 8x6 cm rectangle."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:35",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "20x10 Width1 4, Width2 4, Length1 3, Length2 3. BEV shows rectangular field",
+      "source_section": "Reference / Phantom",
+      "source_line": 35
+    },
+    {
+      "test_id": "BEAM-HEADERS",
+      "test_revision": 1,
+      "profile_id": "aperture-headers",
+      "phase": "initial",
+      "expected": "10x10-labelled beam header pair changes to 80,60,0,0. Leaves/compact shape remain baseline; candidate aperture 8x6 cm.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Aperture observation written under Reference; intended target inferred from test definition, not an explicitly named observed plan. Preserve that uncertainty. Quantitative per-leaf and calculated aperture validation remain pending.",
+        "Actual field label says 20x10 although candidate target is the 10x10-labelled beam; retain the discrepancy. Reported paired dimensions imply an 8x6 cm rectangle."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6347",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Aperture-Headers / Phantom",
+      "source_line": 6347
+    },
+    {
+      "test_id": "BEAM-LEAVES",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "initial",
+      "expected": "10x10-labelled beam: leaf pairs 37-44 second-bank tips change from +50 to +10 mm. Headers/compact shape remain baseline.",
+      "status": "pass",
+      "actual": "I think it looks right. BEV shows a C shape with X2 inner leaves in to about 1/5 of that of the outer ones. That cutout size is slightly narrower than the 5x5 field, but wider than the 3x3.",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Aperture observation written under Reference; intended target inferred from test definition, not an explicitly named observed plan. Preserve that uncertainty. Quantitative per-leaf and calculated aperture validation remain pending."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:36",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "I think it looks right. BEV shows a C shape with X2 inner leaves in to about 1/5 of that of the outer ones. That cutout size is slightly narrower than the 5x5 field, but wider than the 3x3.",
+      "source_section": "Reference / Phantom",
+      "source_line": 36
+    },
+    {
+      "test_id": "BEAM-LEAVES",
+      "test_revision": 1,
+      "profile_id": "aperture-leaves",
+      "phase": "initial",
+      "expected": "10x10-labelled beam: leaf pairs 37-44 second-bank tips change from +50 to +10 mm. Headers/compact shape remain baseline.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Aperture observation written under Reference; intended target inferred from test definition, not an explicitly named observed plan. Preserve that uncertainty. Quantitative per-leaf and calculated aperture validation remain pending."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6357",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Aperture-Leaves / Phantom",
+      "source_line": 6357
+    },
+    {
+      "test_id": "PLAN-NO-DOSE",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "initial",
+      "expected": "No dose payload or historical calculation log supplied. Record warnings/stored dose state; source checksum/status fields remain unverified.",
+      "status": "pass",
+      "actual": "No doses calced. Log paste below",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:37",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "No doses calced. Log paste below",
+      "source_section": "Reference / Phantom",
+      "source_line": 37
+    },
+    {
+      "test_id": "PLAN-NO-DOSE",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "initial",
+      "expected": "No dose payload or historical calculation log supplied. Record warnings/stored dose state; source checksum/status fields remain unverified.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6323",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-A / Phantom",
+      "source_line": 6323
+    },
+    {
+      "test_id": "PLAN-NO-DOSE",
+      "test_revision": 1,
+      "profile_id": "calculation-b",
+      "phase": "initial",
+      "expected": "No dose payload or historical calculation log supplied. Record warnings/stored dose state; source checksum/status fields remain unverified.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6337",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-B / Phantom",
+      "source_line": 6337
+    },
+    {
+      "test_id": "PLAN-NO-DOSE",
+      "test_revision": 1,
+      "profile_id": "aperture-headers",
+      "phase": "initial",
+      "expected": "No dose payload or historical calculation log supplied. Record warnings/stored dose state; source checksum/status fields remain unverified.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6348",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Aperture-Headers / Phantom",
+      "source_line": 6348
+    },
+    {
+      "test_id": "PLAN-NO-DOSE",
+      "test_revision": 1,
+      "profile_id": "aperture-leaves",
+      "phase": "initial",
+      "expected": "No dose payload or historical calculation log supplied. Record warnings/stored dose state; source checksum/status fields remain unverified.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6358",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Aperture-Leaves / Phantom",
+      "source_line": 6358
+    },
+    {
+      "test_id": "PLAN-NO-DOSE",
+      "test_revision": 1,
+      "profile_id": "density-conflict",
+      "phase": "initial",
+      "expected": "No dose payload or historical calculation log supplied. Record warnings/stored dose state; source checksum/status fields remain unverified.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6367",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Density-Conflict / Density",
+      "source_line": 6367
+    },
+    {
+      "test_id": "PLAN-NO-DOSE",
+      "test_revision": 1,
+      "profile_id": "density-aligned",
+      "phase": "initial",
+      "expected": "No dose payload or historical calculation log supplied. Record warnings/stored dose state; source checksum/status fields remain unverified.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6376",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Density-Aligned / Density",
+      "source_line": 6376
+    },
+    {
+      "test_id": "PLAN-PERSISTENCE",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "save_reopen",
+      "expected": "After initial observations, save/close/reopen and retain returned native files; compare each recorded setting.",
+      "status": "pass",
+      "actual": "Reviewer marked pass in the Markdown worksheet; no detailed actual values were transcribed.",
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Human pass attestation only; blank narrative preserved as actual_raw. No numeric values or returned-file verification inferred.",
+        "Save/reopen marked pass without per-plan detail or a returned native capture. Keep attestation separate from byte-level persistence and independence checks."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:38",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Reference / Phantom",
+      "source_line": 38
+    },
+    {
+      "test_id": "PLAN-PERSISTENCE",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "save_reopen",
+      "expected": "After initial observations, save/close/reopen and retain returned native files; compare each recorded setting.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Save/reopen marked pass without per-plan detail or a returned native capture. Keep attestation separate from byte-level persistence and independence checks."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6324",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-A / Phantom",
+      "source_line": 6324
+    },
+    {
+      "test_id": "PLAN-PERSISTENCE",
+      "test_revision": 1,
+      "profile_id": "calculation-b",
+      "phase": "save_reopen",
+      "expected": "After initial observations, save/close/reopen and retain returned native files; compare each recorded setting.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Save/reopen marked pass without per-plan detail or a returned native capture. Keep attestation separate from byte-level persistence and independence checks."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6338",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-B / Phantom",
+      "source_line": 6338
+    },
+    {
+      "test_id": "PLAN-PERSISTENCE",
+      "test_revision": 1,
+      "profile_id": "aperture-headers",
+      "phase": "save_reopen",
+      "expected": "After initial observations, save/close/reopen and retain returned native files; compare each recorded setting.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Save/reopen marked pass without per-plan detail or a returned native capture. Keep attestation separate from byte-level persistence and independence checks."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6349",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Aperture-Headers / Phantom",
+      "source_line": 6349
+    },
+    {
+      "test_id": "PLAN-PERSISTENCE",
+      "test_revision": 1,
+      "profile_id": "aperture-leaves",
+      "phase": "save_reopen",
+      "expected": "After initial observations, save/close/reopen and retain returned native files; compare each recorded setting.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Save/reopen marked pass without per-plan detail or a returned native capture. Keep attestation separate from byte-level persistence and independence checks."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6359",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Aperture-Leaves / Phantom",
+      "source_line": 6359
+    },
+    {
+      "test_id": "PLAN-PERSISTENCE",
+      "test_revision": 1,
+      "profile_id": "density-conflict",
+      "phase": "save_reopen",
+      "expected": "After initial observations, save/close/reopen and retain returned native files; compare each recorded setting.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Save/reopen marked pass without per-plan detail or a returned native capture. Keep attestation separate from byte-level persistence and independence checks."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6368",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Density-Conflict / Density",
+      "source_line": 6368
+    },
+    {
+      "test_id": "PLAN-PERSISTENCE",
+      "test_revision": 1,
+      "profile_id": "density-aligned",
+      "phase": "save_reopen",
+      "expected": "After initial observations, save/close/reopen and retain returned native files; compare each recorded setting.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved.",
+        "Save/reopen marked pass without per-plan detail or a returned native capture. Keep attestation separate from byte-level persistence and independence checks."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6377",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Density-Aligned / Density",
+      "source_line": 6377
+    },
+    {
+      "test_id": "PLAN-INDEPENDENCE",
+      "test_revision": 1,
+      "profile_id": "calculation-a",
+      "phase": "save_reopen",
+      "expected": "After saving A, B retains its independent settings/geometry. Shared-studyset changes are assessed separately.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6325",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-A / Phantom",
+      "source_line": 6325
+    },
+    {
+      "test_id": "PLAN-INDEPENDENCE",
+      "test_revision": 1,
+      "profile_id": "calculation-b",
+      "phase": "save_reopen",
+      "expected": "After saving A, B retains its independent settings/geometry. Shared-studyset changes are assessed separately.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:6339",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Calculation-B / Phantom",
+      "source_line": 6339
+    },
+    {
+      "test_id": "CALC-EXECUTION",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "recalculate",
+      "expected": "After load/geometry review, calculate Reference and retain completion/state evidence and separate returned files. Do not infer dose validity from completion alone.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:39",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Reference / Phantom",
+      "source_line": 39
+    },
+    {
+      "test_id": "EXPORT-DOSE",
+      "test_revision": 1,
+      "profile_id": "reference",
+      "phase": "export",
+      "expected": "If Reference calculates, export DICOM RT Plan/RT Dose for independent geometry, units, grid and association checks; numerical dose validation remains separate.",
+      "status": "not_reviewed",
+      "actual": null,
+      "messages": [
+        "Status and profile preserve the worksheet row, not an analyst-assigned global validation result.",
+        "Observed-at text is 20260226 17:30; embedded logs are dated 2026-10-26; observation date/timezone unresolved."
+      ],
+      "evidence": [
+        "validation/results/history/partial-review-bed8eca15603.md:40",
+        "sha256:bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980"
+      ],
+      "actual_raw": "",
+      "source_section": "Reference / Phantom",
+      "source_line": 40
+    }
+  ],
+  "run_manifest_sha256": "1a5a4437e05e15826eb2c4c28e7be1b0d38301af530f996e5ba5950f6123211f",
+  "generator_sha256": {
+    "__init__.py": "d96d0c084f33bb32929708c802c57c00dff27cae0dd7acc9acffb98d13f15e6f",
+    "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "blank_ct.py": "b5ddfbde1b287bcf51f66afa66ac1a615099f6942a7af9c6af45ccb532bb5a29",
+    "cli.py": "27cb96b48880fab4df513f334f74276a7ff0432b5d86e00f8c489c41e0c01ea1",
+    "core.py": "117de6126b3d7f1367a6f4e4961f8b25b67ff82ef70f9510d261febc2cda4335",
+    "depot_index.py": "369154ef89824f28d7fd342c9983f828405e1a9e1c7536f053de237e370104ff",
+    "depot_layout.py": "b5a82de011047b775291ea2b3eeb864fe14595b30623a8a490eb3c0cb5f179cf",
+    "experiments.py": "049305faf5ffc37af48b765b5e92334a4697665888a4a09fab9fcbd7102c4252",
+    "logs.py": "24df46b95c188af049b2d652faf61278f91c7293fa659479d15c0a86824c17b7",
+    "snapshots.py": "340ecabe03f7d096108b7c2639cab635a06072efe9f09a42b0c6217bec872851",
+    "three_slice.py": "158bbfc797a2b6f6c34c46a168b3158678294a798768a4ca0a2146314d51d12b",
+    "validation_suite.py": "4286b1c7408766b4187178ff59f9ddb9bd52a54cee81c81333c51705af4d5337"
+  },
+  "markdown_source": {
+    "path": "validation/results/history/partial-review-bed8eca15603.md",
+    "sha256": "bed8eca15603d22b959e373ae7be7dc9f47ec8e27807424780ed4dbeeda1a980",
+    "observed_at_raw": "20260226 17:30",
+    "date_issue": "Worksheet says February 26; pasted logs say October 26, 2026. Timezone unspecified. No corrected observation date inferred."
+  }
+}

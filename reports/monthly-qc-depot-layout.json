@@ -1,0 +1,20 @@
+{
+  "archive": "reference/Monthly QC.zip",
+  "archive_sha256": "830b8fd875aefa6cb9e15822b2fdb67754025879de2ecb573d2cccf332c55dd6",
+  "image_count": 130,
+  "field_mapping_one_based": {
+    "3": "SOPClassUID",
+    "4": "SeriesInstanceUID",
+    "5": "StudyInstanceUID",
+    "6": "StudyID",
+    "7": "PatientName",
+    "8": "FrameOfReferenceUID"
+  },
+  "image_filename_pattern": "CT_<SOPInstanceUID>",
+  "image_index_pattern": "CT_<SeriesInstanceUID>.dir",
+  "series_index_filename": "RTDIR.dir",
+  "image_encoding": "raw_implicit_VR_little_endian",
+  "index_sha256": "688ed4060299b77b610c648c154fa72d91989df5c4b78e3c1b896aee992d6cb7",
+  "geometry_mapping": "position and orientation match first SOP listed in series index",
+  "scope": "observed on one complete supplied depot; generated TPS acceptance pending"
+}

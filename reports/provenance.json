@@ -1,0 +1,378 @@
+{
+  "archive": {
+    "path": "reference/1~ZZZELEKTAONEHETERO.zip",
+    "sha256": "da498f300a557f6fc147072cd54a98dee2e52434f288c9c94cebae5173df5654",
+    "bytes": 1499146406
+  },
+  "file_extensions": {
+    ".1": 24,
+    ".2": 6,
+    ".3": 6,
+    ".CT": 1866,
+    ".DCM": 1866,
+    ".STATUS": 12,
+    ".WC": 1866,
+    ".ZZZELEKTAONEHETERO": 1,
+    ".dat": 6,
+    ".hyp": 6,
+    ".xlog": 6,
+    ".xml": 31,
+    "<none>": 39
+  },
+  "inspected_metadata": {
+    "1~ZZZELEKTAONEHETERO/1~PinpointBone/contournames": {
+      "size": 1612,
+      "sha256": "a9d5375680c8803285d6ac29662c517525fabc33f35850a62b4f4855cd394816"
+    },
+    "1~ZZZELEKTAONEHETERO/1~PinpointBone/info": {
+      "size": 1510,
+      "sha256": "7a777bc2a29e15a3dbbf8715a59f2ccd377eb8c717a6572873808581b09c8560"
+    },
+    "1~ZZZELEKTAONEHETERO/1~PinpointWater/contournames": {
+      "size": 1612,
+      "sha256": "21c952fabd4f7a95c91f409a8ece8737bd17cdd295744de81b1238c6d0c6f501"
+    },
+    "1~ZZZELEKTAONEHETERO/1~PinpointWater/info": {
+      "size": 1424,
+      "sha256": "91f19dc26ee9041be60d9b601852005f5858ee90e6f2299f2a088390be7ee932"
+    },
+    "1~ZZZELEKTAONEHETERO/1~PoinpointLung/contournames": {
+      "size": 1612,
+      "sha256": "bfcc6c8b2b17258f570d1a292c65742bac979e2b506d550d3dfa88053f4e9215"
+    },
+    "1~ZZZELEKTAONEHETERO/1~PoinpointLung/info": {
+      "size": 1538,
+      "sha256": "59a654287ef66d40813b47aeaff3416a669b8d529405b3ebdecea3fafe2d0713"
+    },
+    "1~ZZZELEKTAONEHETERO/1~SemiflexBone/contournames": {
+      "size": 1612,
+      "sha256": "ae8ccad0a8636834837f534bcdbc93a763ad915d17d766fc47dcff823000af09"
+    },
+    "1~ZZZELEKTAONEHETERO/1~SemiflexBone/info": {
+      "size": 1958,
+      "sha256": "7c01e0d49c05010587d6b345e0fc9dc82bcd8353a86655cff436c46b489d79e0"
+    },
+    "1~ZZZELEKTAONEHETERO/1~SemiflexLung/contournames": {
+      "size": 1612,
+      "sha256": "12100ba9aee565f199a2335dbcb51f4dc6d607cd755d545ee4306b511b241744"
+    },
+    "1~ZZZELEKTAONEHETERO/1~SemiflexLung/info": {
+      "size": 1330,
+      "sha256": "c7202d28cd9f07e35a4e5b615033f9cf0e5c048b82d77834ad3872d7cd4e35a1"
+    },
+    "1~ZZZELEKTAONEHETERO/1~SemiflexWater/contournames": {
+      "size": 2179,
+      "sha256": "4c1b46114d4636ac4f3a5931e83102a3cc810acc73657392e24a147ef866fd21"
+    },
+    "1~ZZZELEKTAONEHETERO/1~SemiflexWater/info": {
+      "size": 1331,
+      "sha256": "4fabba663e91591f56bbec4ed22de8d6f1dad920735b98a46b4ce7db20554d2b"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/RxA.xlog": {
+      "size": 7037,
+      "sha256": "2e373eacdb54af205acc363f836760b8726f806819609da3ab1c596b91f59463"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/checksum.1": {
+      "size": 1787,
+      "sha256": "4b645c7ebc63ddd13b726c1b720b45875e1cff76b807ed86f58e4b83f40fb17f"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/plan": {
+      "size": 3449,
+      "sha256": "7275e1a2570b2f7ad3523c35741489629cca6d5c5e67783ae6e79c86d4d487dd"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/tel.1": {
+      "size": 27814,
+      "sha256": "15d4d0a29ac23fd98ab91414d5fa68c52c42f81cc9befa8f48e078aeac6bb24b"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp": {
+      "size": 3240,
+      "sha256": "23c5202332cc40d30653ce865f9cfb1e5f614f17da04c2c6e035833f9a0c25e4"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/RxA.xlog": {
+      "size": 7041,
+      "sha256": "588337c4038a8f6aa1a610dd47c470ddb5e4ef7b1ed95f3b30a6c9e34bef9b88"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/checksum.1": {
+      "size": 1794,
+      "sha256": "16419f939d541886c182b91f5fe6af270348490e9a6c824b5a65de328e7e74ec"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/plan": {
+      "size": 3449,
+      "sha256": "7e4941c78abb447757086b5355dcadce571f5525d325bf25e5faae4da741ecd8"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/tel.1": {
+      "size": 27808,
+      "sha256": "ce7738f794f1d510ef531db743f35196ceb259e1f1d7e6e917a7634c98f267c1"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp": {
+      "size": 3206,
+      "sha256": "e3f0a2283378ab87ea6f75d45fd4410392a27e966b6347dd871ced015af3f27f"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/RxA.xlog": {
+      "size": 7038,
+      "sha256": "973036fb708e05fb306a54dd1c3aa2781eaafe242d44773bd808dbb54ee24d23"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/checksum.1": {
+      "size": 1787,
+      "sha256": "4b645c7ebc63ddd13b726c1b720b45875e1cff76b807ed86f58e4b83f40fb17f"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/plan": {
+      "size": 3451,
+      "sha256": "1c93c0f5220e9c14501f2c18f247b51cb30868b7f3b81558373bf2aabd952856"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/tel.1": {
+      "size": 27811,
+      "sha256": "5ee8e10a1c55647419329de9ac1707d605fd09506b1df300f3998e0b00143b0d"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp": {
+      "size": 3240,
+      "sha256": "23c5202332cc40d30653ce865f9cfb1e5f614f17da04c2c6e035833f9a0c25e4"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/RxA.xlog": {
+      "size": 7039,
+      "sha256": "d5d7961dda1a9e0f2949ac8af144bb72d39fdcf4f93f6df747ebf9fafbbad051"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/checksum.1": {
+      "size": 1794,
+      "sha256": "16419f939d541886c182b91f5fe6af270348490e9a6c824b5a65de328e7e74ec"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/plan": {
+      "size": 3451,
+      "sha256": "cf4864c9bd4a48fc29c2ba777246d4756926d205583d894a871c0f584514a032"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/tel.1": {
+      "size": 27806,
+      "sha256": "d2fa7c89840aa1c0dd561c728373f58a7b6a47fab34177162774f65670620eca"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp": {
+      "size": 3206,
+      "sha256": "e3f0a2283378ab87ea6f75d45fd4410392a27e966b6347dd871ced015af3f27f"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/RxA.xlog": {
+      "size": 7047,
+      "sha256": "ff32f8eb7fccfff2943662a0b63ef0b5052b561c14358735b4af249ca266356e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/checksum.1": {
+      "size": 1787,
+      "sha256": "4b645c7ebc63ddd13b726c1b720b45875e1cff76b807ed86f58e4b83f40fb17f"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/plan": {
+      "size": 3434,
+      "sha256": "17ba6c83371d85c19ba60b13fa5bddf6121d72de520e18c9862344a4efd3a1d6"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/tel.1": {
+      "size": 27811,
+      "sha256": "8fde5bdd545975b3e4142fa632fe84ac9e9b3bb7a30e13e187322a21e3ba57c3"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp": {
+      "size": 3240,
+      "sha256": "23c5202332cc40d30653ce865f9cfb1e5f614f17da04c2c6e035833f9a0c25e4"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/RxA.xlog": {
+      "size": 7063,
+      "sha256": "d5d1c31adb79efa8f833270e6253715ffee7e16b483161f997e23d907949b3a3"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/checksum.1": {
+      "size": 1794,
+      "sha256": "16419f939d541886c182b91f5fe6af270348490e9a6c824b5a65de328e7e74ec"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/plan": {
+      "size": 3431,
+      "sha256": "39ff9e6e6a9d909b321bd80a26a219e0b0a635d343605190e55de5b9c3e24304"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/tel.1": {
+      "size": 27808,
+      "sha256": "34525fac49473decd458bcbad6322f600a8c96f3d188c9dde249ba28b35f6dff"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp": {
+      "size": 3192,
+      "sha256": "3b520d9db619d5edc768cc6e3511fed561c6bb9b73d70f57c0bbb237c3e1eb71"
+    }
+  },
+  "native_dose_header_samples": {
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/dose.1": {
+      "sample_bytes": 256,
+      "prefix_sha256": "2eac2ecb7eea84b7c55d3911fce5bf95fd5c5df5f4098b407f350e390987cffe",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/tel.1.dose.1": {
+      "sample_bytes": 256,
+      "prefix_sha256": "a554bc17c3a4952ab2ead4628a280e6b7a64437e384a5bf79cac8896beb88048",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/tel.1.dose.2": {
+      "sample_bytes": 256,
+      "prefix_sha256": "a554bc17c3a4952ab2ead4628a280e6b7a64437e384a5bf79cac8896beb88048",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/tel.1.dose.3": {
+      "sample_bytes": 256,
+      "prefix_sha256": "a554bc17c3a4952ab2ead4628a280e6b7a64437e384a5bf79cac8896beb88048",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/dose.1": {
+      "sample_bytes": 256,
+      "prefix_sha256": "e1b21a6c86fce10b44bea5b4e69778dabc0eba9a79ac4c726fc7d687718eb679",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/tel.1.dose.1": {
+      "sample_bytes": 256,
+      "prefix_sha256": "4fa56983241c984a264e34beaddcbb87411afedac06a3bbec1201dac6dc63673",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/tel.1.dose.2": {
+      "sample_bytes": 256,
+      "prefix_sha256": "4fa56983241c984a264e34beaddcbb87411afedac06a3bbec1201dac6dc63673",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/tel.1.dose.3": {
+      "sample_bytes": 256,
+      "prefix_sha256": "4fa56983241c984a264e34beaddcbb87411afedac06a3bbec1201dac6dc63673",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/dose.1": {
+      "sample_bytes": 256,
+      "prefix_sha256": "f1c0b4e9a038ad707cc5da16a2d63be590c576716b8b0718520eca5222835b1b",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/tel.1.dose.1": {
+      "sample_bytes": 256,
+      "prefix_sha256": "d8add3bccd707d9fc2cee0a59e6a61c68e121bcf99ce521238c717f77f22656b",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/tel.1.dose.2": {
+      "sample_bytes": 256,
+      "prefix_sha256": "d8add3bccd707d9fc2cee0a59e6a61c68e121bcf99ce521238c717f77f22656b",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/tel.1.dose.3": {
+      "sample_bytes": 256,
+      "prefix_sha256": "d8add3bccd707d9fc2cee0a59e6a61c68e121bcf99ce521238c717f77f22656b",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/dose.1": {
+      "sample_bytes": 256,
+      "prefix_sha256": "eecf7eaa3ba857eea2416751a0956cde6f3bd942b055e9c6a3ba129efe0222b9",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/tel.1.dose.1": {
+      "sample_bytes": 256,
+      "prefix_sha256": "a0c8064416c22a62561f69993dcc2df22c39a7c8085607953e83ccd5c6b31a2d",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/tel.1.dose.2": {
+      "sample_bytes": 256,
+      "prefix_sha256": "a0c8064416c22a62561f69993dcc2df22c39a7c8085607953e83ccd5c6b31a2d",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/tel.1.dose.3": {
+      "sample_bytes": 256,
+      "prefix_sha256": "a0c8064416c22a62561f69993dcc2df22c39a7c8085607953e83ccd5c6b31a2d",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/dose.1": {
+      "sample_bytes": 256,
+      "prefix_sha256": "9c1fd49d6b0761eee2e8c61dfae9d1b298ac4b1f234e08b7ec553758d6854501",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/tel.1.dose.1": {
+      "sample_bytes": 256,
+      "prefix_sha256": "66a462e9ff7b2249acefd299f2b26b442f9f6155d2f15911c1f8ce8bd3c91bc1",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/tel.1.dose.2": {
+      "sample_bytes": 256,
+      "prefix_sha256": "66a462e9ff7b2249acefd299f2b26b442f9f6155d2f15911c1f8ce8bd3c91bc1",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/tel.1.dose.3": {
+      "sample_bytes": 256,
+      "prefix_sha256": "66a462e9ff7b2249acefd299f2b26b442f9f6155d2f15911c1f8ce8bd3c91bc1",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/dose.1": {
+      "sample_bytes": 256,
+      "prefix_sha256": "d247f6a5d8da2442a9f0b5a42824f2d68372572f922f89db3347fcb3692a3300",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/tel.1.dose.1": {
+      "sample_bytes": 256,
+      "prefix_sha256": "5d7fd322ff9672006d36467f3e099bb484fb270ebed4226383586eddda2f4948",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/tel.1.dose.2": {
+      "sample_bytes": 256,
+      "prefix_sha256": "5d7fd322ff9672006d36467f3e099bb484fb270ebed4226383586eddda2f4948",
+      "first_line": "00d5301e"
+    },
+    "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/tel.1.dose.3": {
+      "sample_bytes": 256,
+      "prefix_sha256": "5d7fd322ff9672006d36467f3e099bb484fb270ebed4226383586eddda2f4948",
+      "first_line": "00d5301e"
+    }
+  },
+  "parser_source_sha256": {
+    "scripts/index_help.py": "8c38b8d8b32318bb7b0edddf13c46310ad685e8b3e3daabd065f437f6ad3308a",
+    "scripts/research_baseline.py": "1dba7c219f56774d64784567c0e72031e1e0a5eb79d6e10007eb0b1b208e2497",
+    "src/hyperio/__init__.py": "d96d0c084f33bb32929708c802c57c00dff27cae0dd7acc9acffb98d13f15e6f",
+    "src/hyperio/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "src/hyperio/cli.py": "c6d04aab72d1b48e7c2e8f7f54b1497641cc1de87c025eb4dd288dbbb36b15a7",
+    "src/hyperio/core.py": "117de6126b3d7f1367a6f4e4961f8b25b67ff82ef70f9510d261febc2cda4335",
+    "src/hyperio/experiments.py": "11664727466306c4f9dbbc8248565d196a5f8a63df5aca3250f6121fe381ce58",
+    "src/hyperio/logs.py": "24df46b95c188af049b2d652faf61278f91c7293fa659479d15c0a86824c17b7",
+    "src/hyperio/snapshots.py": "340ecabe03f7d096108b7c2639cab635a06072efe9f09a42b0c6217bec872851"
+  },
+  "help_chm": {
+    "path": "reference/Monaco.chm",
+    "sha256": "53d31119551837abd3a966329388bf294fc1f3fe81b56939b2c952f8a7f29252"
+  },
+  "help_topics": {
+    "usm1506019008231.htm": {
+      "title": "Calculation Properties dialog box",
+      "sha256": "33cae8f00dc5d081552ec275886568563e416fbe9ef3abe698114099805cb204"
+    },
+    "usm1493663129001.htm": {
+      "title": "Monte Carlo uncertainty formula",
+      "sha256": "839d82baa245cd0cafe77c70ef56b2d2df2aa721d81ea98f02d71dafa056ae30"
+    },
+    "usm1493663145497.htm": {
+      "title": "Dose to Water versus Dose to Medium",
+      "sha256": "f25d1e26285cfd4ee82c484484bba47bfbcad508cc2e78ca611a75df274db864"
+    },
+    "usm1506018979724.htm": {
+      "title": "Assign Densities dialog box",
+      "sha256": "57f8527fa7601ab51513de2967c2bd9b4d9ed0e640a0d114e8e056f5b6c9b5ad"
+    },
+    "jap1518315983721.htm": {
+      "title": "Structures Control: Layers Tab",
+      "sha256": "2d2c89c85784eb7e95fa9c4350497e8da01361079ab7166fe52de0552de771a7"
+    },
+    "usm1493663137867.htm": {
+      "title": "Frozen Dose",
+      "sha256": "6ef58f6f149d1f3da0de5aa7158693d2066233925c37b330b4afd1df4e02527d"
+    },
+    "usy1504705192560.htm": {
+      "title": "About CT-to-ED Conversion Files",
+      "sha256": "25dd142dc922aef8a88d39a0cb87ff37c6b8705ffaad73c2171131d011f176cd"
+    },
+    "usm1506018963596.htm": {
+      "title": "Grid Volume group",
+      "sha256": "5a89856bed668ddc58d62856eb71d6115e8181b739b89377503bacdf53e50938"
+    }
+  },
+  "plancheck": {
+    "path": "/Users/gil/src/PlanCheck.jl",
+    "investigator_checked_head": "6c6c00b8973430e5ab645c8191951db7cd8161a1",
+    "files": {
+      "src/monaco/raw.jl": "4ea3187fce6fe8d8618300aa69646f811fe5cb6a1181fb58310a01b2bd21fc24",
+      "src/monaco/plan/plan.jl": "7d77ee8a91d46f5d242e996bc5ca1a69d684bde0ce3596e64f00e224636fe148",
+      "src/monaco/plan/hyperion.jl": "edfa85cc075eb863469587cec94298ffabb083650a9388fe49db9da670ab5060",
+      "src/monaco/plan/tel.jl": "2f1a07a0db26c34f22a3f1b214175494f799dfdf313b42394f441efd7e8470d5",
+      "src/monaco/studyset/contournames.jl": "cfe6adcf30bea56cc70c7857091abeeb830a0b901be7315b5e497047f5d82a4d",
+      "src/monaco/studyset/info.jl": "3cc5831d4359063b4c06c9d85bf14909e784bb576f5bf1296089226f3859e156",
+      "src/checks/ROMP/5.2.jl": "216d4da9398aeb127829e84468c2bd77719296f94b0679695d1d2eec4ed04743",
+      "src/checks/ROMP/5.3.jl": "d5c5292642b8ed1d7123e876266fb1b5634d88d60e7e268996425cd5b785f630"
+    },
+    "note": "Working-tree hashes are authoritative; checks/ROMP/5.3.jl had local changes."
+  }
+}

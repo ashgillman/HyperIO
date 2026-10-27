@@ -1,0 +1,318 @@
+{
+  "source": "reference/1~ZZZELEKTAONEHETERO.zip",
+  "profile": "examples/common-settings.json",
+  "plans": [
+    {
+      "name": "HDHeteroSq6F",
+      "path": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F",
+      "checks": [
+        {
+          "key": "DOSEGRIDSIZE",
+          "expected": 1,
+          "actual": 1.0,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp",
+            "line": 68,
+            "raw": "1"
+          }
+        },
+        {
+          "key": "DOSETOMEDIUM",
+          "expected": true,
+          "actual": true,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp",
+            "line": 77,
+            "raw": "1"
+          }
+        },
+        {
+          "key": "FORCEWATER",
+          "expected": false,
+          "actual": false,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp",
+            "line": 78,
+            "raw": "0"
+          }
+        },
+        {
+          "key": "STORECOUCHCOILDOSE",
+          "expected": false,
+          "actual": false,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6F/zzzelektaonehetero.hyp",
+            "line": 79,
+            "raw": "0"
+          }
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "name": "HDHeteroSq6X",
+      "path": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X",
+      "checks": [
+        {
+          "key": "DOSEGRIDSIZE",
+          "expected": 1,
+          "actual": 1.0,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp",
+            "line": 68,
+            "raw": "1"
+          }
+        },
+        {
+          "key": "DOSETOMEDIUM",
+          "expected": true,
+          "actual": true,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp",
+            "line": 77,
+            "raw": "1"
+          }
+        },
+        {
+          "key": "FORCEWATER",
+          "expected": false,
+          "actual": false,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp",
+            "line": 78,
+            "raw": "0"
+          }
+        },
+        {
+          "key": "STORECOUCHCOILDOSE",
+          "expected": false,
+          "actual": false,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/HDHeteroSq6X/zzzelektaonehetero.hyp",
+            "line": 79,
+            "raw": "0"
+          }
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "name": "LDHeteroSq6F",
+      "path": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F",
+      "checks": [
+        {
+          "key": "DOSEGRIDSIZE",
+          "expected": 1,
+          "actual": 1.0,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp",
+            "line": 68,
+            "raw": "1"
+          }
+        },
+        {
+          "key": "DOSETOMEDIUM",
+          "expected": true,
+          "actual": true,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp",
+            "line": 77,
+            "raw": "1"
+          }
+        },
+        {
+          "key": "FORCEWATER",
+          "expected": false,
+          "actual": false,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp",
+            "line": 78,
+            "raw": "0"
+          }
+        },
+        {
+          "key": "STORECOUCHCOILDOSE",
+          "expected": false,
+          "actual": false,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6F/zzzelektaonehetero.hyp",
+            "line": 79,
+            "raw": "0"
+          }
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "name": "LDHeteroSq6X",
+      "path": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X",
+      "checks": [
+        {
+          "key": "DOSEGRIDSIZE",
+          "expected": 1,
+          "actual": 1.0,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp",
+            "line": 68,
+            "raw": "1"
+          }
+        },
+        {
+          "key": "DOSETOMEDIUM",
+          "expected": true,
+          "actual": true,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp",
+            "line": 77,
+            "raw": "1"
+          }
+        },
+        {
+          "key": "FORCEWATER",
+          "expected": false,
+          "actual": false,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp",
+            "line": 78,
+            "raw": "0"
+          }
+        },
+        {
+          "key": "STORECOUCHCOILDOSE",
+          "expected": false,
+          "actual": false,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/LDHeteroSq6X/zzzelektaonehetero.hyp",
+            "line": 79,
+            "raw": "0"
+          }
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "name": "RefHeteroSq6F",
+      "path": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F",
+      "checks": [
+        {
+          "key": "DOSEGRIDSIZE",
+          "expected": 1,
+          "actual": 1.0,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp",
+            "line": 68,
+            "raw": "1"
+          }
+        },
+        {
+          "key": "DOSETOMEDIUM",
+          "expected": true,
+          "actual": true,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp",
+            "line": 77,
+            "raw": "1"
+          }
+        },
+        {
+          "key": "FORCEWATER",
+          "expected": false,
+          "actual": false,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp",
+            "line": 78,
+            "raw": "0"
+          }
+        },
+        {
+          "key": "STORECOUCHCOILDOSE",
+          "expected": false,
+          "actual": false,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6F/zzzelektaonehetero.hyp",
+            "line": 79,
+            "raw": "0"
+          }
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "name": "RefHeteroSq6X",
+      "path": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X",
+      "checks": [
+        {
+          "key": "DOSEGRIDSIZE",
+          "expected": 1,
+          "actual": 1.0,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp",
+            "line": 68,
+            "raw": "1"
+          }
+        },
+        {
+          "key": "DOSETOMEDIUM",
+          "expected": true,
+          "actual": true,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp",
+            "line": 77,
+            "raw": "1"
+          }
+        },
+        {
+          "key": "FORCEWATER",
+          "expected": false,
+          "actual": false,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp",
+            "line": 78,
+            "raw": "0"
+          }
+        },
+        {
+          "key": "STORECOUCHCOILDOSE",
+          "expected": false,
+          "actual": false,
+          "status": "match",
+          "source": {
+            "file": "1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp",
+            "line": 79,
+            "raw": "0"
+          }
+        }
+      ],
+      "diagnostics": []
+    }
+  ],
+  "limitations": [
+    "Saved settings do not establish which settings generated saved dose.",
+    "Only supplied single-Rx text layouts are interpreted.",
+    "Absent uncertainty mode is unknown; no Monaco defaults are assumed.",
+    "Native dose, voxel density, geometry, MU and checksums are not interpreted."
+  ]
+}
