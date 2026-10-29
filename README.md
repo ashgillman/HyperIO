@@ -13,6 +13,9 @@ See [the observed results](reports/supplied-plans.md), [the field map](docs/form
 - Read named `.hyp` calculation settings with file, line, literal value, and interpretation attached.
 - Read plan identity, primary studyset, the observed five-value plan density records, studyset density defaults, and selected CT-to-ED name.
 - Read the observed beam-header layout, keeping native coordinate values and machine identifiers.
+- Read saved optimisation cost functions with source tokens, native units, saved isoeffects and individual shrink-margin targets.
+- Read DVH sampling settings, structure HI/CI reference settings, reference-dose requests and dosimetric goal definitions.
+- Read beam DRP descriptions, coordinates and saved beam-dose entries from supported beam headers.
 - Read labelled calculation-log uncertainty values and completion messages as separate observations.
 - Compare selected saved settings against an explicit JSON expectation profile.
 - Preserve `.hyp` bytes and produce an edited in-memory copy of an existing supported scalar setting.
@@ -73,6 +76,17 @@ for plan in report["plans"]:
     })
     print(plan["name"], results)
 
+# Review metadata is available through the same API and `hyperio inspect`.
+for plan in report["plans"]:
+    print(plan["dvh_parameters"])  # resolution_mm and bin_width_cgy, or None
+    for objective in plan["cost_functions"] or []:
+        print(objective["structure"], objective["cost_function"],
+              objective["isoconstraint"], objective["isoeffect"], objective["effect_unit"])
+        print(objective["shrink_margin_targets"])  # each target and its margin_mm
+    if plan["isodose_settings"]:
+        print(plan["isodose_settings"]["dose_goals"])
+    print(plan["dose_reference_points"])
+
 # Byte-preserving edits return a new document and do not touch the source file.
 doc = HypDocument.read("work/metadata/1~ZZZELEKTAONEHETERO/plan/RefHeteroSq6X/zzzelektaonehetero.hyp")
 grid = doc.get("DOSEGRIDSIZE")
@@ -90,6 +104,27 @@ That evidence does not validate arbitrary edits or every combination of supporte
 Changing a text setting alone does not recalculate dose or update related files and checksums.
 Supported native plan write-back is a later milestone in [TODO.org](TODO.org).
 For TPS validation, [validation/](validation/README.md) contains the perpetual component catalogue, combined native import package and append-only result ledger.
+
+### Saved optimisation and DVH review metadata
+
+`cost_functions`, `dvh_parameters`, `isodose_settings`, and `dose_reference_points` are also public byte-reader functions accepting an optional source filename.
+`HypDocument.cost_functions()` reads objectives from the document's unchanged bytes.
+These functions use named records and supported format profiles without requiring particular patient, plan or structure names.
+Inspection adds their results to every discovered plan, and the existing CLI includes them automatically.
+Absent optional XML files produce `None`; malformed or unsupported records produce plan diagnostics while other readable components remain available.
+
+Objective display quantities are cGy or percent according to type, with the unit stated explicitly.
+The `fields` dictionary retains native values, units, raw tokens, filename and one-based line numbers.
+Every shrink-margin target remains separate in mm; `shrink_margin_cm` is a convenience value only when all targets have the same margin.
+Unknown objective/goal types retain their raw fields and diagnostics; missing values and explicit unknown sentinels do not acquire defaults.
+XML records retain filename and element paths.
+Goal definitions cover the 14 mapped types, including absolute-volume conversion from native mm³ to cm³ and separate HI/CI `Index` values.
+
+The [VMAT screenshot comparison](reports/vmat-2026-10-29.md) validates library output against the supplied GT.
+The documented examples in [test_vmat_evidence.py](tests/test_vmat_evidence.py) compare inspected plans directly with the [GT fixture](tests/fixtures/vmat-2026-10-29-ground-truth.json).
+The independent examples in [test_plan_review.py](tests/test_plan_review.py) demonstrate byte-reader usage without private files.
+Saved optimizer isoeffects and DRP values are not independently recalculated dose or DVH statistics.
+Native dose decoding and exact Monaco DVH sampling remain open work.
 
 ## Review generated plan candidates in Monaco
 

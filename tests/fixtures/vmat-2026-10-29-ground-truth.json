@@ -1,0 +1,450 @@
+{
+  "schema_version": 1,
+  "description": "Manual transcription of user-designated screenshot ground truth. Numerical DVH results are not independently calculated. Blank cells are null; repeated reference-dose row retained.",
+  "screenshots": {
+    "image (6).png": {
+      "path": "/Users/gil/Downloads/image (6).png",
+      "sha256": "3c194e6fb8041fd78c845c382e34353d4a624b77acf2ad80db79df00188235ba"
+    },
+    "image (7).png": {
+      "path": "/Users/gil/Downloads/image (7).png",
+      "sha256": "f5843fdefbb125030f0fc00bf4bf5ff377c454389b524fe91c792e9e885cc794"
+    },
+    "image (8).png": {
+      "path": "/Users/gil/Downloads/image (8).png",
+      "sha256": "b835eb6c1a7aa39075db7a947065d05f24ae3f70fdeb117d270e1d924dc56a63"
+    }
+  },
+  "plan_association": "D291026AG / CT1, identified by matching objectives, criteria and beam names in returned archive.",
+  "dvh_statistics": [
+    {
+      "structure": "PTV 1",
+      "volume_cm3": 20.98,
+      "min_dose_cgy": 5662.7,
+      "max_dose_cgy": 6342.9,
+      "mean_dose_cgy": 6147.6,
+      "heterogeneity_index": 1.03,
+      "conformity_index": 0.66,
+      "percent_in_volume": 100.0,
+      "is_in_ss": true
+    },
+    {
+      "structure": "PTV 2",
+      "volume_cm3": 5.31,
+      "min_dose_cgy": 5228.7,
+      "max_dose_cgy": 6174.2,
+      "mean_dose_cgy": 5884.1,
+      "heterogeneity_index": 1.1,
+      "conformity_index": 0.09,
+      "percent_in_volume": 100.0,
+      "is_in_ss": true
+    },
+    {
+      "structure": "OAR",
+      "volume_cm3": 32.735,
+      "min_dose_cgy": 757.6,
+      "max_dose_cgy": 3613.7,
+      "mean_dose_cgy": 2104.4,
+      "heterogeneity_index": 2.26,
+      "conformity_index": null,
+      "percent_in_volume": 100.0,
+      "is_in_ss": true
+    }
+  ],
+  "dose_goals": [
+    {
+      "structure": "PTV 1",
+      "metric": "HI",
+      "operator": "<=",
+      "limit": 1.15,
+      "tolerance": 0.1,
+      "displayed_value": 1.03,
+      "displayed_status": "green"
+    },
+    {
+      "structure": "PTV 1",
+      "metric": "V6600cGy",
+      "operator": "<=",
+      "limit": 0,
+      "tolerance": 0,
+      "displayed_value": 0,
+      "displayed_status": "green"
+    },
+    {
+      "structure": "PTV 1",
+      "metric": "D2%",
+      "operator": "<=",
+      "limit": 6300,
+      "tolerance": 120,
+      "displayed_value": 6264.4,
+      "displayed_status": "green"
+    },
+    {
+      "structure": "PTV 1",
+      "metric": "D50%",
+      "operator": "<=",
+      "limit": 6060,
+      "tolerance": 0,
+      "displayed_value": 6156.9,
+      "displayed_status": "red"
+    },
+    {
+      "structure": "PTV 1",
+      "metric": "V5700cGy",
+      "operator": ">=",
+      "limit": 98,
+      "tolerance": 3,
+      "displayed_value": 99.98,
+      "displayed_status": "green"
+    },
+    {
+      "structure": "PTV 2",
+      "metric": "D50%",
+      "operator": ">=",
+      "limit": 6000,
+      "tolerance": 50,
+      "displayed_value": 5939.9,
+      "displayed_status": "red"
+    },
+    {
+      "structure": "PTV 2",
+      "metric": "Dmean",
+      "operator": ">=",
+      "limit": 6000,
+      "tolerance": 0,
+      "displayed_value": 5884.1,
+      "displayed_status": "red"
+    },
+    {
+      "structure": "OAR",
+      "metric": "V6000cGy",
+      "operator": "<=",
+      "limit": 1,
+      "tolerance": 4,
+      "displayed_value": 0,
+      "displayed_status": "green"
+    },
+    {
+      "structure": "OAR",
+      "metric": "V5700cGy",
+      "operator": "<=",
+      "limit": 10,
+      "tolerance": 5,
+      "displayed_value": 0,
+      "displayed_status": "green"
+    },
+    {
+      "structure": "OAR",
+      "metric": "V3000cGy",
+      "operator": "<=",
+      "limit": 35,
+      "tolerance": 15,
+      "displayed_value": 2.03,
+      "displayed_status": "green"
+    }
+  ],
+  "dvh_reference_rows": [
+    {
+      "structure": "PTV 1",
+      "ref_volume_cm3": 0,
+      "ref_volume_percent": 0,
+      "ref_dose_cgy": 6600
+    },
+    {
+      "structure": "PTV 1",
+      "ref_volume_cm3": 0.42,
+      "ref_volume_percent": 2,
+      "ref_dose_cgy": 6264.4
+    },
+    {
+      "structure": "PTV 1",
+      "ref_volume_cm3": 10.49,
+      "ref_volume_percent": 50,
+      "ref_dose_cgy": 6156.9
+    },
+    {
+      "structure": "PTV 1",
+      "ref_volume_cm3": 20.975,
+      "ref_volume_percent": 99.98,
+      "ref_dose_cgy": 5700
+    },
+    {
+      "structure": "PTV 1",
+      "ref_volume_cm3": 20.975,
+      "ref_volume_percent": 99.98,
+      "ref_dose_cgy": 5700
+    },
+    {
+      "structure": "PTV 2",
+      "ref_volume_cm3": 2.655,
+      "ref_volume_percent": 50,
+      "ref_dose_cgy": 5939.9
+    },
+    {
+      "structure": "OAR",
+      "ref_volume_cm3": 0,
+      "ref_volume_percent": 0,
+      "ref_dose_cgy": 6000
+    },
+    {
+      "structure": "OAR",
+      "ref_volume_cm3": 0,
+      "ref_volume_percent": 0,
+      "ref_dose_cgy": 5700
+    },
+    {
+      "structure": "OAR",
+      "ref_volume_cm3": 0.327,
+      "ref_volume_percent": 1,
+      "ref_dose_cgy": 3107.3
+    },
+    {
+      "structure": "OAR",
+      "ref_volume_cm3": 0.666,
+      "ref_volume_percent": 2.03,
+      "ref_dose_cgy": 3000
+    }
+  ],
+  "dose_reference_points": [
+    {
+      "beam": 1,
+      "description": "CCW-180-PE",
+      "location": "Plan Isocenter",
+      "xyz_cm": [
+        -1.7,
+        -53.95,
+        -0.26
+      ],
+      "point_description": "DRP",
+      "beam_dose_cgy": 2042.6,
+      "total_dose_cgy": 2042.6
+    },
+    {
+      "beam": 2,
+      "description": "CBCT-F0-S10-245-PE",
+      "location": "Beam 2 Isocenter",
+      "xyz_cm": [
+        -1.7,
+        -53.95,
+        -0.26
+      ],
+      "point_description": "DRP",
+      "beam_dose_cgy": null,
+      "total_dose_cgy": 2042.6
+    }
+  ],
+  "imrt_constraints": [
+    {
+      "structure": "PTV 1",
+      "cost_function": "Target Penalty",
+      "weight": 1,
+      "reference_dose_cgy": null,
+      "exponent": null,
+      "shrink_margin_cm": null,
+      "isoconstraint": 6000,
+      "isoeffect": 6117.5,
+      "relative_impact": "",
+      "status": "On",
+      "enabled": true,
+      "manual": false,
+      "multicriterial": false,
+      "effect_unit": "cGy"
+    },
+    {
+      "structure": "PTV 1",
+      "cost_function": "Quadratic Overdose",
+      "weight": 0.01,
+      "reference_dose_cgy": 6180,
+      "exponent": null,
+      "shrink_margin_cm": null,
+      "isoconstraint": 40,
+      "isoeffect": 28.9,
+      "relative_impact": "",
+      "status": "On",
+      "enabled": true,
+      "manual": false,
+      "multicriterial": false,
+      "effect_unit": "cGy"
+    },
+    {
+      "structure": "PTV 2",
+      "cost_function": "Target Penalty",
+      "weight": 1,
+      "reference_dose_cgy": null,
+      "exponent": null,
+      "shrink_margin_cm": null,
+      "isoconstraint": 5700,
+      "isoeffect": 5910.7,
+      "relative_impact": "",
+      "status": "On",
+      "enabled": true,
+      "manual": false,
+      "multicriterial": false,
+      "effect_unit": "cGy"
+    },
+    {
+      "structure": "PTV 2",
+      "cost_function": "Quadratic Overdose",
+      "weight": 0.01,
+      "reference_dose_cgy": 6060,
+      "exponent": null,
+      "shrink_margin_cm": 0,
+      "isoconstraint": 30,
+      "isoeffect": 19.7,
+      "relative_impact": "",
+      "status": "On",
+      "enabled": true,
+      "manual": false,
+      "multicriterial": false,
+      "effect_unit": "cGy"
+    },
+    {
+      "structure": "Patient",
+      "cost_function": "Quadratic Overdose",
+      "weight": 0.101,
+      "reference_dose_cgy": 5700,
+      "exponent": null,
+      "shrink_margin_cm": 0,
+      "isoconstraint": 20,
+      "isoeffect": 19.9,
+      "relative_impact": "++++",
+      "status": "On",
+      "enabled": true,
+      "manual": false,
+      "multicriterial": false,
+      "effect_unit": "cGy"
+    },
+    {
+      "structure": "Patient",
+      "cost_function": "Quadratic Overdose",
+      "weight": 0.01,
+      "reference_dose_cgy": 5400,
+      "exponent": null,
+      "shrink_margin_cm": 0.3,
+      "isoconstraint": 20,
+      "isoeffect": 9.1,
+      "relative_impact": "",
+      "status": "On",
+      "enabled": true,
+      "manual": false,
+      "multicriterial": false,
+      "effect_unit": "cGy"
+    },
+    {
+      "structure": "Patient",
+      "cost_function": "Quadratic Overdose",
+      "weight": 0.01,
+      "reference_dose_cgy": 5000,
+      "exponent": null,
+      "shrink_margin_cm": 0.6,
+      "isoconstraint": 20,
+      "isoeffect": 10.3,
+      "relative_impact": "",
+      "status": "On",
+      "enabled": true,
+      "manual": false,
+      "multicriterial": false,
+      "effect_unit": "cGy"
+    },
+    {
+      "structure": "Patient",
+      "cost_function": "Quadratic Overdose",
+      "weight": 0.01,
+      "reference_dose_cgy": 4600,
+      "exponent": null,
+      "shrink_margin_cm": 0.9,
+      "isoconstraint": 30,
+      "isoeffect": 8.7,
+      "relative_impact": "",
+      "status": "On",
+      "enabled": true,
+      "manual": false,
+      "multicriterial": false,
+      "effect_unit": "cGy"
+    },
+    {
+      "structure": "Patient",
+      "cost_function": "Quadratic Overdose",
+      "weight": 0.01,
+      "reference_dose_cgy": 4200,
+      "exponent": null,
+      "shrink_margin_cm": 1.2,
+      "isoconstraint": 30,
+      "isoeffect": 12.1,
+      "relative_impact": "",
+      "status": "On",
+      "enabled": true,
+      "manual": false,
+      "multicriterial": false,
+      "effect_unit": "cGy"
+    },
+    {
+      "structure": "Patient",
+      "cost_function": "Quadratic Overdose",
+      "weight": 0.01,
+      "reference_dose_cgy": 2000,
+      "exponent": null,
+      "shrink_margin_cm": 4,
+      "isoconstraint": 30,
+      "isoeffect": 27.6,
+      "relative_impact": "",
+      "status": "On",
+      "enabled": true,
+      "manual": false,
+      "multicriterial": false,
+      "effect_unit": "cGy"
+    },
+    {
+      "structure": "OAR",
+      "cost_function": "Serial",
+      "weight": 0.01,
+      "reference_dose_cgy": null,
+      "exponent": 18,
+      "shrink_margin_cm": 0,
+      "isoconstraint": 6000,
+      "isoeffect": 2722.1,
+      "relative_impact": "",
+      "status": "On",
+      "enabled": true,
+      "manual": false,
+      "multicriterial": false,
+      "effect_unit": "cGy"
+    },
+    {
+      "structure": "OAR",
+      "cost_function": "Parallel",
+      "weight": 0.033,
+      "reference_dose_cgy": 3000,
+      "exponent": 4,
+      "shrink_margin_cm": 0.3,
+      "isoconstraint": 22.5,
+      "isoeffect": 21.5,
+      "relative_impact": "++",
+      "status": "On",
+      "enabled": true,
+      "manual": false,
+      "multicriterial": false,
+      "effect_unit": "%"
+    },
+    {
+      "structure": "OAR",
+      "cost_function": "Serial",
+      "weight": 0.01,
+      "reference_dose_cgy": null,
+      "exponent": 20,
+      "shrink_margin_cm": 1,
+      "isoconstraint": 3000,
+      "isoeffect": 2702.7,
+      "relative_impact": "",
+      "status": "On",
+      "enabled": true,
+      "manual": false,
+      "multicriterial": false,
+      "effect_unit": "cGy"
+    }
+  ],
+  "plan": {
+    "name": "D291026AG",
+    "studyset": "CT1"
+  }
+}

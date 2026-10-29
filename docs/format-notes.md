@@ -32,12 +32,48 @@ A CT file count does not by itself establish slice ordering or equivalence of th
 | `T.*.CT`, `T.*.WC` | Counted; data retained in the original ZIP | Future native image/contour work |
 | `dose.1`, `tel.1.dose.*` | Counted and available to content snapshots | Payload representation unresolved |
 | `RxA.xlog` | Labelled uncertainty and calculation completion observations | Literal XML-fragment messages; dose association unverified |
-| XML, `checksum.1`, status files | Retained and compared by snapshots | Freshness semantics and checksum algorithms not yet mapped |
+| `dvhparam.xml` | DVH sample spacing and dose bin width | XML version 1; screenshot-associated sampling settings |
+| `isodosesettings.xml` | Structure index references, reference-dose requests, 14 mapped goal types | XML version 5; PlanCheck goal mapping plus supplied VMAT screenshot |
+| `checksum.1`, status files | Retained and compared by snapshots | Freshness semantics and checksum algorithms not yet mapped |
 
 The library reads ZIP members directly and never extracts them as part of inspection.
 A single-Rx plan must have exactly one `.hyp` in its directory to associate settings unambiguously.
 The interpreter requires known headers and the observed record shapes and reports a diagnostic when those checks fail.
 Version headers alone are not proof that every other file with that header has an identical layout.
+
+## Saved optimisation and DVH review readers
+
+`hyperio.review` reads `.hyp` objective blocks and the two review XML documents.
+`inspect_export` exposes `cost_functions`, `dvh_parameters`, `isodose_settings`, and `dose_reference_points` per plan.
+The public readers and `HypDocument.cost_functions()` do not depend on fixture patient, plan or structure names.
+
+The `.hyp` reader uses the existing known-block grammar with explicit structure/objective/margin nesting and rejects duplicate keys or incomplete blocks.
+It retains unknown objective types and extra properties, and exposes absent values as unknown.
+Dose-valued objective effects are converted from Gy to cGy; percentage-valued types remain percent.
+The underlying field records retain native units, original tokens and one-based line provenance.
+Nonfinite saved optimizer results retain their literal/special representation and a JSON-safe null numerical value.
+All per-target shrink margins remain available in mm, including unequal margins.
+The Parallel reference-dose display uses `refdose`, supported by the supplied 3000 cGy screenshot row, rather than `thresholddose`.
+
+The XML readers support namespaced and non-namespaced elements and validate the observed metadata versions when present.
+DVH parameters are sample spacing in mm and bin width in cGy; they do not specify the exact sampling-grid phase or contour voxelization rules.
+Structure settings retain enabled state, high/min dose reference percentages, prescribed dose of interest and reference-dose requests.
+The observed `Enabled=-1`, `PrescribedDose=-1` and `RefValue=-1` sentinels retain their literal values and expose unknown interpreted values.
+Reference request types 0 (dose in cGy) and 1 (relative volume in percent) have screenshot evidence; other types retain literal fields without guessed units.
+Goal definitions preserve all raw XML fields, including finite or infinite mean-dose bounds, recovery tolerances and shift-recovery configuration.
+The 14 mapped goal types include dose, relative/absolute volume, and HI/CI index goals.
+Absolute-volume fields are mapped from mm³ to cm³; HI/CI limits use `Index`, not `Dose`.
+Only the 10 goal definitions and four objective types represented in the supplied screenshot have that independent UI comparison; other type labels/units remain PlanCheck-derived mappings.
+
+DRP parsing shares the `00d5101d` beam-header anchors and validates the six-value coordinate and eight-value saved-dose record shapes.
+The coordinate/dose offsets are format-profile rules, not absolute line numbers or beam-name searches.
+Coordinates retain native mm values and expose a cm convenience vector.
+The saved dose entry is exposed in cGy with the complete raw record and line provenance.
+A native zero stays zero; a UI dash, Location dropdown selection or total-dose value is not inferred.
+Malformed DRP records produce a diagnostic independently of beam-header parsing.
+
+The [29 October comparison](../reports/vmat-2026-10-29.md) uses the normal library output and records 25 matching saved records.
+It does not establish native dose-array scaling, independent DRP dose sampling, DVH statistics, or general validity of all mapped objective/goal types.
 
 ## Named calculation settings
 

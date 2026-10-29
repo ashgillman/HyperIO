@@ -116,6 +116,11 @@ class HypDocument:
     def settings(self) -> dict[str, dict | None]:
         return {key: field.as_dict() if (field := self.get(key)) else None for key in SPECS}
 
+    def cost_functions(self) -> list[dict]:
+        """Read saved optimisation objectives without changing this document."""
+        from .review import cost_functions
+        return cost_functions(self._data, self.source)
+
     def with_value(self, key: str, value: float | int | bool) -> HypDocument:
         if key not in SPECS:
             raise FormatError(f"editing unsupported directive {key!r}")
@@ -288,6 +293,43 @@ def beam_headers(data: bytes, source: str):
     return beams
 
 
+def dose_reference_points(data: bytes, source: str = '<memory>') -> list[dict]:
+    """Read DRP records anchored to each supported tel.1 beam header.
+
+    Offsets belong to the 00d5101d layout, not to a particular beam or plan.
+    Native positions are mm; the convenience coordinates are cm.
+    Saved beam-dose values are retained separately from any dose sampling.
+    """
+    lines = _lines(data)
+    points = []
+    for beam in beam_headers(data, source):
+        beam_header_index = beam['source']['line'] - 1
+        # In the observed 00d5101d header, the DRP label is at +8, followed
+        # by a six-value record at +9 with native x/y/z in slots 1..3.
+        # The saved dose is slot 4 of the eight-value record at +34.
+        # Other slots stay opaque; retain both complete records for study.
+        description_index = beam_header_index + 8
+        coordinate_index = beam_header_index + 9
+        dose_index = beam_header_index + 34
+        coordinate_record = _numbers(lines[coordinate_index], 6)
+        dose_record = _numbers(lines[dose_index], 8)
+        if coordinate_record is None or dose_record is None:
+            raise FormatError(f'{source}:{beam_header_index + 1}: unsupported DRP coordinate/dose record')
+        # Python indices are zero-based; evidence line numbers are one-based.
+        coordinate_field = Field(coordinate_record[1:4], source, coordinate_index + 1, lines[coordinate_index], 'mm',
+                                 'native DRP coordinates; fixture-supported UI conversion').as_dict()
+        dose_field = Field(dose_record[4], source, dose_index + 1, lines[dose_index], 'cGy',
+                           'saved DRP beam dose; screenshot-supported, not recalculated').as_dict()
+        points.append({'field_id': beam['field_id'], 'description': beam['description'],
+                       'point_description': lines[description_index],
+                       'xyz_cm': [coordinate_mm / 10 for coordinate_mm in coordinate_record[1:4]],
+                       'saved_beam_dose_cgy': dose_record[4],
+                       'coordinates': coordinate_field, 'saved_beam_dose': dose_field,
+                       'source_lines': [description_index + 1, coordinate_index + 1, dose_index + 1],
+                       'raw_position_record': coordinate_record, 'raw_dose_record': dose_record})
+    return points
+
+
 def study_metadata(export: Export, prefix: str):
     result = {"name": PurePosixPath(prefix).name.split("~", 1)[-1],
               "path": prefix, "ct_to_ed_name": None, "structures": [], "diagnostics": []}
@@ -334,6 +376,7 @@ def study_metadata(export: Export, prefix: str):
 
 def inspect_export(path: str | Path) -> dict:
     from .logs import calculation_log
+    from .review import dvh_parameters, isodose_settings
 
     with Export(path) as export:
         plans = []
@@ -343,7 +386,9 @@ def inspect_export(path: str | Path) -> dict:
                 continue
             prefix = str(p.parent)
             plan = {"name": p.parent.name, "path": prefix, "settings": {}, "beams": [],
-                    "density_overrides": [], "diagnostics": [], "studyset": None}
+                    "density_overrides": [], "diagnostics": [], "studyset": None,
+                    "cost_functions": None, "dose_reference_points": None,
+                    "dvh_parameters": None, "isodose_settings": None}
             try:
                 plan.update(plan_metadata(export.read(name), name))
             except FormatError as exc:
@@ -360,6 +405,13 @@ def inspect_export(path: str | Path) -> dict:
                     except FormatError as exc:
                         plan["settings"][key] = None
                         plan["diagnostics"].append(str(exc))
+                try:
+                    plan['cost_functions'] = hyp.cost_functions()
+                    for objective in plan['cost_functions']:
+                        plan['diagnostics'].extend(f'{hyps[0]}:{objective["source_line"]}: {d}'
+                                                   for d in objective['diagnostics'])
+                except FormatError as exc:
+                    plan['diagnostics'].append(str(exc))
             else:
                 plan["diagnostics"].append(f"expected one .hyp for single-Rx plan, found {len(hyps)}")
             tel = prefix + "/tel.1"
@@ -370,8 +422,27 @@ def inspect_export(path: str | Path) -> dict:
                     plan["diagnostics"].append(str(exc))
                 if plan.get("hyp_beam_definition_count") is not None and len(plan["beams"]) != plan["hyp_beam_definition_count"]:
                     plan["diagnostics"].append(".hyp beam definition count differs from parsed tel.1 beam count")
+                try:
+                    plan['dose_reference_points'] = dose_reference_points(export.read(tel), tel)
+                except FormatError as exc:
+                    plan['diagnostics'].append(str(exc))
             else:
                 plan["diagnostics"].append("missing tel.1")
+            for filename, key, reader in [('dvhparam.xml', 'dvh_parameters', dvh_parameters),
+                                           ('isodosesettings.xml', 'isodose_settings', isodose_settings)]:
+                member = prefix + '/' + filename
+                # Optional review files can be absent in old exports. Keep
+                # absence distinct from a present but unreadable document.
+                if member not in export.sizes:
+                    continue
+                try:
+                    plan[key] = reader(export.read(member), member)
+                    if key == 'isodose_settings':
+                        for goal in plan[key]['dose_goals']:
+                            plan['diagnostics'].extend(f'{member}:{goal["source"]["path"]}: {d}'
+                                                       for d in goal['diagnostics'])
+                except FormatError as exc:
+                    plan['diagnostics'].append(str(exc))
             if any(PurePosixPath(n).parent == p.parent and re.fullmatch(r"rx.*plan", PurePosixPath(n).name, re.I)
                    for n in export.sizes):
                 plan["diagnostics"].append("multiple prescription files present; association is unsupported")
@@ -398,7 +469,9 @@ def inspect_export(path: str | Path) -> dict:
                 "limitations": ["Saved settings do not establish which settings generated saved dose.",
                                 "Only supplied single-Rx text layouts are interpreted.",
                                 "Absent uncertainty mode is unknown; no Monaco defaults are assumed.",
-                                "Native dose, voxel density, geometry, MU and checksums are not interpreted."]}
+                                "Native dose arrays, voxel density, complete geometry, MU and checksums are not interpreted.",
+                                "DVH configuration and objective isoeffects are saved records, not recalculated DVH statistics.",
+                                "DRP layout and objective/goal mappings remain scoped to supported native format profiles."]}
 
 
 def compare_settings(settings: dict, expected: dict) -> list[dict]:

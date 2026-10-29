@@ -14,6 +14,11 @@ Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the
 6. Expand to nonzero rotations, asymmetric/oblique geometry, other models/energies and broader commissioning matrices after independent geometry/dose interpretation works.
 
 ** Useful work while TPS review is paused
+- Reproduce D291026AG DVH statistics against the screenshot GT in tests/fixtures/vmat-2026-10-29-ground-truth.json.
+  Saved criteria, objectives and DRP records match through the public inspection API; no readable DVH-results cache was identified.
+  Resolve native dose decoding or obtain independent DICOM RT Dose, then implement Monaco's documented first-active-beam-isocentre-aligned sampling, contour bitmaps, trilinear interpolation and bin handling.
+  Verify grid phase, contour interpolation, boundary inclusion and Dx interpolation against this fixture before claiming the screenshot statistics are reproduced.
+- Correct PlanCheck.jl's Parallel objective reference-dose display after adding a regression: D291026AG stores refdose=30 Gy and thresholddose=1 Gy, while the screenshot displays 3000 cGy.
 - Implement DICOM RT Dose geometry/scaling and sampling with independent analytic-array tests, ready for the first TPS export.
 - Separate automatic filename/package/linkage checks from human UI questions, and support grouped observations with explicit observed-plan scope while retaining stable IDs and historical revisions.
 - Investigate calculation-state semantics without using the unchanged inherited checksum files as proof of current dose/settings agreement.

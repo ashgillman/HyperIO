@@ -5,6 +5,25 @@ It records 208 matching values across 19 beams in three 6X plans, with explicit 
 The historical initial-validation record predates that evidence and the subsequent partial UI/native-return reviews.
 Current boundaries are stated below; native dose-array interpretation and independent export validation remain pending.
 
+## Saved optimisation and DVH configuration readers, 29 October 2026
+
+The public library now reads optimisation objectives, individual shrink-margin targets, DVH sampling settings, structure index references, reference-dose requests, dosimetric goal definitions and DRP records.
+The existing inspection API and CLI expose these records for all discovered plans.
+The screenshot GT lives under tests/fixtures, and documented integration tests compare public inspection results directly with each expected record.
+
+The complete suite with the returned VMAT archive enabled passed with 97 tests and 3 skips.
+The 26 documented private-archive examples cover 25 screenshot records plus sampling settings and complete collection counts.
+Without the archive environment variable, those examples skip explicitly; the synthetic byte-reader examples run independently.
+Synthetic tests exercise arbitrary structure names and values, all mapped objective/goal types and units, unequal per-target margins, retained raw values and provenance, missing values, unknown types, nonfinite optimizer results, explicit unset sentinels, duplicate/incomplete records, XML namespace/version handling, and beam-anchored DRP parsing.
+The original six-plan supplied-archive integration test remains passing.
+The ordinary CLI inspected all eight plans in the new return without plan diagnostics; D291026AG exposes 13 objectives, 10 goal definitions and two DRPs.
+The library output matches all 25 screenshot saved-record comparisons.
+
+These tests validate parsing and regression behavior, not independent calculated-dose or DVH results.
+The four objective types and 10 goal definitions in the screenshot have UI evidence; other mapped labels and types retain their PlanCheck-derived evidence level.
+Native dose decoding and Monaco's exact DVH sampling and histogram rules remain unimplemented.
+Format comments in the readers describe the observed nesting, schema versions, units, sentinels, positional anchors and remaining unknown fields.
+
 Validation was performed on 20 October 2026 using local Python 3.13.12.
 The declared Python 3.10+ compatibility has not been exercised on other interpreters yet.
 

@@ -152,7 +152,7 @@ def synthetic_export(root):
     for index, value in {0: "1", 2: "Test field", 3: "Arbitrary model", 4: "Unit",
                          5: "0,0,0", 7: ",".join(["0"] * 11), 8: "DRP", 9: "0,0,0,0,0,0",
                          10: "6,-1", 13: "5181,6", 22: ",".join(["0"] * 9),
-                         26: "1,2,3,1,2,3,0,100"}.items():
+                         26: "1,2,3,1,2,3,0,100", 34: '0,0,0,0,123.4,100,0,1'}.items():
         beam[index] = value
     (plan_dir / "tel.1").write_text("00d5101d\n" + "\n".join(beam) + "\n")
     (study_dir / "info").write_text("00271016\n0\nCalibrationName\nPHANTOM\nStudy\n" + "0\n" * 13)
