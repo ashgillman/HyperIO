@@ -59,7 +59,8 @@
       "limit": 1.15,
       "tolerance": 0.1,
       "displayed_value": 1.03,
-      "displayed_status": "green"
+      "displayed_status": "green",
+      "unit": "dimensionless"
     },
     {
       "structure": "PTV 1",
@@ -68,7 +69,8 @@
       "limit": 0,
       "tolerance": 0,
       "displayed_value": 0,
-      "displayed_status": "green"
+      "displayed_status": "green",
+      "unit": "%"
     },
     {
       "structure": "PTV 1",
@@ -77,7 +79,8 @@
       "limit": 6300,
       "tolerance": 120,
       "displayed_value": 6264.4,
-      "displayed_status": "green"
+      "displayed_status": "green",
+      "unit": "cGy"
     },
     {
       "structure": "PTV 1",
@@ -86,7 +89,8 @@
       "limit": 6060,
       "tolerance": 0,
       "displayed_value": 6156.9,
-      "displayed_status": "red"
+      "displayed_status": "red",
+      "unit": "cGy"
     },
     {
       "structure": "PTV 1",
@@ -95,7 +99,8 @@
       "limit": 98,
       "tolerance": 3,
       "displayed_value": 99.98,
-      "displayed_status": "green"
+      "displayed_status": "green",
+      "unit": "%"
     },
     {
       "structure": "PTV 2",
@@ -104,7 +109,8 @@
       "limit": 6000,
       "tolerance": 50,
       "displayed_value": 5939.9,
-      "displayed_status": "red"
+      "displayed_status": "red",
+      "unit": "cGy"
     },
     {
       "structure": "PTV 2",
@@ -113,7 +119,8 @@
       "limit": 6000,
       "tolerance": 0,
       "displayed_value": 5884.1,
-      "displayed_status": "red"
+      "displayed_status": "red",
+      "unit": "cGy"
     },
     {
       "structure": "OAR",
@@ -122,7 +129,8 @@
       "limit": 1,
       "tolerance": 4,
       "displayed_value": 0,
-      "displayed_status": "green"
+      "displayed_status": "green",
+      "unit": "%"
     },
     {
       "structure": "OAR",
@@ -131,7 +139,8 @@
       "limit": 10,
       "tolerance": 5,
       "displayed_value": 0,
-      "displayed_status": "green"
+      "displayed_status": "green",
+      "unit": "%"
     },
     {
       "structure": "OAR",
@@ -140,7 +149,8 @@
       "limit": 35,
       "tolerance": 15,
       "displayed_value": 2.03,
-      "displayed_status": "green"
+      "displayed_status": "green",
+      "unit": "%"
     }
   ],
   "dvh_reference_rows": [
@@ -172,7 +182,12 @@
       "structure": "PTV 1",
       "ref_volume_cm3": 20.975,
       "ref_volume_percent": 99.98,
-      "ref_dose_cgy": 5700
+      "ref_dose_cgy": 5700,
+      "origin": "request",
+      "query": {
+        "quantity": "dose",
+        "value": 5700.0
+      }
     },
     {
       "structure": "PTV 2",
@@ -196,7 +211,12 @@
       "structure": "OAR",
       "ref_volume_cm3": 0.327,
       "ref_volume_percent": 1,
-      "ref_dose_cgy": 3107.3
+      "ref_dose_cgy": 3107.3,
+      "origin": "request",
+      "query": {
+        "quantity": "relative_volume",
+        "value": 1.0
+      }
     },
     {
       "structure": "OAR",

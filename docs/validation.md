@@ -3,7 +3,39 @@
 For the additional 23 October 2026 selected-plan comparison, see [TPS PDF comparison](../reports/tps-pdf-comparison.md).
 It records 208 matching values across 19 beams in three 6X plans, with explicit unit conversions and limitations.
 The historical initial-validation record predates that evidence and the subsequent partial UI/native-return reviews.
-Current boundaries are stated below; native dose-array interpretation and independent export validation remain pending.
+Current boundaries are stated below; one native full-grid profile now has fixture-specific numerical evidence, while independent export validation remains pending.
+
+## Native dose sampling and calculated DVHs, 30 October 2026
+
+The optional `analysis` extra supplies NumPy, SciPy, Shapely and unlzw3.
+The native reader delegates all decompression to unlzw3 after restoring a standard `.Z` wrapper.
+GNU gzip independently decoded the plan payload to identical bytes during investigation.
+The supplied fixture's grid-centre dose matches its DRP, and its array maximum matches screenshot rounding.
+Synthetic tests cover a noncubic independently compressed array, byte order, physical axes/spacing/origin, affine-field trilinear interpolation, explicit out-of-grid behavior, WC polygon counts/tails, and separate raw versus binned statistics.
+
+Calculated GT tests match all six extrema, all three HI values, both PTV volumes and means, eight of ten criterion values at displayed precision, and all ten criterion indicators.
+The OAR volume is 0.015 cm³ high and its mean about 0.326 cGy high; the two D50 values and OAR D1% retain explicitly documented residuals.
+The subsequent shared-policy reference-plan library below replaces the original per-metric residual allowances.
+The nearest-slice contour rule, exact boundary and bin/inversion conventions, and Monaco CI formula remain provisional or unresolved.
+Paddick CI can be requested as a separately labelled candidate, but is not asserted as the native Monaco CI.
+The full suite with analysis dependencies and the private VMAT archive enabled passed with 119 tests and 3 skips.
+The metadata-only environment passed with 97 tests and 5 skips, including explicit skips for the two optional analysis test modules.
+Analysis was exercised with NumPy 2.3.4, SciPy 1.16.3, Shapely 2.2.0 / GEOS 3.14.1, and unlzw3 0.2.3.
+
+### Shared-policy reference-plan library
+
+`tests/plan_library/cases.json` registers the independent GT, plan identity, local source locator and calculation options for each case.
+The generic integration example discovers all registered cases, while the public `hyperio.comparison` API compares numerical outputs without changing the calculation.
+No per-case threshold overrides or residual waivers are supported.
+The user-specified dose policy is absolute difference ≤0.1 cGy for pass, >0.1 and <1.0 cGy for review, and ≥1.0 cGy for action_required.
+The action gate fails missing dose outputs and action-level results; review findings are retained as warnings and in comparison records.
+Values are compared unrounded against the supplied GT, with only a 1e-12 representation allowance at exact boundaries.
+Other physical units are not evaluated until their own explicit policies are supplied.
+This fixture currently yields 13 dose comparisons within tolerance and three at review level, with none reaching the action level.
+The review differences are OAR mean +0.325789 cGy, PTV 2 D50 +0.242857 cGy, and OAR D1% -0.466667 cGy.
+The shared-policy revision passed with 122 tests, 3 skips and one warning reporting those review-level results.
+Without analysis extras, 117 tests passed and 5 skipped.
+The local archive fallback was copied under ignored reference/plan-library and verified byte-for-byte by SHA-256; the plan-library tests also passed without an archive environment variable.
 
 ## Saved optimisation and DVH configuration readers, 29 October 2026
 
@@ -21,7 +53,7 @@ The library output matches all 25 screenshot saved-record comparisons.
 
 These tests validate parsing and regression behavior, not independent calculated-dose or DVH results.
 The four objective types and 10 goal definitions in the screenshot have UI evidence; other mapped labels and types retain their PlanCheck-derived evidence level.
-Native dose decoding and Monaco's exact DVH sampling and histogram rules remain unimplemented.
+At this 29 October checkpoint, native dose decoding and Monaco's exact DVH sampling and histogram rules remained unimplemented.
 Format comments in the readers describe the observed nesting, schema versions, units, sentinels, positional anchors and remaining unknown fields.
 
 Validation was performed on 20 October 2026 using local Python 3.13.12.
@@ -71,7 +103,8 @@ The generated zero CT has now been imported in Monaco and its returned native st
 The partial review and 27 October native return establish fixture-specific UI effects, retained numeric aperture inputs and completed calculations for four generated Phantom plans.
 The returned studyset files preserve the generated images/contours byte-for-byte, and the Patient centroid independently matches the reported UI value.
 Explicit per-plan close/reopen steps were not independently demonstrated by the returned archive.
-No native dose array, effective density voxel grid, checksum algorithm or complete saved-dose freshness state has been validated.
+The later 30 October full-grid dose reader has fixture-specific array/DRP/screenshot evidence as described above.
+Effective density voxel grids, checksum algorithms and complete saved-dose freshness remain unvalidated.
 Initial UI observations distinguish the displayed uncertainty field and mode polarity; returned files show segment uncertainty normalization and omission of A's explicit false mode key.
 These findings remain scoped to this fixture/build and do not establish all mappings or a universal absent-key default.
 The package was exercised with available local build tools; an isolated dependency download/install workflow and a Python-version matrix remain untested.

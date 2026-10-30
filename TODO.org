@@ -15,9 +15,10 @@ Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the
 
 ** Useful work while TPS review is paused
 - Reproduce D291026AG DVH statistics against the screenshot GT in tests/fixtures/vmat-2026-10-29-ground-truth.json.
-  Saved criteria, objectives and DRP records match through the public inspection API; no readable DVH-results cache was identified.
-  Resolve native dose decoding or obtain independent DICOM RT Dose, then implement Monaco's documented first-active-beam-isocentre-aligned sampling, contour bitmaps, trilinear interpolation and bin handling.
-  Verify grid phase, contour interpolation, boundary inclusion and Dx interpolation against this fixture before claiming the screenshot statistics are reproduced.
+  The experimental calculation now decodes the observed full-grid dose using unlzw3 and samples native WC polygons with SciPy/Shapely.
+  Resolve the remaining OAR volume/mean and Dx residuals by verifying contour-boundary, slice and histogram conventions; the current exact displayed matches and residuals are documented in reports/vmat-2026-10-29.md.
+  Establish Monaco's CI formula and the relationship of the saved dose-of-interest setting to the screenshot index before treating a Paddick candidate as a verified Monaco CI.
+- Define explicit reference-plan comparison policies for volume, relative volume and dimensionless indices; current test-library limits of 0.1 cGy tolerance / 1.0 cGy action apply only to dose.
 - Correct PlanCheck.jl's Parallel objective reference-dose display after adding a regression: D291026AG stores refdose=30 Gy and thresholddose=1 Gy, while the screenshot displays 3000 cGy.
 - Implement DICOM RT Dose geometry/scaling and sampling with independent analytic-array tests, ready for the first TPS export.
 - Separate automatic filename/package/linkage checks from human UI questions, and support grouped observations with explicit observed-plan scope while retaining stable IDs and historical revisions.

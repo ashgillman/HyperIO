@@ -28,7 +28,8 @@ The current perpetual-suite UI review identifies Monaco 6.2.3.0; mappings remain
 
 Saved settings describe the files being read.
 They do not establish which settings generated a saved dose distribution or whether that dose is current.
-Native dose arrays, effective voxel density maps, complete control-point/MU semantics, checksum algorithms and multi-prescription associations are not yet interpreted.
+An optional experimental path now decodes one observed native full-grid dose profile and calculates sampled DVHs; its remaining numerical differences are recorded in [the VMAT comparison](reports/vmat-2026-10-29.md).
+Other native dose profiles, effective voxel density maps, complete control-point/MU semantics, checksum algorithms and multi-prescription associations remain uninterpreted.
 The zero-CT generator and round-trip checks read cached DICOM pixels; native compressed CT pixels remain uninterpreted.
 The current implementation is a research and commissioning development tool with fixture-specific UI and native calculation evidence; independent exported-dose validation remains pending.
 A fixture-specific generator produces combined native plan candidates for that review; it does not establish general native write-back support.
@@ -36,7 +37,8 @@ A fixture-specific generator produces combined native plan candidates for that r
 ## Run locally
 
 Python 3.10 or newer is required.
-The library uses the Python standard library; tests use pytest.
+Metadata readers use the Python standard library; tests use pytest.
+Optional dose/DVH analysis uses NumPy, SciPy, Shapely and unlzw3 through the `analysis` extra.
 No Julia environment is required.
 
 ```sh
@@ -124,7 +126,43 @@ The [VMAT screenshot comparison](reports/vmat-2026-10-29.md) validates library o
 The documented examples in [test_vmat_evidence.py](tests/test_vmat_evidence.py) compare inspected plans directly with the [GT fixture](tests/fixtures/vmat-2026-10-29-ground-truth.json).
 The independent examples in [test_plan_review.py](tests/test_plan_review.py) demonstrate byte-reader usage without private files.
 Saved optimizer isoeffects and DRP values are not independently recalculated dose or DVH statistics.
-Native dose decoding and exact Monaco DVH sampling remain open work.
+Exact Monaco contour-boundary and histogram conventions remain open work.
+
+### Calculate an experimental DVH from saved native dose
+
+Install the optional analysis dependencies with `python3 -m pip install -e '.[analysis]'`.
+The library delegates compression decoding to unlzw3, interpolation to SciPy and polygon geometry to Shapely.
+It does not implement its own compression algorithm.
+
+```python
+from hyperio import calculate_plan_dvh
+
+result = calculate_plan_dvh(archive_path, plan_name="D291026AG")
+print(result["sampling"])  # the actual lattice, contour and histogram policies
+for structure in result["structures"]:
+    print(structure["structure"], structure["volume_cm3"],
+          structure["min_dose_cgy"], structure["max_dose_cgy"],
+          structure["mean_dose_cgy"], structure["heterogeneity_index"])
+    print(structure["criterion_results"])
+```
+
+`native_dose(bytes, source_name)` returns a `DoseGrid` with cGy values ordered `(y,z,x)` and native xyz geometry in mm.
+`DoseGrid.sample(points_xyz_mm)` interpolates dose and rejects extrapolation by default.
+`contour_slice(bytes, source_name)` reads polygon geometry and retains unparsed trailing records.
+`DVH(samples_cgy, resolution_mm=1, bin_width_cgy=1)` exposes raw statistics and a separately binned cumulative curve with `dose_at_volume` and `volume_at_dose` queries.
+These APIs are documented by [synthetic examples](tests/test_dose_analysis.py) and [the reference-plan test library](tests/plan_library/README.md).
+
+The native reader currently supports the observed `00d5301e` profile with four zero placeholder blocks and one complete uint32 dose grid.
+Other block profiles and non-unit secondary scaling fields raise diagnostics rather than acquiring guessed interpretations.
+The plan calculation requires axial WC slices and a sampling spacing commensurate with the isocentre-aligned native grid origin.
+It unions same-structure polygons and holds each contour over a nearest-slice slab; those reconstruction choices remain provisional.
+`boundary="include"` or `"exclude"` makes the boundary rule explicit.
+The [generic plan-library test](tests/test_plan_library.py) discovers plans from [cases.json](tests/plan_library/cases.json) and compares their results under shared policies.
+For dose quantities, the user-specified tolerance is 0.1 cGy and the action level is 1.0 cGy: differences up to 0.1 pass, differences between the levels require review, and differences reaching 1.0 fail the action gate.
+Comparisons use unrounded values and retain review statuses and signed differences; an action gate passing does not mean every metric met tolerance.
+No volume, percentage or dimensionless policies are inferred from dose thresholds.
+The reusable API is `compare_dvh_results(calculated, ground_truth, policies)` with `ComparisonPolicy` values indexed by unit.
+Optional `include_conformity=True` reports a Paddick CI candidate, explicitly separate from a verified Monaco conformity-index mapping.
 
 ## Review generated plan candidates in Monaco
 

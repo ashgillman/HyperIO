@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "description": "Independent reference plans for calculated DVH regression. Dose thresholds are software-comparison policies, not treatment-plan goal limits.",
+  "comparison_policies": {
+    "cGy": {
+      "tolerance": 0.1,
+      "action_level": 1.0
+    }
+  },
+  "cases": [
+    {
+      "id": "monaco-vmat-2026-10-29",
+      "description": "User-drawn PTV 1, PTV 2 and OAR on HyperIO zero CT; screenshot GT.",
+      "plan_name": "D291026AG",
+      "source": {
+        "environment": "HYPERIO_VMAT_ARCHIVE",
+        "path": "../../reference/plan-library/D291026AG.zip"
+      },
+      "ground_truth": "../fixtures/vmat-2026-10-29-ground-truth.json",
+      "calculation_options": {
+        "boundary": "include"
+      }
+    }
+  ]
+}
