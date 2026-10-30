@@ -29,8 +29,9 @@ A CT file count does not by itself establish slice ordering or equivalence of th
 | `<studyset>/contournames` | Structure indices, density defaults, mode, type code, layer | PlanCheck `contournames.jl` |
 | `<studyset>/info` | Selected CT-to-ED conversion name | PlanCheck `info.jl` |
 | `DCMData/*.DCM` | Counted; pixels and tags not yet parsed | Future independent DICOM comparison |
-| `T.*.CT`, `T.*.WC` | Counted; data retained in the original ZIP | Future native image/contour work |
-| `dose.1`, `tel.1.dose.*` | Counted and available to content snapshots | Payload representation unresolved |
+| `T.*.CT` | Counted; data retained in the original ZIP | Native compressed image pixels remain uninterpreted |
+| `T.*.WC` | Leading polygon records, coordinates, source lines and unparsed tail | Public contour reader; sampling policy is separate |
+| `dose.1`, `tel.1.dose.*` | Optional full-grid decoding for one observed profile | 30 October VMAT array/DRP/statistic evidence below; other block profiles remain unsupported |
 | `RxA.xlog` | Labelled uncertainty and calculation completion observations | Literal XML-fragment messages; dose association unverified |
 | `dvhparam.xml` | DVH sample spacing and dose bin width | XML version 1; screenshot-associated sampling settings |
 | `isodosesettings.xml` | Structure index references, reference-dose requests, 14 mapped goal types | XML version 5; PlanCheck goal mapping plus supplied VMAT screenshot |
@@ -236,9 +237,41 @@ The inspected reference `checksum.1` is Boost-serialization XML with named physi
 Those names offer candidates for freshness experiments; their algorithms and validation behavior are not yet established.
 PlanCheck reads exported DICOM dose rather than its native dose files, whose compression is unresolved in that implementation.
 That is a useful boundary, not evidence for a specific compression algorithm.
-The initial HyperIO implementation makes no compression, byte-order, scaling, grid-shape, or axis-order claims for native dose.
+The initial HyperIO implementation made no compression, byte-order, scaling, grid-shape, or axis-order claims for native dose.
+
+### Full-grid VMAT dose profile, 30 October 2026
+
+The D291026AG dose and beam-dose files have 39 ASCII header lines followed by five ASCII-length-prefixed compressed blocks and an uninterpreted `0,` trailer.
+The first four blocks decode to four-byte zero placeholders; the fifth is a full array.
+For this profile, adding the three-byte `.Z` header `1f 9d 90` makes the payload readable by the existing Unix-compress decoder in [unlzw3](https://github.com/scivision/unlzw3/blob/main/src/unlzw3/unlzw.py).
+An independent GNU gzip invocation produced exactly the same 438,204 decoded bytes for the plan dose.
+The library contains only this wrapper adapter, not an LZW or gzip implementation.
+
+The tenth header line contains mode, x/z/y physical extents, x/z/y centre and x/z/y node counts.
+For this case, counts are 53/53/39 and extents are 156/156/114 mm.
+Array order is `(y,z,x)`, with x contiguous; each count is a big-endian uint32.
+The first scalar on header line six scales counts to cGy; its value here is 1e-5.
+The centre and extents define node-centre origin and spacing via `(extent / (node_count - 1))`.
+The public DoseGrid converts geometry to xyz order and delegates trilinear interpolation to SciPy.
+The remaining secondary scaling fields must equal the observed unit values; their general meaning is not inferred.
+Non-placeholder preceding blocks, unsupported normalization/scaling profiles and decoded-size mismatches are rejected.
+
+The sampled grid-centre dose is 2042.64831 cGy, matching the saved DRP's 2042.648315 cGy and screenshot 2042.6 cGy.
+The array maximum is 6342.85086 cGy, matching screenshot rounding to 6342.9 cGy.
+Both values are array-derived, not cached statistics read from review metadata.
+Synthetic tests use an independently system-compressed noncubic grid to check byte order, all axes, origin, spacing and off-node interpolation.
+These checks support this fixture's mapping; independent RT Dose export validation remains valuable before broadening support.
+
+The public WC reader retains native x/z polygons at the filename's y coordinate and leaves marker/trailing records uninterpreted.
+The existing validation generator now delegates its polygon reading to that public reader.
+The experimental DVH calculation unions polygons belonging to one structure on each section, holds each section over a nearest-slice slab, samples a native-origin lattice commensurate with the first beam isocentre, and uses Shapely for point inclusion.
+Only axial section orientation is supported.
+Boundary inclusion is explicit because the rounded WC coordinates place sample points on polygon edges.
+Histograms currently round samples to their nearest dose bin and linearly invert cumulative counts for Dx; raw min/max/mean remain separate from binning.
+The [calculated-DVH comparison](../reports/vmat-2026-10-29.md) distinguishes exact displayed matches from unresolved OAR boundary and quantile residuals.
 
 The help's Frozen Dose topic describes saved dose becoming out of date after changes to patient models, CT-to-ED assignment, or relevant treatment-unit settings.
 A commissioning audit must eventually distinguish requested settings, saved settings, calculation completion, and dose freshness.
-Current checks compare saved settings only.
-C11 and independent exported RT Dose data are required before making stronger claims.
+Metadata checks compare saved settings; the experimental calculation separately samples the decoded saved dose.
+Neither establishes current dose freshness.
+C11 and independent exported RT Dose data remain required for stronger provenance and general mapping claims.

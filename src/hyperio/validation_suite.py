@@ -53,29 +53,13 @@ def _replace_record(data, old, new):
 
 
 def _wc_polygons(data):
-    """Read the fixture's leading polygon records; leave marker records untouched."""
-    rows = data.decode('cp1252').splitlines()
-    if rows[0] != '00091013':
-        raise FormatError('unsupported contour file header')
-    i, polygons = 7, []
-    while i + 1 < len(rows):
-        try:
-            count, structure = int(rows[i]), int(rows[i+1])
-        except ValueError:
-            break
-        if count <= 0 or structure <= 0:
-            break
-        if count > 10000:
-            raise FormatError('unexpected contour point count')
-        i += 2
-        values = []
-        while len(values) < 2*count and i < len(rows):
-            values.extend(float(x) for x in rows[i].split(','))
-            i += 1
-        if len(values) != 2*count:
-            raise FormatError('contour point count disagrees with polygon records')
-        polygons.append((structure, list(zip(values[::2], values[1::2]))))
-    return polygons
+    """Adapt the public WC reader to the validation generator's legacy tuple API."""
+    from .contours import contour_slice
+    # This helper only returns in-plane polygons. The transfer caller already
+    # owns slice coordinates, so the explicit unused y value is not a mapping.
+    section = contour_slice(data, '<validation-WC>', y_mm=0)
+    return [(polygon['structure_index'], [tuple(point) for point in polygon['points_xz_mm']])
+            for polygon in section['polygons']]
 
 
 def _contours(original, returned):

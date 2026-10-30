@@ -12,6 +12,7 @@ dependencies = []
 [project.optional-dependencies]
 test = ["pytest>=7"]
 dicom = ["pydicom>=3,<4", "numpy>=1.24"]
+analysis = ["numpy>=1.24", "scipy>=1.10", "shapely>=2,<3", "unlzw3>=0.2.3,<0.3"]
 
 [project.scripts]
 hyperio = "hyperio.cli:main"

@@ -1,0 +1,4 @@
+{
+  "description": "Synthetic 2x3x4 y/z/x dose array; independent /usr/bin/compress output, .Z header removed. Values are arange(24)*10000 in big-endian uint32; native scale 1e-5 cGy/count. No vendor data.",
+  "data_base64": "MDBkNTMwMWUKMjAwMDAxMDEuMDAwMDAwCjAsMgoKMAoxZS0wNSwxLjAwMDAwMDAwMDAwMDAwMDAwCjEuMDAwMDAwMDAwCjAKNQowLDYsOCwzLDIsNiwxMS41LDQsMywyCjAKMAowCjAKMAowCjAKMAowCjAKMAowCjAKMAowCjAKMAowCjAKMAowCjAKMAowCjAKMAowCjAKMAo0CgACAgA0CgACAgA0CgACAgA0CgACAgA4MwoAAgo8ASGgExAB68AIyAlIwGFQAqoDAyBABDgVcQCq+AVSRUOgKraCVZEasIr7oAEQIALcyiTwVsYJKABTQQG/EAowt3BAA4cDaEQcsIXiAEFwADAs"
+}
