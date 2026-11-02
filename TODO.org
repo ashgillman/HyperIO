@@ -14,6 +14,7 @@ Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the
 6. Expand to nonzero rotations, asymmetric/oblique geometry, other models/energies and broader commissioning matrices after independent geometry/dose interpretation works.
 
 ** Useful work while TPS review is paused
+- Smoke-test applications/ RED preset preview/copy saving and DVH calculation/XLSX/CSV export on Windows and macOS with Python/Tk; confirm installed GUI launchers, native dialogs, scrolling, responsiveness and error recovery.
 - Resolve the remaining D291026AG OAR volume/mean residual by establishing Monaco's contour-boundary/rasterization convention.
   The independent review in reports/vmat-2026-10-29.md records boundary and floating-point sensitivity; changing the global include/exclude rule does not reproduce all structures.
   Validate the inferred interval-midpoint histogram convention on held-out plans or a controlled change in bin width; all supplied Dx values now meet the shared 0.1 cGy tolerance.

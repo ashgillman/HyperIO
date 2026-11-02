@@ -167,7 +167,7 @@ def _criterion_result(goal, histogram, high_ref, min_ref):
             'goal': goal, 'interpretation': 'reconstructed primary-bound result; not a clinical approval'}
 
 
-def calculate_plan_dvh(source, plan_name, *, structures=None, boundary='include',
+def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, boundary='include',
                        include_conformity=False, max_samples=5_000_000):
     """Reconstruct a plan's DVH statistics from saved dose and WC polygons.
 
@@ -175,11 +175,13 @@ def calculate_plan_dvh(source, plan_name, *, structures=None, boundary='include'
     No numerical values from GT fixtures are consulted by this function.
     Policies are returned alongside results so residual differences stay visible.
     Paddick CI is optional and explicitly labelled as a candidate mapping.
+    Supply plan_path to select one plan when names repeat across patient sets.
     """
     import numpy as np
     if boundary not in ('include', 'exclude'):
         raise ValueError('boundary must be include or exclude')
-    plans = [plan for plan in inspect_export(source)['plans'] if plan['name'] == plan_name]
+    plans = [plan for plan in inspect_export(source)['plans'] if plan['name'] == plan_name
+             and (plan_path is None or plan['path'] == plan_path)]
     if len(plans) != 1:
         raise FormatError('expected one uniquely named plan')
     plan = plans[0]
@@ -196,8 +198,8 @@ def calculate_plan_dvh(source, plan_name, *, structures=None, boundary='include'
         if dose_member not in export.sizes:
             raise FormatError('plan has no saved dose.1')
         grid = native_dose(export.read(dose_member, limit=256_000_000), dose_member)
-        patient_prefix = str(PurePosixPath(plan['path']).parent.parent)
-        study_prefix = patient_prefix + '/1~' + plan['studyset']
+        patient_prefix = PurePosixPath(plan['path']).parent.parent
+        study_prefix = str(patient_prefix / ('1~' + plan['studyset']))
         from .core import study_metadata
         study = study_metadata(export, study_prefix)
         if study['diagnostics']:
@@ -279,7 +281,7 @@ def calculate_plan_dvh(source, plan_name, *, structures=None, boundary='include'
             row['paddick_conformity_index'] = covered ** 2 / (row['volume_cm3'] * prescription_volume) if prescription_volume else None
     drp_checks = [{'description': point['description'], 'sampled_dose_cgy': grid.sample(np.asarray(point['xyz_cm']) * 10),
                    'saved_beam_dose_cgy': point['saved_beam_dose_cgy']} for point in plan['dose_reference_points'] or []]
-    return {'plan': plan_name, 'structures': results, 'dose_grid': grid.metadata,
+    return {'plan': plan_name, 'plan_path': plan['path'], 'structures': results, 'dose_grid': grid.metadata,
             'dose_reference_point_samples': drp_checks,
             'sampling': {'resolution_mm': resolution, 'bin_width_cgy': bin_width,
                          'origin_xyz_mm': grid.origin_xyz_mm, 'boundary': boundary,

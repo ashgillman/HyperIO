@@ -227,3 +227,9 @@ The input archive, CHM, extracted help, and working captures are excluded from v
 The synthetic tests run without those assets; the local archive integration test is skipped when the archive is absent.
 Raw archives, vendor help, generated patient packages and private captures remain local and are excluded from commits.
 No project licence has been selected; no third-party licence is assumed for colleague code or vendor assets.
+
+## Desktop applications
+
+The [applications](applications/README.md) directory contains Windows/macOS launchers for a RED preset override GUI and a Monaco-style DVH spreadsheet exporter.
+Install with `pip install -e '.[applications]'`, using Python with Tk support.
+Run `hyperio-red-overrides` or `hyperio-dvh-exporter`.

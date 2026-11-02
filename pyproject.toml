@@ -13,9 +13,14 @@ dependencies = []
 test = ["pytest>=7"]
 dicom = ["pydicom>=3,<4", "numpy>=1.24"]
 analysis = ["numpy>=1.24", "scipy>=1.10", "shapely>=2,<3", "unlzw3>=0.2.3,<0.3"]
+applications = ["numpy>=1.24", "scipy>=1.10", "shapely>=2,<3", "unlzw3>=0.2.3,<0.3", "openpyxl>=3.1,<4"]
 
 [project.scripts]
 hyperio = "hyperio.cli:main"
+
+[project.gui-scripts]
+hyperio-red-overrides = "hyperio.gui:red_main"
+hyperio-dvh-exporter = "hyperio.gui:dvh_main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
