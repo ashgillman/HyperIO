@@ -14,10 +14,10 @@ Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the
 6. Expand to nonzero rotations, asymmetric/oblique geometry, other models/energies and broader commissioning matrices after independent geometry/dose interpretation works.
 
 ** Useful work while TPS review is paused
-- Reproduce D291026AG DVH statistics against the screenshot GT in tests/fixtures/vmat-2026-10-29-ground-truth.json.
-  The experimental calculation now decodes the observed full-grid dose using unlzw3 and samples native WC polygons with SciPy/Shapely.
-  Resolve the remaining OAR volume/mean and Dx residuals by verifying contour-boundary, slice and histogram conventions; the current exact displayed matches and residuals are documented in reports/vmat-2026-10-29.md.
-  Establish Monaco's CI formula and the relationship of the saved dose-of-interest setting to the screenshot index before treating a Paddick candidate as a verified Monaco CI.
+- Resolve the remaining D291026AG OAR volume/mean residual by establishing Monaco's contour-boundary/rasterization convention.
+  The independent review in reports/vmat-2026-10-29.md records boundary and floating-point sensitivity; changing the global include/exclude rule does not reproduce all structures.
+  Validate the inferred interval-midpoint histogram convention on held-out plans or a controlled change in bin width; all supplied Dx values now meet the shared 0.1 cGy tolerance.
+- Establish Monaco's CI formula and the relationship of the saved dose-of-interest setting to the screenshot index before treating a Paddick candidate as a verified Monaco CI.
 - Define explicit reference-plan comparison policies for volume, relative volume and dimensionless indices; current test-library limits of 0.1 cGy tolerance / 1.0 cGy action apply only to dose.
 - Correct PlanCheck.jl's Parallel objective reference-dose display after adding a regression: D291026AG stores refdose=30 Gy and thresholddose=1 Gy, while the screenshot displays 3000 cGy.
 - Implement DICOM RT Dose geometry/scaling and sampling with independent analytic-array tests, ready for the first TPS export.

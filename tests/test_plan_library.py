@@ -92,3 +92,20 @@ def test_registry_can_add_plans_without_changing_test_code(tmp_path):
     path.write_text(json.dumps(registry))
     with pytest.raises(ValueError, match='duplicate'):
         load_plan_library(path)
+
+
+def test_requested_dose_quantiles_meet_shared_tolerance(plan_comparisons):
+    """Guard the Dx correction without waiving the separate raw-mean residual.
+
+    All registered percentage/absolute-volume dose queries use the registry's
+    existing cGy tolerance; this gate adds no plan-specific expected values.
+    """
+    case, comparisons = plan_comparisons
+    quantiles = [result for result in comparisons if result['unit'] == 'cGy' and (
+        result['id'].startswith('criteria/') and
+        result['id'].split('/')[2].startswith('D') and
+        result['id'].split('/')[2][1:2].isdigit() or
+        result['id'].startswith('reference/') and '/dose_cgy' in result['id'])]
+    if not quantiles:
+        pytest.skip(f'{case.id}: no reference dose quantiles')
+    assert all(result['status'] == 'pass' for result in quantiles), quantiles

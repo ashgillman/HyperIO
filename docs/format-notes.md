@@ -267,8 +267,12 @@ The existing validation generator now delegates its polygon reading to that publ
 The experimental DVH calculation unions polygons belonging to one structure on each section, holds each section over a nearest-slice slab, samples a native-origin lattice commensurate with the first beam isocentre, and uses Shapely for point inclusion.
 Only axial section orientation is supported.
 Boundary inclusion is explicit because the rounded WC coordinates place sample points on polygon edges.
-Histograms currently round samples to their nearest dose bin and linearly invert cumulative counts for Dx; raw min/max/mean remain separate from binning.
-The [calculated-DVH comparison](../reports/vmat-2026-10-29.md) distinguishes exact displayed matches from unresolved OAR boundary and quantile residuals.
+Histograms assign samples to half-open dose intervals `[k*w, (k+1)*w)` and place cumulative counts at their midpoints `(k+0.5)*w`, then linearly interpolate queries.
+This replaces the initial nearest-integer assignment and brings all supplied Dx references within the shared 0.1 cGy tolerance.
+The vendor help specifies dose intervals but not their precise bin coordinates; midpoint placement remains a fixture-supported inference pending held-out evidence.
+Raw min/max/mean remain separate from binning, and interpolated Dx results are bounded by the raw extrema.
+Optional conformity-volume sampling uses the same interval and cumulative-interpolation convention.
+The [calculated-DVH comparison](../reports/vmat-2026-10-29.md) retains the unresolved OAR volume and raw-mean residuals and the independent boundary investigation.
 
 The help's Frozen Dose topic describes saved dose becoming out of date after changes to patient models, CT-to-ED assignment, or relevant treatment-unit settings.
 A commissioning audit must eventually distinguish requested settings, saved settings, calculation completion, and dose freshness.

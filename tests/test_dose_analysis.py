@@ -65,16 +65,59 @@ def test_dvh_preserves_raw_statistics_and_exposes_a_separate_binned_curve():
     """Raw min/max/mean and histogram-based Dx/Vx are distinct quantities.
 
     Four samples at 0,10,20,30 cGy occupy four mm³ at 1 mm sampling.
-    Histogram counts are cumulative at each bin's dose coordinate.
+    Histogram counts are cumulative at each interval's midpoint.
     """
     dvh = DVH(np.array([0., 10., 20., 30.]), resolution_mm=1, bin_width_cgy=10)
     assert dvh.statistics['volume_cm3'] == .004
     assert dvh.statistics['mean_dose_cgy'] == 15
     assert dvh.statistics['min_dose_cgy'] == 0
     assert dvh.statistics['max_dose_cgy'] == 30
-    assert dvh.volume_at_dose(20) == 50
-    assert dvh.volume_at_dose(20, absolute=True) == .002
-    assert dvh.dose_at_volume(50) == 20
+    assert dvh.volume_at_dose(25) == 50
+    assert dvh.volume_at_dose(25, absolute=True) == .002
+    assert dvh.dose_at_volume(50) == 25
     assert dvh.volume_at_dose(100) == 0
     with pytest.raises(ValueError):
         dvh.dose_at_volume(101)
+
+
+def test_dvh_uses_half_open_intervals_and_midpoint_dose_coordinates():
+    """Dose intervals include their lower edge; half bins never use ties-to-even.
+
+    At width 2, [0,2), [2,4), [4,6) contain 3, 1, 1 samples.
+    Their midpoint coordinates are 1, 3, 5 cGy and the cumulative counts
+    are 5, 2, 1, followed by a zero-count sentinel at 7 cGy.
+    """
+    dvh = DVH([0., 1., 1.99, 2., 4.], bin_width_cgy=2)
+    np.testing.assert_array_equal(dvh.counts, [3, 1, 1, 0])
+    np.testing.assert_array_equal(dvh.dose_axis_cgy, [1, 3, 5, 7])
+    np.testing.assert_array_equal(dvh.cumulative_counts, [5, 2, 1, 0])
+    assert dvh.dose_at_volume(50) == pytest.approx(8 / 3)
+    assert dvh.volume_at_dose(2) == 70
+    assert dvh.statistics['mean_dose_cgy'] == pytest.approx(1.798)
+
+
+def test_dvh_quantiles_stay_within_raw_extrema_even_with_wide_bins():
+    """Interpolating a binned tail must not exceed the actual sampled range."""
+    dvh = DVH([10., 10.1, 10.2], bin_width_cgy=5)
+    for percent in [0, .01, 1, 50, 99, 100]:
+        assert 10 <= dvh.dose_at_volume(percent) <= 10.2
+
+
+def test_contour_boundary_policy_changes_raw_volume_and_mean_before_binning():
+    """Two square contours span disjoint [0,2), [2,4) nearest-slice slabs.
+
+    Including the square's edges selects x,z = 1,2,3 on four y planes;
+    excluding them selects only x=z=2 on those same four planes.
+    Dose is x² on grid nodes, so the means follow directly from 1,4,9.
+    """
+    from hyperio.dvh import _structure_samples
+    _, _, x = np.indices((5, 5, 5))
+    grid = DoseGrid(x ** 2, (0, 0, 0), (1, 1, 1))
+    polygon = {'structure_index': 1, 'points_xz_mm': [[1, 1], [3, 1], [3, 3], [1, 3]]}
+    slices = [{'y_mm': y, 'polygons': [polygon]} for y in [1, 3]]
+    included, total = _structure_samples(grid, slices, 1, 1, 'include', 100)
+    excluded, interior = _structure_samples(grid, slices, 1, 1, 'exclude', 100)
+    assert len(included) == total == 36
+    assert len(excluded) == interior == 4
+    assert DVH(included).statistics['mean_dose_cgy'] == pytest.approx(14 / 3)
+    assert DVH(excluded).statistics['mean_dose_cgy'] == 4

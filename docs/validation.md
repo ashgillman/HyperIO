@@ -13,13 +13,14 @@ GNU gzip independently decoded the plan payload to identical bytes during invest
 The supplied fixture's grid-centre dose matches its DRP, and its array maximum matches screenshot rounding.
 Synthetic tests cover a noncubic independently compressed array, byte order, physical axes/spacing/origin, affine-field trilinear interpolation, explicit out-of-grid behavior, WC polygon counts/tails, and separate raw versus binned statistics.
 
-Calculated GT tests match all six extrema, all three HI values, both PTV volumes and means, eight of ten criterion values at displayed precision, and all ten criterion indicators.
-The OAR volume is 0.015 cm³ high and its mean about 0.326 cGy high; the two D50 values and OAR D1% retain explicitly documented residuals.
+Calculated GT tests match all six extrema, all three HI values, both PTV volumes and means, all ten criterion values at displayed precision, and all ten criterion indicators.
+The OAR volume is 0.015 cm³ high and its mean about 0.326 cGy high.
+The independent interval-midpoint histogram revision brings both PTV D50 values and OAR D1% within 0.1 cGy; all supplied dose quantiles now have a separate tolerance-level regression gate.
 The subsequent shared-policy reference-plan library below replaces the original per-metric residual allowances.
 The nearest-slice contour rule, exact boundary and bin/inversion conventions, and Monaco CI formula remain provisional or unresolved.
 Paddick CI can be requested as a separately labelled candidate, but is not asserted as the native Monaco CI.
-The full suite with analysis dependencies and the private VMAT archive enabled passed with 119 tests and 3 skips.
-The metadata-only environment passed with 97 tests and 5 skips, including explicit skips for the two optional analysis test modules.
+At the initial calculation checkpoint, the full suite with analysis dependencies and the private VMAT archive enabled passed with 119 tests and 3 skips.
+At that checkpoint, the metadata-only environment passed with 97 tests and 5 skips, including explicit skips for the two optional analysis test modules.
 Analysis was exercised with NumPy 2.3.4, SciPy 1.16.3, Shapely 2.2.0 / GEOS 3.14.1, and unlzw3 0.2.3.
 
 ### Shared-policy reference-plan library
@@ -31,9 +32,10 @@ The user-specified dose policy is absolute difference ≤0.1 cGy for pass, >0.1 
 The action gate fails missing dose outputs and action-level results; review findings are retained as warnings and in comparison records.
 Values are compared unrounded against the supplied GT, with only a 1e-12 representation allowance at exact boundaries.
 Other physical units are not evaluated until their own explicit policies are supplied.
-This fixture currently yields 13 dose comparisons within tolerance and three at review level, with none reaching the action level.
-The review differences are OAR mean +0.325789 cGy, PTV 2 D50 +0.242857 cGy, and OAR D1% -0.466667 cGy.
-The shared-policy revision passed with 122 tests, 3 skips and one warning reporting those review-level results.
+This fixture now yields 15 dose comparisons within tolerance and one at review level, with none reaching the action level.
+The remaining review difference is OAR mean +0.325789 cGy.
+The independent histogram/boundary review passed with 126 tests, 3 skips and one warning retaining that review-level result.
+New synthetic coverage checks half-open dose intervals, midpoint coordinates, wide-bin extrema bounds, and the separate effect of contour-edge sampling on raw volume and mean.
 Without analysis extras, 117 tests passed and 5 skipped.
 The local archive fallback was copied under ignored reference/plan-library and verified byte-for-byte by SHA-256; the plan-library tests also passed without an archive environment variable.
 

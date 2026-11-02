@@ -16,11 +16,12 @@ from .dose import native_dose
 
 
 class DVH:
-    """Raw dose statistics plus an explicit nearest-bin cumulative histogram.
+    """Raw dose statistics plus an explicit interval-binned cumulative curve.
 
     Dx is interpolated on the binned curve, not taken from np.percentile.
-    Bins use NumPy's nearest-integer rounding; that convention is an explicit
-    approximation pending exact Monaco bin-edge/quantile validation.
+    Samples occupy [k*w, (k+1)*w) intervals and cumulative counts are placed at
+    (k+0.5)*w. This convention reproduces the supplied reference quantiles;
+    the vendor help documents intervals but does not specify their coordinates.
     """
     def __init__(self, samples_cgy, *, resolution_mm=1, bin_width_cgy=1):
         import numpy as np
@@ -33,10 +34,10 @@ class DVH:
         self.samples_cgy = samples
         self.resolution_mm = float(resolution_mm)
         self.bin_width_cgy = float(bin_width_cgy)
-        indices = np.rint(samples / bin_width_cgy).astype(int)
+        indices = np.floor(samples / bin_width_cgy).astype(int)
         self.counts = np.r_[np.bincount(indices), 0]
         self.cumulative_counts = np.cumsum(self.counts[::-1])[::-1]
-        self.dose_axis_cgy = np.arange(len(self.counts)) * bin_width_cgy
+        self.dose_axis_cgy = (np.arange(len(self.counts)) + .5) * bin_width_cgy
 
     @property
     def statistics(self):
@@ -57,7 +58,8 @@ class DVH:
     def dose_at_volume(self, volume_percent):
         """Return Dx by linear inversion of the cumulative histogram.
 
-        Endpoints use raw extrema; interior values use the binned curve.
+        Endpoints use raw extrema; interior values use the binned curve,
+        bounded by the raw range so a wide bin cannot create a larger maximum.
         """
         import numpy as np
         if not math.isfinite(volume_percent) or not 0 <= volume_percent <= 100:
@@ -66,8 +68,9 @@ class DVH:
             return float(self.samples_cgy.max())
         if volume_percent == 100:
             return float(self.samples_cgy.min())
-        return float(np.interp(len(self.samples_cgy) * volume_percent / 100,
-                               self.cumulative_counts[::-1], self.dose_axis_cgy[::-1]))
+        dose = np.interp(len(self.samples_cgy) * volume_percent / 100,
+                         self.cumulative_counts[::-1], self.dose_axis_cgy[::-1])
+        return float(np.clip(dose, self.samples_cgy.min(), self.samples_cgy.max()))
 
     def heterogeneity_index(self, high_dose_ref_percent=5, min_dose_ref_percent=95):
         """Monaco help's configurable Dhigh/Dlow form, default D5%/D95%."""
@@ -262,9 +265,11 @@ def calculate_plan_dvh(source, plan_name, *, structures=None, boundary='include'
         counts = {threshold: 0 for threshold in thresholds}
         for y in axes[1]:
             values = grid.sample(np.column_stack((x_mesh.ravel(), np.full(x_mesh.size, y), z_mesh.ravel())))
-            binned = np.rint(values / bin_width) * bin_width
+            binned = (np.floor(values / bin_width) + .5) * bin_width
             for threshold in thresholds:
-                counts[threshold] += int((binned >= threshold).sum())
+                # Match volume_at_dose's linear cumulative curve, including
+                # a fractional contribution between adjacent bin midpoints.
+                counts[threshold] += float(np.clip(1 + (binned - threshold) / bin_width, 0, 1).sum())
         for row in results:
             threshold = configs.get(row['structure'], {}).get('prescribed_dose_cgy')
             if threshold is None:
@@ -279,7 +284,8 @@ def calculate_plan_dvh(source, plan_name, *, structures=None, boundary='include'
             'sampling': {'resolution_mm': resolution, 'bin_width_cgy': bin_width,
                          'origin_xyz_mm': grid.origin_xyz_mm, 'boundary': boundary,
                          'contours': 'union polygons; nearest-slice slabs [lower,upper)',
-                         'dose': 'SciPy trilinear interpolation', 'bins': 'nearest integer; linear cumulative inversion'},
+                         'dose': 'SciPy trilinear interpolation',
+                         'bins': 'half-open dose intervals; cumulative counts at midpoints; linear inversion'},
             'limitations': ['Contour boundary and histogram conventions remain provisional; inspect residual differences.',
                             'Paddick CI is a candidate mapping, not a documented Monaco formula.',
                             'A decoded saved dose does not establish dose freshness or validity.']}

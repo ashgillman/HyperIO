@@ -150,6 +150,9 @@ for structure in result["structures"]:
 `DoseGrid.sample(points_xyz_mm)` interpolates dose and rejects extrapolation by default.
 `contour_slice(bytes, source_name)` reads polygon geometry and retains unparsed trailing records.
 `DVH(samples_cgy, resolution_mm=1, bin_width_cgy=1)` exposes raw statistics and a separately binned cumulative curve with `dose_at_volume` and `volume_at_dose` queries.
+Samples occupy half-open dose intervals, with cumulative counts placed at interval midpoints and linear interpolation for queries.
+This convention reproduces the supplied Dx references within 0.1 cGy; its precise bin coordinates are inferred from this fixture rather than specified in the vendor help.
+Dx results are bounded by the raw sampled dose range.
 These APIs are documented by [synthetic examples](tests/test_dose_analysis.py) and [the reference-plan test library](tests/plan_library/README.md).
 
 The native reader currently supports the observed `00d5301e` profile with four zero placeholder blocks and one complete uint32 dose grid.
