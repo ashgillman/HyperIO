@@ -10,13 +10,15 @@ requires-python = ">=3.10"
 dependencies = []
 
 [project.optional-dependencies]
-test = ["pytest>=7"]
+test = ["pytest>=7", "beautifulsoup4>=4.12,<5"]
+eviq = ["beautifulsoup4>=4.12,<5"]
 dicom = ["pydicom>=3,<4", "numpy>=1.24"]
 analysis = ["numpy>=1.24", "scipy>=1.10", "shapely>=2,<3", "unlzw3>=0.2.3,<0.3"]
 applications = ["numpy>=1.24", "scipy>=1.10", "shapely>=2,<3", "unlzw3>=0.2.3,<0.3", "openpyxl>=3.1,<4"]
 
 [project.scripts]
 hyperio = "hyperio.cli:main"
+hyperio-eviq-update = "hyperio.eviq:main"
 
 [project.gui-scripts]
 hyperio-red-overrides = "hyperio.gui:red_main"
@@ -24,6 +26,9 @@ hyperio-dvh-exporter = "hyperio.gui:dvh_main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+hyperio = ["data/*.json"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

@@ -33,6 +33,7 @@
             openpyxl
             pydicom
             pytest
+            beautifulsoup4
           ]);
         in
         {
