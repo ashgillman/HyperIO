@@ -192,3 +192,60 @@ def export_dvh_csv(result, destination, *, source=''):
     sidecar = destination.with_name(destination.name + '.provenance.json')
     sidecar.write_text(serialized, encoding='utf-8')
     return sidecar
+
+
+def safe_filename_component(value):
+    """Make a portable filename component from a plan identity."""
+    import re
+    value = re.sub(r'[\\/:*?"<>|\x00-\x1f]', '_', str(value)).strip(' .')
+    if not value:
+        value = '_'
+    if value.split('.')[0].upper() in {'CON', 'PRN', 'AUX', 'NUL', *(f'COM{i}' for i in range(1, 10)), *(f'LPT{i}' for i in range(1, 10))}:
+        value = '_' + value
+    return value
+
+
+def calculate_for_export(source, selected, boundary):
+    """Calculate a plan and retain its saved structure display order."""
+    from .dvh import calculate_plan_dvh
+    from .core import inspect_export
+
+    result = calculate_plan_dvh(source, selected['name'], plan_path=selected['path'], boundary=boundary)
+    result['plan_path'] = selected['path']
+    plan = next(p for p in inspect_export(source)['plans'] if p['path'] == selected['path'])
+    order = {c['structure']: i for i, c in enumerate(plan['isodose_settings']['structures'])}
+    result['structures'].sort(key=lambda row: order[row['structure']])
+    return result
+
+
+def batch_export_dvh(source, plans, destination, *, boundary='include'):
+    """Export each calculable plan, reporting failures without overwriting files."""
+    destination = Path(destination)
+    outcomes = []
+    names = {}
+    for plan in plans:
+        if not plan.get('error'):
+            name = '-'.join(safe_filename_component(plan[key]) for key in ('patient_id', 'studyset', 'name')) + '.xlsx'
+            names.setdefault(name.casefold(), []).append(plan['path'])
+    for plan in plans:
+        path = plan['path']
+        try:
+            if plan.get('error'):
+                raise ValueError(plan['error'])
+            name = '-'.join(safe_filename_component(plan[key]) for key in ('patient_id', 'studyset', 'name')) + '.xlsx'
+            if len(names[name.casefold()]) > 1:
+                raise ValueError(f'Filename collision: {name}')
+            target = destination / name
+            result = calculate_for_export(source, plan, boundary)
+            # Reserve the output exclusively; remove a partial file if export fails.
+            with target.open('xb'):
+                pass
+            try:
+                export_dvh_xlsx(result, target, source=source)
+            except Exception:
+                target.unlink()
+                raise
+            outcomes.append({'path': path, 'output': str(target), 'error': None})
+        except Exception as exc:
+            outcomes.append({'path': path, 'output': None, 'error': str(exc)})
+    return outcomes

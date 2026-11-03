@@ -99,6 +99,12 @@ Native edits remain experimental pending Monaco load/save and recalculation revi
 3. Choose **Calculate DVH** to load saved `dose.1`, studyset contours and saved DVH settings.
 4. Review the table, choose **xlsx** (default) or **csv**, and choose **Export spreadsheet…**.
 
+For one plan, the suggested filename is the plan name.
+Alternatively, choose **Batch export XLSX…** and an output folder to calculate every discovered plan using the selected contour-boundary policy.
+Each successful workbook is named `<patient ID>-<studyset>-<plan>.xlsx`.
+Invalid filename characters are replaced, existing files are never overwritten, and colliding names are reported instead of exported.
+A results dialog lists plans that could not be exported; other plans continue.
+
 The exporter calculates the structures enabled in the saved isodose configuration.
 The source can be a patient directory, its parent directory, or a ZIP containing either layout.
 ZIP contents are read directly without writing an extracted patient set.

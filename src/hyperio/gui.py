@@ -11,7 +11,8 @@ import threading
 
 from .application_io import discover_plans, load_red_mapping, apply_red_mapping, save_plan_copy
 from .core import Export, plan_metadata
-from .dvh_export import HEADERS, display_rows, export_dvh_csv, export_dvh_xlsx
+from .dvh_export import (HEADERS, display_rows, export_dvh_csv, export_dvh_xlsx,
+                         safe_filename_component, calculate_for_export, batch_export_dvh)
 
 
 def _launch(mode):
@@ -81,6 +82,9 @@ def _launch(mode):
                 self.button(actions, 'Preview preset', self.preview).pack(side='left')
             self.save_button = self.button(actions, 'Save modified plan copy…' if self.is_red else 'Export spreadsheet…', self.save)
             self.save_button.pack(side='left', padx=(8, 0))
+            if not self.is_red:
+                self.batch_button = self.button(actions, 'Batch export XLSX…', self.batch_export)
+                self.batch_button.pack(side='left', padx=(8, 0))
             ttk.Label(actions, textvariable=self.status, wraplength=850).pack(side='left', padx=12)
 
             host = ttk.Frame(root, padding=(12, 0, 12, 8))
@@ -118,6 +122,8 @@ def _launch(mode):
         def update_actions(self):
             self.load_button.configure(state='normal' if self.selected and not self.busy else 'disabled')
             self.save_button.configure(state='normal' if self.result is not None and not self.busy else 'disabled')
+            if not self.is_red:
+                self.batch_button.configure(state='normal' if self.plans and not self.busy else 'disabled')
 
         def clear_table(self):
             self.table.delete(*self.table.get_children())
@@ -221,15 +227,7 @@ def _launch(mode):
             else:
                 boundary = self.boundary.get()
                 def calculate():
-                    from .dvh import calculate_plan_dvh
-                    result = calculate_plan_dvh(source, selected['name'], plan_path=selected['path'], boundary=boundary)
-                    result['plan_path'] = selected['path']
-                    # Follow the saved display order, rather than alphabetic calculation order.
-                    from .core import inspect_export
-                    plan = next(p for p in inspect_export(source)['plans'] if p['path'] == selected['path'])
-                    order = {c['structure']: i for i, c in enumerate(plan['isodose_settings']['structures'])}
-                    result['structures'].sort(key=lambda row: order[row['structure']])
-                    return result
+                    return calculate_for_export(source, selected, boundary)
                 self.work(calculate, self.loaded_dvh, 'Calculating DVH statistics from saved dose…')
 
         def loaded_red(self, data):
@@ -279,13 +277,32 @@ def _launch(mode):
                 self.table.insert('', 'end', values=['' if value is None else f'{value:.3f}' if isinstance(value, float) else value for value in row])
             self.status.set(f'Calculated {len(result["structures"])} structures. Ready to export.')
 
+        def batch_export(self):
+            destination = filedialog.askdirectory(title='Choose a folder for the DVH spreadsheets')
+            if not destination:
+                return
+            source, plans, boundary = self.source, list(self.plans), self.boundary.get()
+            self.work(lambda: batch_export_dvh(source, plans, destination, boundary=boundary),
+                      self.batch_finished, 'Calculating and exporting DVHs…')
+
+        def batch_finished(self, outcomes):
+            failures = [item for item in outcomes if item['error']]
+            count = len(outcomes) - len(failures)
+            summary = f'Exported {count} of {len(outcomes)} plans.'
+            self.status.set(summary)
+            if failures:
+                details = '\n'.join(f"{item['path']}: {item['error']}" for item in failures)
+                messagebox.showwarning('Batch export results', summary + '\n\n' + details)
+            else:
+                messagebox.showinfo('Batch export results', summary)
+
         def save(self):
             if self.result is None:
                 return
             extension = '.' + self.export_format.get()
             path = filedialog.asksaveasfilename(
                 title='Save modified plan copy' if self.is_red else 'Export DVH spreadsheet',
-                initialfile='plan.RED-overridden' if self.is_red else 'DVH' + extension,
+                initialfile='plan.RED-overridden' if self.is_red else safe_filename_component(self.selected['name']) + extension,
                 defaultextension='' if self.is_red else extension,
                 filetypes=[('Plan copy', '*.*')] if self.is_red else [('Spreadsheet', '*' + extension)])
             if not path:

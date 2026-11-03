@@ -208,3 +208,43 @@ def test_returned_plan_calculates_and_exports_without_screenshot_values(tmp_path
             assert all(row[index] != '' for index in (5, 6, 7))
     assert all(row[-1] == '' for row in rows[1:])
     assert json.loads(sidecar.read_text())['plan_path'] == selected['path']
+
+
+def test_batch_dvh_exports_and_reports_failures(tmp_path, monkeypatch):
+    from hyperio import dvh_export
+    plans = [
+        {'path': 'a', 'patient_id': 'id', 'studyset': 'ss', 'name': 'good'},
+        {'path': 'b', 'patient_id': 'id', 'studyset': 'ss', 'name': 'bad'},
+        {'path': 'c', 'patient_id': 'id', 'studyset': 'ss', 'name': 'existing'},
+    ]
+    (tmp_path / 'id-ss-existing.xlsx').write_text('keep')
+    def calculate(source, plan, boundary):
+        assert boundary == 'exclude'
+        if plan['path'] == 'b':
+            raise ValueError('missing dose')
+        return {'plan': plan['name']}
+    monkeypatch.setattr(dvh_export, 'calculate_for_export', calculate)
+    monkeypatch.setattr(dvh_export, 'export_dvh_xlsx',
+                        lambda result, target, source: target.write_text(result['plan']))
+    outcomes = dvh_export.batch_export_dvh('source.zip', plans, tmp_path, boundary='exclude')
+    assert (tmp_path / 'id-ss-good.xlsx').read_text() == 'good'
+    assert (tmp_path / 'id-ss-existing.xlsx').read_text() == 'keep'
+    assert outcomes[0]['error'] is None
+    assert 'missing dose' in outcomes[1]['error']
+    assert outcomes[2]['error']
+
+
+def test_batch_dvh_rejects_collisions_and_handles_unreadable(tmp_path, monkeypatch):
+    from hyperio import dvh_export
+    plans = [
+        {'path': 'a', 'patient_id': 'id', 'studyset': 'ss', 'name': 'A/B'},
+        {'path': 'b', 'patient_id': 'ID', 'studyset': 'ss', 'name': 'a_b'},
+        {'path': 'c', 'error': 'unreadable'},
+    ]
+    monkeypatch.setattr(dvh_export, 'calculate_for_export', lambda *args: pytest.fail('collision must not calculate'))
+    outcomes = dvh_export.batch_export_dvh('source', plans, tmp_path)
+    assert all(item['error'] for item in outcomes)
+    assert 'collision' in outcomes[0]['error']
+    assert 'unreadable' in outcomes[2]['error']
+    assert not list(tmp_path.iterdir())
+    assert dvh_export.safe_filename_component('CON') == '_CON'
