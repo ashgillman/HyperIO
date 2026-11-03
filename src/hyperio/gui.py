@@ -27,7 +27,7 @@ def _launch(mode):
         def __init__(self, root):
             self.root = root
             self.is_red = mode == 'red'
-            root.title('HyperIO — RED preset overrides' if self.is_red else 'HyperIO — DVH exporter')
+            root.title('HyperIO — RED preset overrides' if self.is_red else 'HyperIO — DVH explorer / exporter')
             root.geometry('1250x760')
             root.minsize(850, 450)
             root.columnconfigure(0, weight=1)
@@ -91,6 +91,19 @@ def _launch(mode):
             host.grid(row=2, column=0, sticky='nsew')
             host.columnconfigure(0, weight=1)
             host.rowconfigure(0, weight=1)
+            self.plot = None
+            if not self.is_red:
+                notebook = ttk.Notebook(host)
+                notebook.grid(row=0, column=0, sticky='nsew')
+                table_host = ttk.Frame(notebook)
+                table_host.columnconfigure(0, weight=1)
+                table_host.rowconfigure(0, weight=1)
+                plot_host = ttk.Frame(notebook)
+                notebook.add(table_host, text='Statistics')
+                notebook.add(plot_host, text='DVH plot')
+                from .dvh_plot import DVHPlot
+                self.plot = DVHPlot(plot_host)
+                host = table_host
             headers = ['Structure', 'Current mode', 'Current RED', 'Preset RED', 'Resulting mode'] if self.is_red else HEADERS
             self.table = ttk.Treeview(host, columns=list(range(len(headers))), show='headings')
             for index, name in enumerate(headers):
@@ -103,14 +116,11 @@ def _launch(mode):
             horizontal.grid(row=1, column=0, sticky='ew')
             self.table.configure(yscrollcommand=vertical.set, xscrollcommand=horizontal.set)
             self.table.tag_configure('changed', background='#DCE6F1')
-            note = ('Preset matches use exact structure names and force the plan-level RED. '
-                    'Save creates a separate plan file. Studyset defaults and saved dose are unchanged. '
-                    'Native density editing remains experimental and requires Monaco load/save/recalculation review.'
-                    if self.is_red else
-                    'DVHs are reconstructed from saved native dose, using the enabled structures and saved sampling settings. '
-                    'Contour and bin conventions remain provisional; saved dose freshness is unknown. '
-                    'Monaco conformity index is unavailable and is exported blank.')
-            ttk.Label(root, text=note, wraplength=1100, padding=12).grid(row=3, column=0, sticky='ew')
+            if self.is_red:
+                note = ('Preset matches use exact structure names and force the plan-level RED. '
+                        'Save creates a separate plan file. Studyset defaults and saved dose are unchanged. '
+                        'Native density editing remains experimental and requires Monaco load/save/recalculation review.')
+                ttk.Label(root, text=note, wraplength=1100, padding=12).grid(row=3, column=0, sticky='ew')
             self.update_actions()
             root.after(100, self.poll)
 
@@ -127,6 +137,8 @@ def _launch(mode):
 
         def clear_table(self):
             self.table.delete(*self.table.get_children())
+            if self.plot is not None:
+                self.plot.set_result()
 
         def invalidate(self, event=None):
             self.result = None
@@ -273,6 +285,7 @@ def _launch(mode):
 
         def loaded_dvh(self, result):
             self.result = result
+            self.plot.set_result(result)
             for row in display_rows(result):
                 self.table.insert('', 'end', values=['' if value is None else f'{value:.3f}' if isinstance(value, float) else value for value in row])
             self.status.set(f'Calculated {len(result["structures"])} structures. Ready to export.')

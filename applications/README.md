@@ -38,7 +38,7 @@ On macOS or Linux with Nix, enter the development shell from the repository dire
 ```sh
 nix develop
 python applications/override_reds.py
-python applications/export_dvh.py
+python applications/dvh.py
 ```
 
 The flake supplies Python, Tk, the DVH and XLSX dependencies, pydicom and pytest, and adds `src/` to `PYTHONPATH`.
@@ -50,7 +50,7 @@ From the repository directory:
 
 ```sh
 python3 applications/override_reds.py
-python3 applications/export_dvh.py
+python3 applications/dvh.py
 ```
 
 On Windows, use `py` instead of `python3` if needed.
@@ -98,6 +98,17 @@ Native edits remain experimental pending Monaco load/save and recalculation revi
 2. Keep the default **include** contour-boundary policy, or explicitly select **exclude** for investigation.
 3. Choose **Calculate DVH** to load saved `dose.1`, studyset contours and saved DVH settings.
 4. Review the table, choose **xlsx** (default) or **csv**, and choose **Export spreadsheet…**.
+
+The **DVH plot** tab displays the calculated cumulative curves.
+Use the checkboxes on the right to show or hide each structure, and the radio buttons to select the structure to inspect.
+The selected curve is drawn thicker.
+Move the cursor over the plot to choose a dose on that curve; the readout shows dose in cGy and volume in both cm³ and percent.
+Click to pin a point, click again to choose another point, or choose **Track cursor** to resume movement.
+Enter a positive **Prescription (Gy)** to also show dose as a percentage of that prescription (for example, enter `60` for 60 Gy).
+The **Dose** and **Volume** selectors switch the axes between absolute and relative units.
+The prescription is a user-supplied display normalization and does not change calculated dose, statistics, criteria or exports.
+Cursor values use linear interpolation of the same provisional cumulative histogram used for calculated volume-at-dose queries.
+Changing the plan, source or contour-boundary setting clears both the table and plot until the next calculation.
 
 For one plan, the suggested filename is the plan name.
 Alternatively, choose **Batch export XLSX…** and an output folder to calculate every discovered plan using the selected contour-boundary policy.

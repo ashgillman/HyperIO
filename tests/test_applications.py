@@ -89,6 +89,41 @@ def example_result():
         'dose_reference_point_samples': []}
 
 
+def test_plot_curve_and_cursor_preserve_histogram_interpolation_and_units():
+    pytest.importorskip('numpy')
+    from hyperio.dvh import DVH
+    from hyperio.dvh_plot import cursor_point
+    histogram = DVH([0., 10., 20., 30.], resolution_mm=2, bin_width_cgy=10)
+    curve = histogram.curve
+    assert curve['dose_cgy'] == [0., 5., 15., 25., 35., 45.]
+    structure = {'volume_cm3': histogram.statistics['volume_cm3'], 'dvh_curve': curve}
+    for dose in (0, 7.3, 25, 45, 100):
+        point = cursor_point(structure, dose, 50)
+        assert point['volume_percent'] == pytest.approx(histogram.volume_at_dose(dose))
+        assert point['volume_cm3'] == pytest.approx(histogram.volume_at_dose(dose, absolute=True))
+        assert point['dose_percent'] == pytest.approx(dose * 2)
+    assert cursor_point(structure, 25)['dose_percent'] is None
+    for invalid in (0, -1, float('nan'), float('inf')):
+        with pytest.raises(ValueError, match='prescription'):
+            cursor_point(structure, 25, invalid)
+
+
+@pytest.mark.parametrize('entry,expected', [
+    ('60', 6000.), ('2.5', 250.), ('', None), ('invalid', None),
+    ('0', None), ('-1', None), ('nan', None), ('inf', None), ('1e308', None),
+])
+def test_plot_prescription_accepts_gy_and_normalizes_cgy(entry, expected):
+    from types import SimpleNamespace
+    from hyperio.dvh_plot import DVHPlot, cursor_point
+    plot = DVHPlot.__new__(DVHPlot)
+    plot.rx = SimpleNamespace(get=lambda: entry)
+    assert plot.prescription() == expected
+    if expected is not None:
+        structure = {'volume_cm3': 1., 'dvh_curve': {
+            'dose_cgy': [0., expected * 2], 'volume_percent': [100., 0.]}}
+        assert cursor_point(structure, expected, plot.prescription())['dose_percent'] == 100.
+
+
 def test_display_keeps_duplicate_reference_rows_without_repeating_criteria():
     rows = display_rows(example_result())
     assert len(rows) == 3
@@ -194,8 +229,19 @@ def test_returned_plan_calculates_and_exports_without_screenshot_values(tmp_path
                 path.write_bytes(data)
             source = container / patient if layout == 'patient_directory' else container
     from hyperio.dvh import calculate_plan_dvh
+    from hyperio.dvh_plot import cursor_point
     selected = next(p for p in discover_plans(source) if p['name'] == 'D291026AG')
     result = calculate_plan_dvh(source, selected['name'], plan_path=selected['path'])
+    for structure in result['structures']:
+        curve = structure['dvh_curve']
+        assert len(curve['dose_cgy']) == len(curve['volume_percent'])
+        assert curve['volume_percent'][0] == 100
+        assert curve['volume_percent'][-1] == 0
+        for reference in structure['reference_requests']:
+            if reference['query']['quantity'] == 'dose':
+                point = cursor_point(structure, reference['dose_cgy'])
+                assert point['volume_percent'] == pytest.approx(reference['volume_percent'])
+                assert point['volume_cm3'] == pytest.approx(reference['volume_cm3'])
     sidecar = export_dvh_csv(result, tmp_path / 'DVH.csv', source=source)
     with (tmp_path / 'DVH.csv').open(encoding='utf-8-sig', newline='') as stream:
         rows = list(csv.reader(stream))

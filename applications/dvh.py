@@ -1,4 +1,4 @@
-"""Launch the DVH exporter directly from a HyperIO checkout."""
+"""Launch the DVH application directly from a HyperIO checkout."""
 from pathlib import Path
 import sys
 

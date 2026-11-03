@@ -40,6 +40,12 @@ class DVH:
         self.dose_axis_cgy = (np.arange(len(self.counts)) + .5) * bin_width_cgy
 
     @property
+    def curve(self):
+        """JSON-safe cumulative curve, including the full-volume origin."""
+        return {'dose_cgy': [0., *self.dose_axis_cgy.tolist()],
+                'volume_percent': [100., *(self.cumulative_counts / len(self.samples_cgy) * 100).tolist()]}
+
+    @property
     def statistics(self):
         return {'volume_cm3': len(self.samples_cgy) * self.resolution_mm ** 3 / 1000,
                 'min_dose_cgy': float(self.samples_cgy.min()),
@@ -248,7 +254,7 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
                 references.append({'dose_cgy': histogram.dose_at_volume(value), 'volume_percent': value,
                                    'volume_cm3': value / 100 * statistics['volume_cm3'],
                                    'query': {'quantity': 'relative_volume', 'value': value}})
-        results.append({'structure': name, **statistics, 'heterogeneity_index': hi,
+        results.append({'structure': name, **statistics, 'dvh_curve': histogram.curve, 'heterogeneity_index': hi,
                         'percent_in_volume': len(samples) / all_count * 100,
                         'is_in_ss': not any(p['structure_index'] == structure_index
                                             for section in (slices[0], slices[-1]) for p in section['polygons']),
