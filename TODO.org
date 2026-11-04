@@ -14,7 +14,8 @@ Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the
 6. Expand to nonzero rotations, asymmetric/oblique geometry, other models/energies and broader commissioning matrices after independent geometry/dose interpretation works.
 
 ** Useful work while TPS review is paused
-- Smoke-test applications/ RED preset preview/copy saving and DVH calculation/XLSX/CSV export on Windows and macOS with Python/Tk; confirm installed GUI launchers, native dialogs, scrolling, responsiveness and error recovery.
+- Review the eviQ updater's manual-review records and unsupported layouts against their source snapshots before expanding parser support; validate extracted criteria and DVH overlays independently, including native Windows/macOS use and fractionation/structure mapping.
+- Smoke-test applications/ RED preset preview/copy saving and DVH calculation/plot cursor/XLSX/CSV export on Windows and macOS with Python/Tk; confirm installed GUI launchers, native dialogs, scrolling, responsiveness and error recovery.
 - Resolve the remaining D291026AG OAR volume/mean residual by establishing Monaco's contour-boundary/rasterization convention.
   The independent review in reports/vmat-2026-10-29.md records boundary and floating-point sensitivity; changing the global include/exclude rule does not reproduce all structures.
   Validate the inferred interval-midpoint histogram convention on held-out plans or a controlled change in bin width; all supplied Dx values now meet the shared 0.1 cGy tolerance.
@@ -26,6 +27,17 @@ Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the
 - Investigate calculation-state semantics without using the unchanged inherited checksum files as proof of current dose/settings agreement.
 - Support unique case-insensitive patient-ID .hyp lookup where needed and reject collisions; Monaco lower-cased the four calculated plans' .hyp filenames in this return.
 - Resolve the review metadata date discrepancy (literal 20260226 versus log date 2026-10-26) without changing the supplied evidence or assuming a timezone.
+
+* Promote investigated capabilities into reusable library APIs
+The [[file:reports/library-coverage-audit-2026-10-30.md][30 October library coverage audit]] distinguishes missing reusable readers from existing submodule APIs, research harnesses and unimplemented features.
+Coordinate contour/dose items with the ongoing DVH correction before implementation.
+- Add a format-scoped static aperture reader for both numeric headers and individual leaf positions, including shifted returned tables, source provenance and ambiguous/truncated-record diagnostics; expose it through inspection without claiming general control-point or compact-shape semantics.
+- Add native studyset image-index/header geometry readers and an optional cached-DICOM round-trip comparison, retaining separate identity/geometry/pixel evidence and the uninterpreted native compressed-pixel boundary.
+- Extend the literal calculation-log API to return structure total/free-volume and segment-calculation observations, preserving labels, units, times and file/line provenance without inferring effective materials or dose freshness.
+- Expose plan-scoped native dose-payload inventory/provenance through the library, extracting filename classification and bounded header sampling from scripts/research_baseline.py, reusing export/snapshot infrastructure, explicitly distinguishing prefix hashes from full-file hashes, and keeping presence/association separate from interpreted dose and freshness.
+- Add optional unique case-insensitive snapshot correspondence with collision rejection, retaining exact-path comparison by default and reporting original paths plus content changes.
+- Add optional beam/dose visibility metadata reading if needed by callers; keep visibility distinct from treatment/calculation inclusion.
+- Document Python submodule entry points for the existing blank-CT, depot and validation-suite functions; clarify their fixture/experimental scope and avoid advertising retired candidate helpers as supported workflows.
 
 * Commissioning plan generation and dose-analysis use case
 The software should support generating the plan data for a commissioning test suite, calculating it in Monaco, and comparing returned calculated data against measured data.
