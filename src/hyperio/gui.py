@@ -44,7 +44,6 @@ def _launch(mode):
             self.plan = tk.StringVar()
             self.preset = tk.StringVar()
             self.boundary = tk.StringVar(value='include')
-            self.export_format = tk.StringVar(value='xlsx')
             self.status = tk.StringVar(value='Choose a patient-set directory or ZIP archive to begin.')
 
             controls = ttk.Frame(root, padding=12)
@@ -66,15 +65,16 @@ def _launch(mode):
                 ttk.Entry(controls, textvariable=self.preset, state='readonly').grid(row=2, column=1, sticky='ew', padx=8)
                 self.button(controls, 'Choose CSV / TSV…', self.choose_preset).grid(row=2, column=2)
             else:
-                ttk.Label(controls, text='Contour boundary').grid(row=2, column=0, sticky='w')
-                boundary_box = ttk.Combobox(controls, textvariable=self.boundary, values=['include', 'exclude'], state='readonly', width=15)
-                boundary_box.grid(row=2, column=1, sticky='w', padx=8)
-                boundary_box.bind('<<ComboboxSelected>>', self.invalidate)
-                self.controls.append((boundary_box, 'readonly'))
-                ttk.Label(controls, text='Export format').grid(row=3, column=0, sticky='w', pady=(8, 0))
-                format_box = ttk.Combobox(controls, textvariable=self.export_format, values=['xlsx', 'csv'], state='readonly', width=15)
-                format_box.grid(row=3, column=1, sticky='w', padx=8, pady=(8, 0))
-                self.controls.append((format_box, 'readonly'))
+                advanced = ttk.Menubutton(controls, text='Advanced…')
+                advanced.grid(row=1, column=3, padx=(8, 0), sticky='w')
+                menu = tk.Menu(advanced, tearoff=False)
+                boundary_menu = tk.Menu(menu, tearoff=False)
+                for value in ('include', 'exclude'):
+                    boundary_menu.add_radiobutton(label=value.capitalize() + ' boundary voxels',
+                                                  variable=self.boundary, value=value, command=self.invalidate)
+                menu.add_cascade(label='Contour boundary', menu=boundary_menu)
+                advanced.configure(menu=menu)
+                self.controls.append((advanced, 'normal'))
 
             actions = ttk.Frame(root, padding=(12, 0, 12, 8))
             actions.grid(row=1, column=0, sticky='ew')
@@ -312,19 +312,24 @@ def _launch(mode):
         def save(self):
             if self.result is None:
                 return
-            extension = '.' + self.export_format.get()
+            selected_type = tk.StringVar(value='Excel workbook')
             path = filedialog.asksaveasfilename(
                 title='Save modified plan copy' if self.is_red else 'Export DVH spreadsheet',
-                initialfile='plan.RED-overridden' if self.is_red else safe_filename_component(self.selected['name']) + extension,
-                defaultextension='' if self.is_red else extension,
-                filetypes=[('Plan copy', '*.*')] if self.is_red else [('Spreadsheet', '*' + extension)])
+                initialfile='plan.RED-overridden' if self.is_red else safe_filename_component(self.selected['name']),
+                defaultextension='' if self.is_red else '.xlsx',
+                typevariable=selected_type,
+                filetypes=[('Plan copy', '*.*')] if self.is_red else [('Excel workbook', '*.xlsx'), ('CSV (comma-separated)', '*.csv')])
             if not path:
                 return
             if self.is_red:
                 original = self.source if self.source.is_file() else self.source / self.selected['member']
                 operation = lambda: save_plan_copy(self.result, original, path)
             else:
-                exporter = export_dvh_xlsx if self.export_format.get() == 'xlsx' else export_dvh_csv
+                suffix = Path(path).suffix.lower()
+                if suffix not in ('.xlsx', '.csv'):
+                    messagebox.showerror('Unsupported export format', 'Choose an .xlsx or .csv filename.')
+                    return
+                exporter = export_dvh_csv if suffix == '.csv' else export_dvh_xlsx
                 operation = lambda: exporter(self.result, path, source=self.source)
             self.work(operation, lambda _: self.status.set(f'Saved {path}'), 'Saving…')
 

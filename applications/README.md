@@ -125,6 +125,8 @@ Selecting a different plan structure resumes automatic name matching.
 Matching uses case-insensitive shell-style `structure_patterns`, for example `["*PTV*"]`.
 Broad patterns can match subtraction structures or PRVs too; edit them for local naming conventions.
 **Advanced: load JSON…** below the goal selection lists loads a library from another location, including a local refresh.
+**Advanced…** beside **Calculate DVH** contains the contour-boundary setting.
+**Export spreadsheet…** offers Excel and CSV in the save dialog; the selected filename extension determines the writer.
 
 TCC contains the seven user-supplied PTV goals, with separate tolerance and action D2% limits.
 Relative-dose goals require the prescription entered in Gy and work with either dose-axis unit.
