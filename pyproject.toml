@@ -28,7 +28,7 @@ hyperio-dvh-exporter = "hyperio.gui:dvh_main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-hyperio = ["data/*.json"]
+hyperio = ["data/*.json", "data/dvh/*.json"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

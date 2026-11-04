@@ -24,6 +24,16 @@ def cursor_point(structure, dose_cgy, prescription_cgy=None):
             'volume_percent': volume, 'volume_cm3': volume / 100 * structure['volume_cm3']}
 
 
+def structure_summary(row):
+    """Show calculated statistics as soon as a structure is selected."""
+    parts = [row['structure'], f"Volume: {row['volume_cm3']:.4g} cm³"]
+    for label, key in [('Min', 'min_dose_cgy'), ('Mean', 'mean_dose_cgy'), ('Max', 'max_dose_cgy')]:
+        value = row.get(key)
+        if value is not None and math.isfinite(value):
+            parts.append(f'{label}: {value:.4g} cGy')
+    return '  |  '.join(parts)
+
+
 class DVHPlot:
     """Tk Canvas plot, with independent visibility and active-curve controls."""
 
@@ -57,23 +67,25 @@ class DVHPlot:
             ttk.Combobox(tools, textvariable=variable, values=values,
                          state='readonly', width=8).pack(side='left')
         ttk.Button(tools, text='Track cursor', command=self.track).pack(side='left', padx=12)
-        self.build_eviq_controls(toolbar)
         self.canvas = tk.Canvas(parent, background='white', highlightthickness=0, width=600, height=350)
         self.canvas.grid(row=1, column=0, sticky='nsew')
         side = ttk.Frame(parent, padding=8)
         side.grid(row=1, column=1, sticky='ns')
-        ttk.Label(side, text='Show    Select structure').pack(anchor='w')
-        scroll = tk.Canvas(side, width=250, highlightthickness=0)
-        scrollbar = ttk.Scrollbar(side, orient='vertical', command=scroll.yview)
+        structures = ttk.Frame(side)
+        structures.pack(fill='both', expand=True)
+        ttk.Label(structures, text='Show    Select structure').pack(anchor='w')
+        scroll = tk.Canvas(structures, width=235, height=100, highlightthickness=0)
+        scrollbar = ttk.Scrollbar(structures, orient='vertical', command=scroll.yview)
         scrollbar.pack(side='right', fill='y')
         scroll.pack(side='left', fill='both', expand=True)
         scroll.configure(yscrollcommand=scrollbar.set)
         self.list = ttk.Frame(scroll)
         scroll.create_window((0, 0), window=self.list, anchor='nw')
         self.list.bind('<Configure>', lambda e: scroll.configure(scrollregion=scroll.bbox('all')))
-        ttk.Label(parent, textvariable=self.readout, padding=8, wraplength=1000).grid(row=2, column=0, columnspan=2, sticky='w')
-        ttk.Label(parent, text='Select a structure on the right, then move over the plot. Click to pin a point; Track cursor resumes movement.',
-                  padding=8, wraplength=1000).grid(row=3, column=0, columnspan=2, sticky='w')
+        readout = ttk.Label(parent, textvariable=self.readout, padding=8, wraplength=1000)
+        readout.grid(row=2, column=0, columnspan=2, sticky='ew')
+        readout.bind('<Configure>', lambda e: readout.configure(wraplength=max(100, e.width - 16)))
+        self.build_goal_controls(toolbar)
         self.canvas.bind('<Configure>', lambda e: self.draw())
         self.canvas.bind('<Motion>', self.motion)
         self.canvas.bind('<Button-1>', self.click)
@@ -95,120 +107,188 @@ class DVHPlot:
             self.ttk.Radiobutton(self.list, text=row['structure'], variable=self.active,
                                  value=index, command=self.select).grid(row=index, column=2, sticky='w')
         self.active.set(0 if self.rows else -1)
-        self.eviq_apply.set(False)
+        self.match_goal_structure()
         self.draw()
 
     def select(self):
         self.point_dose = None
         self.pinned = False
-        self.eviq_apply.set(False)
+        self.match_goal_structure()
         self.draw()
 
-    def build_eviq_controls(self, parent):
-        from .eviq import default_catalogue_path
+    def build_goal_controls(self, parent):
+        from .dvh_goals import library_paths
         tk, ttk = self.tk, self.ttk
-        self.eviq_pages = []
-        self.eviq_groups = []
-        self.eviq_protocol = tk.StringVar()
-        self.eviq_group = tk.StringVar()
-        self.eviq_apply = tk.BooleanVar(value=False)
-        controls = ttk.Frame(parent)
-        controls.pack(fill='x', pady=(8, 0))
-        ttk.Button(controls, text='Load eviQ JSON…', command=self.load_eviq).pack(side='left')
-        self.protocol_box = ttk.Combobox(controls, textvariable=self.eviq_protocol, state='readonly', width=55)
-        self.protocol_box.pack(side='left', padx=6, fill='x', expand=True)
-        self.protocol_box.bind('<<ComboboxSelected>>', self.eviq_protocol_changed)
-        ttk.Button(controls, text='Open source', command=self.open_eviq_source).pack(side='left')
-        line = ttk.Frame(parent)
-        line.pack(fill='x', pady=4)
-        self.group_box = ttk.Combobox(line, textvariable=self.eviq_group, state='readonly', width=65)
-        self.group_box.pack(side='left', fill='x', expand=True)
-        self.group_box.bind('<<ComboboxSelected>>', self.eviq_group_changed)
-        ttk.Checkbutton(line, text='Overlay on selected structure', variable=self.eviq_apply,
-                        command=self.draw).pack(side='left', padx=6)
-        self.eviq_details = tk.Text(parent, height=4, wrap='word', state='disabled')
-        self.eviq_details.pack(fill='x')
-        self.set_eviq_details('Load a catalogue generated by hyperio-eviq-update. Select protocol and organ/regimen, '
-                              'then select the corresponding plan structure and enable the overlay. '
-                              'Review fractionation, definitions and source; points are not clinical approval.')
-        catalogue_path = default_catalogue_path()
-        if catalogue_path.is_file():
-            self.load_eviq(catalogue_path)
+        self.goal_pages, self.goal_groups = [], []
+        self.goal_manual = False
+        self.goal_protocol = tk.IntVar(value=-1)
+        self.goal_group = tk.IntVar(value=-1)
+        self.goal_filter = tk.StringVar()
+        self.goal_library = tk.StringVar()
+        self.goal_regimen = tk.StringVar()
+        self.goal_apply = tk.BooleanVar(value=True)
+        panel = ttk.LabelFrame(parent, text='DVH goals', padding=6)
+        panel.pack(fill='x', pady=(8, 0))
+        line = ttk.Frame(panel)
+        line.pack(fill='x')
+        self.library_paths = library_paths()
+        ttk.Label(line, text='Goal library').grid(row=0, column=0, sticky='w')
+        self.library_box = ttk.Combobox(line, textvariable=self.goal_library, state='readonly',
+                                        values=[p.name for p in self.library_paths], width=20)
+        self.library_box.grid(row=0, column=1, sticky='ew', padx=4)
+        self.library_box.bind('<<ComboboxSelected>>',
+                              lambda e: self.load_goals(self.library_paths[self.library_box.current()]))
+        ttk.Label(line, text='Filter protocols').grid(row=0, column=2, sticky='w', padx=(12, 0))
+        ttk.Entry(line, textvariable=self.goal_filter, width=25).grid(row=0, column=3, sticky='ew', padx=4)
+        ttk.Checkbutton(line, text='Show goals', variable=self.goal_apply, command=self.draw).grid(row=0, column=4, sticky='w', padx=8)
+        ttk.Button(line, text='Open source', command=self.open_goal_source).grid(row=0, column=5, sticky='e')
+        lists = ttk.Frame(panel)
+        lists.pack(fill='x', pady=4)
+        lists.columnconfigure(0, weight=3)
+        lists.columnconfigure(1, weight=2)
+        lists.columnconfigure(2, weight=1)
+        self.goal_list_canvases = {}
+        def radio_list(label, column, width):
+            frame = ttk.LabelFrame(lists, text=label)
+            frame.grid(row=0, column=column, sticky='nsew', padx=3)
+            canvas = tk.Canvas(frame, width=width, height=95, highlightthickness=0)
+            bar = ttk.Scrollbar(frame, orient='vertical', command=canvas.yview)
+            bar.pack(side='right', fill='y')
+            canvas.pack(side='left', fill='both', expand=True)
+            canvas.configure(yscrollcommand=bar.set)
+            self.goal_list_canvases[column] = canvas
+            content = ttk.Frame(canvas)
+            window = canvas.create_window((0, 0), window=content, anchor='nw')
+            canvas.bind('<Configure>', lambda e: canvas.itemconfigure(window, width=e.width))
+            content.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox('all')))
+            return content
+        self.protocol_list = radio_list('1. Protocol', 0, 460)
+        self.regimen_list = radio_list('2. Prescription', 1, 300)
+        self.target_list = radio_list('3. Structure goals', 2, 180)
+        self.goal_filter.trace_add('write', lambda *args: self.filter_protocols())
+        # An unobtrusive advanced loader stays below the normal selection flow.
+        ttk.Button(panel, text='Advanced: load JSON…', command=self.load_goals).pack(anchor='e', pady=(3, 0))
+        if self.library_paths:
+            self.library_box.current(0)
+            self.load_goals(self.library_paths[0])
 
-    def set_eviq_details(self, text):
-        self.eviq_details.configure(state='normal')
-        self.eviq_details.delete('1.0', 'end')
-        self.eviq_details.insert('1.0', text)
-        self.eviq_details.configure(state='disabled')
+    def add_goal_radio(self, parent, text, variable, value, command):
+        button = self.tk.Radiobutton(parent, text=text, variable=variable, value=value,
+                                     command=command, anchor='w', justify='left', wraplength=300)
+        button.pack(fill='x', anchor='w')
+        button.bind('<Configure>', lambda e: button.configure(wraplength=max(60, e.width - 30)))
 
-    def load_eviq(self, path=None):
+    def load_goals(self, path=None):
         from tkinter import filedialog, messagebox
-        from .eviq import load_catalogue
-        path = path or filedialog.askopenfilename(title='Load eviQ criteria catalogue', filetypes=[('JSON', '*.json')])
+        from pathlib import Path
+        from .dvh_goals import load_catalogue
+        path = path or filedialog.askopenfilename(title='Load DVH goal library', filetypes=[('JSON', '*.json')])
         if not path:
             return
         try:
             catalogue = load_catalogue(path)
-            pages = catalogue['protocols']
-            labels = [f'{i + 1}. {p["title"]}' for i, p in enumerate(pages)]
         except (OSError, ValueError, KeyError, TypeError) as error:
-            messagebox.showerror('Cannot load eviQ criteria', str(error))
+            messagebox.showerror('Cannot load DVH goals', str(error))
             return
-        self.eviq_pages = pages
-        self.eviq_updated = catalogue.get('generated_at', 'unknown')
-        self.protocol_box.configure(values=labels)
-        self.eviq_protocol.set('')
-        self.eviq_groups = []
-        self.group_box.configure(values=[])
-        self.eviq_group.set('')
-        self.eviq_apply.set(False)
-        self.set_eviq_details(f'Catalogue retrieved {self.eviq_updated}. Select a protocol; review the current source before use.')
+        self.goal_library.set(Path(path).name)
+        self.goal_pages = catalogue['protocols']
+        self.goal_source = catalogue.get('attribution', catalogue.get('source', ''))
+        self.goal_protocol.set(0 if len(self.goal_pages) == 1 else -1)
+        self.goal_filter.set('')
+        self.filter_protocols()
+        self.goal_protocol_changed()
+
+    def filter_protocols(self):
+        self.goal_list_canvases[0].yview_moveto(0)
+        for child in self.protocol_list.winfo_children():
+            child.destroy()
+        query = self.goal_filter.get().casefold().split()
+        for index, page in enumerate(self.goal_pages):
+            title = f'{page.get("protocol_id") or ""} {page["title"]}'.strip()
+            if all(word in title.casefold() for word in query):
+                self.add_goal_radio(self.protocol_list, title, self.goal_protocol, index, self.goal_protocol_changed)
+
+    def goal_protocol_changed(self):
+        from .dvh_goals import regimens
+        for child in self.regimen_list.winfo_children():
+            child.destroy()
+        self.goal_list_canvases[1].yview_moveto(0)
+        self.goal_regimen.set('')
+        index = self.goal_protocol.get()
+        if index >= 0:
+            prescriptions = regimens(self.goal_pages[index])
+            if len(prescriptions) == 1:
+                self.goal_regimen.set(prescriptions[0])
+            for regimen in prescriptions:
+                self.add_goal_radio(self.regimen_list, regimen, self.goal_regimen, regimen, self.goal_regimen_changed)
+        self.goal_regimen_changed()
+
+    def goal_regimen_changed(self):
+        self.goal_list_canvases[2].yview_moveto(0)
+        for child in self.target_list.winfo_children():
+            child.destroy()
+        index = self.goal_protocol.get()
+        self.goal_groups = ([g for g in self.goal_pages[index]['groups']
+                             if g['regimen'] == self.goal_regimen.get()] if index >= 0 else [])
+        self.goal_group.set(-1)
+        for i, group in enumerate(self.goal_groups):
+            self.add_goal_radio(self.target_list, group['organ'], self.goal_group, i, self.goal_target_changed)
+        self.match_goal_structure()
+        if len(self.goal_groups) == 1:
+            self.goal_group.set(0)
+            self.goal_target_changed()
         if hasattr(self, 'canvas'):
             self.draw()
 
-    def eviq_protocol_changed(self, event=None):
-        index = self.protocol_box.current()
-        self.eviq_groups = self.eviq_pages[index]['groups'] if index >= 0 else []
-        self.group_box.configure(values=[f'{i + 1}. {g["organ"]} | {g["regimen"]}'
-                                         for i, g in enumerate(self.eviq_groups)])
-        self.eviq_group.set('')
-        self.eviq_apply.set(False)
-        page = self.eviq_pages[index] if index >= 0 else {}
-        self.set_eviq_details('Select an organ/regimen. ' + ' '.join(page.get('warnings', [])))
+    def match_goal_structure(self):
+        self.goal_manual = False
+        from .dvh_goals import matching_groups
+        index, protocol = self.active.get(), self.goal_protocol.get()
+        matches = (matching_groups(self.goal_pages[protocol], self.goal_regimen.get(),
+                                   self.rows[index]['structure'])
+                   if protocol >= 0 and 0 <= index < len(self.rows) else [])
+        self.goal_group.set(next((i for i, g in enumerate(self.goal_groups) if g in matches), -1))
+
+    def goal_target_changed(self):
+        self.goal_manual = True
+        from fnmatch import fnmatchcase
+        group = self.goal_groups[self.goal_group.get()]
+        patterns = group.get('structure_patterns', [group['organ']])
+        matches = [i for i, row in enumerate(self.rows) if any(
+            fnmatchcase(row['structure'].casefold(), p.casefold()) for p in patterns)]
+        if matches:
+            matching = set(matches)
+            for index, visible in enumerate(self.visible):
+                visible.set(index in matching)
+            if self.active.get() not in matching:
+                self.active.set(matches[0])
+                self.point_dose = None
+                self.pinned = False
+        self.goal_apply.set(True)
         self.draw()
 
-    def eviq_group_changed(self, event=None):
-        self.eviq_apply.set(False)
-        index = self.group_box.current()
-        if index >= 0:
-            group = self.eviq_groups[index]
-            page = self.eviq_pages[self.protocol_box.current()]
-            lines = [f'Adapted from eviQ / Cancer Institute NSW | ID {page.get("protocol_id", "?")} '
-                     f'| {page.get("version") or "version unavailable"} | Retrieved {self.eviq_updated} | {page["url"]}',
-                     f'{group["organ"]} | {group["regimen"]} | {group["notes"]}']
-            for record in group['recommendations']:
-                status = 'point' if record.get('point') else 'manual review, no point'
-                lines.append(f'{record.get("qualifier", "")}: {record["text"]} [{status}]')
-            lines.append('Verify prescription, fractionation, contour definitions and conditional notes in the source. '
-                         'Open circles mark limits, not measured dose or approval. No EQD2 conversion is performed.')
-            self.set_eviq_details('\n'.join(lines))
-        self.draw()
-
-    def open_eviq_source(self):
+    def open_goal_source(self):
         import webbrowser
-        from .eviq import protocol_url
-        index = self.protocol_box.current()
+        from urllib.parse import urlsplit
+        index = self.goal_protocol.get()
         if index >= 0:
-            url = self.eviq_pages[index]['url']
-            if protocol_url(url):
+            url = self.goal_pages[index].get('url', '')
+            if urlsplit(url).scheme == 'https' and urlsplit(url).netloc:
                 webbrowser.open(url)
 
-    def eviq_points(self):
-        from .eviq import overlay_points
-        index, group_index = self.active.get(), self.group_box.current()
-        if not self.eviq_apply.get() or index < 0 or group_index < 0 or index >= len(self.rows):
+    def goal_points(self):
+        from .dvh_goals import overlay_points, matching_groups
+        index, protocol = self.active.get(), self.goal_protocol.get()
+        if not self.goal_apply.get() or not 0 <= index < len(self.rows) or protocol < 0:
             return []
-        return overlay_points(self.eviq_groups[group_index], self.rows[index]['volume_cm3'], self.volume_unit.get())
+        row = self.rows[index]
+        selected = self.goal_group.get()
+        if self.goal_manual and 0 <= selected < len(self.goal_groups):
+            groups = [self.goal_groups[selected]]
+        else:
+            groups = matching_groups(self.goal_pages[protocol], self.goal_regimen.get(), row['structure'])
+        return [point for group in groups for point in overlay_points(
+            group, row['volume_cm3'], self.volume_unit.get(), self.prescription())]
 
     def track(self):
         self.pinned = False
@@ -232,7 +312,7 @@ class DVHPlot:
             self.readout.set('Enter a finite, positive prescription dose in Gy to plot relative dose.')
             return
         shown = [i for i, visible in enumerate(self.visible) if visible.get()]
-        points = self.eviq_points() if self.active.get() in shown else []
+        points = self.goal_points() if self.goal_manual or self.active.get() in shown else []
         self.xmax = max((self.rows[i]['dvh_curve']['dose_cgy'][-1] for i in shown), default=1.)
         self.ymax = 100. if self.volume_unit.get() == '%' else max((self.rows[i]['volume_cm3'] for i in shown), default=1.)
         self.xmax = max(self.xmax, *(p['dose_cgy'] for p in points), 1.)
@@ -245,11 +325,21 @@ class DVHPlot:
             fraction = tick / 5
             x, y = left + fraction * (right - left), bottom - fraction * (bottom - top)
             c.create_line(left, y, right, y, fill='#eeeeee')
-            c.create_text(left - 8, y, text=f'{fraction * self.ymax:.3g}', anchor='e')
+            c.create_line(x, top, x, bottom, fill='#eeeeee')
+            c.create_line(x, bottom, x, bottom + 5, fill='#444444', tags='axis-tick')
+            c.create_line(left - 5, y, left, y, fill='#444444', tags='axis-tick')
+            c.create_text(left - 8, y, text=f'{fraction * self.ymax:.3g}', anchor='e', fill='#222222', tags='axis-value')
             dose = fraction * self.xmax
-            c.create_text(x, bottom + 15, text=f'{dose / rx * 100 if self.dose_unit.get() == "% Rx" else dose:.4g}')
-        c.create_text((left + right) / 2, bottom + 38, text=f'Dose ({self.dose_unit.get()})')
-        c.create_text(18, (top + bottom) / 2, text=f'Volume ({self.volume_unit.get()})', angle=90)
+            c.create_text(x, bottom + 15, text=f'{dose / rx * 100 if self.dose_unit.get() == "% Rx" else dose:.4g}', fill='#222222', tags='axis-value')
+        for tick in range(1, 25):
+            if tick % 5 == 0:
+                continue
+            fraction = tick / 25
+            x, y = left + fraction * (right - left), bottom - fraction * (bottom - top)
+            c.create_line(x, bottom, x, bottom + 3, fill='#777777', tags='axis-tick')
+            c.create_line(left - 3, y, left, y, fill='#777777', tags='axis-tick')
+        c.create_text((left + right) / 2, bottom + 38, text=f'Dose ({self.dose_unit.get()})', fill='#222222')
+        c.create_text(18, (top + bottom) / 2, text=f'Volume ({self.volume_unit.get()})', angle=90, fill='#222222')
         for index in shown:
             row = self.rows[index]
             curve = row['dvh_curve']
@@ -258,8 +348,17 @@ class DVHPlot:
             c.create_line(*coordinates, fill=self.COLORS[index % len(self.COLORS)], width=3 if index == self.active.get() else 1.5)
         for number, point in enumerate(points, 1):
             x, y = xy(point['dose_cgy'], point['volume'])
-            color = self.COLORS[self.active.get() % len(self.COLORS)]
-            c.create_oval(x - 6, y - 6, x + 6, y + 6, outline=color, width=2)
+            from .dvh_goals import goal_colour, marker
+            color = goal_colour(point)
+            direction = marker(point)
+            shapes = {'<': [x + 5, y - 6, x - 5, y, x + 5, y + 6],
+                      '>': [x - 5, y - 6, x + 5, y, x - 5, y + 6],
+                      '^': [x - 6, y + 5, x, y - 5, x + 6, y + 5],
+                      'v': [x - 6, y - 5, x, y + 5, x + 6, y - 5]}
+            if direction in shapes:
+                c.create_polygon(*shapes[direction], fill='white', outline=color, width=2)
+            else:
+                c.create_oval(x - 6, y - 6, x + 6, y + 6, outline=color, width=2)
             c.create_text(x - 8, y - 8, text=f'{number}: {point["qualifier"]} {point["text"]}',
                           anchor='se', fill=color, font=('TkDefaultFont', 8))
         index = self.active.get()
@@ -268,16 +367,28 @@ class DVHPlot:
             return
         row = self.rows[index]
         if self.point_dose is None:
-            self.readout.set(f'{row["structure"]}: move the cursor over the plot to inspect a point.')
+            self.readout.set(structure_summary(row))
             return
         point = cursor_point(row, self.point_dose, rx)
         x, y = xy(point['dose_cgy'], point['volume_percent'] if self.volume_unit.get() == '%' else point['volume_cm3'])
         if left <= x <= right:
             c.create_line(x, top, x, bottom, dash=(3, 3), fill='#888888')
             c.create_line(left, y, right, y, dash=(3, 3), fill='#888888')
-            c.create_oval(x - 4, y - 4, x + 4, y + 4, outline=self.COLORS[index % len(self.COLORS)], width=2)
+            color = self.COLORS[index % len(self.COLORS)]
+            c.create_oval(x - 4, y - 4, x + 4, y + 4, outline=color, width=2)
+            dose_position = point['dose_percent'] if self.dose_unit.get() == '% Rx' else point['dose_cgy']
+            volume_position = point['volume_percent'] if self.volume_unit.get() == '%' else point['volume_cm3']
+            # Keep axis positions legible over the regular tick labels without adding a panel.
+            for px, py, value, anchor in (
+                    (min(right - 24, max(left + 24, x)), bottom + 15, dose_position, 'center'),
+                    (left - 8, min(bottom - 8, max(top + 8, y)), volume_position, 'e')):
+                label = c.create_text(px, py, text=f'{value:.4g}', anchor=anchor,
+                                      fill=color, tags='axis-position')
+                background = c.create_rectangle(*c.bbox(label), fill='white', outline=color,
+                                                 tags='axis-position')
+                c.tag_lower(background, label)
         relative = f' ({point["dose_percent"]:.3f}% Rx)' if rx else ''
-        self.readout.set(f'{row["structure"]}  |  Dose: {point["dose_cgy"]:.3f} cGy{relative}  |  '
+        self.readout.set(structure_summary(row) + f'\nCursor  |  Dose: {point["dose_cgy"]:.3f} cGy{relative}  |  '
                          f'Volume: {point["volume_cm3"]:.4f} cm³ ({point["volume_percent"]:.3f}%)'
                          + ('  |  Pinned' if self.pinned else ''))
 

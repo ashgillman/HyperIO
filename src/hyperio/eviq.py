@@ -18,10 +18,13 @@ from urllib.request import Request, urlopen
 from urllib.robotparser import RobotFileParser
 
 
+from .dvh_goals import load_catalogue, overlay_points, parse_point as parse_goal_point
+
+
 ROOT = 'https://www.eviq.org.au'
 AGENT = 'HyperIO-eviQ/1.0'
 DEFAULT_CATALOGUE = Path.home() / '.hyperio' / 'eviq.json'
-BUNDLED_CATALOGUE = Path(__file__).parent / 'data' / 'eviq.json'
+BUNDLED_CATALOGUE = Path(__file__).parent / 'data' / 'dvh' / 'eviq.json'
 NUMBER = r'(?:\d+(?:\.\d*)?|\.\d+)'
 UNIT = r'(?:%|cc|cm3|cm³)'
 OP = r'(?:<=|>=|<|>|=)'
@@ -37,43 +40,9 @@ def clean(text):
 
 
 def parse_point(text):
-    """Return a threshold coordinate, never an interpretation of clinical suitability."""
-    text = clean(text).replace('≤', '<=').replace('≥', '>=').rstrip('.')
-    v = re.fullmatch(rf'V\s*({NUMBER})\s*(cGy|Gy)\s*({OP})\s*({NUMBER})\s*({UNIT})', text, re.I)
-    d = re.fullmatch(rf'D\s*({NUMBER})\s*({UNIT})\s*({OP})\s*({NUMBER})\s*(cGy|Gy)', text, re.I)
-    if v:
-        dose, dose_unit, operator, volume, volume_unit = v.groups()
-        metric = 'V'
-    elif d:
-        volume, volume_unit, operator, dose, dose_unit = d.groups()
-        metric = 'D'
-    else:
-        return None
-    dose, volume = float(dose), float(volume)
-    dose *= 100 if dose_unit.lower() == 'gy' else 1
-    unit = '%' if volume_unit == '%' else 'cm3'
-    if not math.isfinite(dose) or not math.isfinite(volume) or (unit == '%' and volume > 100):
-        return None
-    return dict(metric=metric, dose_cgy=dose, volume=volume, volume_unit=unit, operator=operator)
-
-
-def overlay_points(group, volume_cm3, volume_unit):
-    """Convert thresholds for the explicitly selected plan structure and volume axis."""
-    if not math.isfinite(volume_cm3) or volume_cm3 <= 0:
-        return []
-    points = []
-    for record in group['recommendations']:
-        point = record.get('point')
-        if point is None:
-            continue
-        volume = point['volume']
-        if point['volume_unit'] == 'cm3' and volume_unit == '%':
-            volume = volume / volume_cm3 * 100
-        elif point['volume_unit'] == '%' and volume_unit != '%':
-            volume = volume / 100 * volume_cm3
-        points.append(dict(point, volume=volume, text=record.get('point_expression', record['text']),
-                           qualifier=record.get('qualifier', '')))
-    return points
+    """eviQ extraction currently supports physical dose only."""
+    point = parse_goal_point(text)
+    return point if point is not None and 'dose_cgy' in point else None
 
 
 def _soup(html):
@@ -194,7 +163,8 @@ def parse_protocol(html, url):
                 if not records:
                     continue
                 key = f'{url}#{table_index}:{row_index}:{x}'
-                page['groups'].append(dict(id=key, organ=organ, regimen=headers[x], notes=notes,
+                page['groups'].append(dict(id=key, organ=organ, structure_patterns=[f'*{organ}*'],
+                                           regimen=headers[x], notes=notes,
                                            recommendations=records))
     if not page['groups']:
         page['warnings'].append('No supported OAR table rows; inspect source and section_text.')
@@ -333,20 +303,6 @@ def update_catalogue(urls, destination, *, fetch, delay=0):
         temporary.replace(destination)
     finally:
         temporary.unlink(missing_ok=True)
-    return catalogue
-
-
-def load_catalogue(path):
-    catalogue = json.loads(Path(path).read_text(encoding='utf-8'))
-    if not isinstance(catalogue, dict) or catalogue.get('schema_version') != 1 or not isinstance(catalogue.get('protocols'), list):
-        raise ValueError('Unsupported eviQ catalogue format')
-    for page in catalogue['protocols']:
-        for group in page['groups']:
-            for record in group['recommendations']:
-                point = record.get('point')
-                if point is not None and (not isinstance(point, dict) or not point
-                                          or point != parse_point(record.get('point_expression', record['text']))):
-                    raise ValueError('Catalogue point differs from its recommendation text')
     return catalogue
 
 

@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "source": "TCC",
+  "protocols": [
+    {
+      "title": "PTV goals",
+      "groups": [
+        {
+          "organ": "PTV",
+          "structure_patterns": [
+            "*PTV*"
+          ],
+          "regimen": "Relative to prescription",
+          "notes": "User-supplied TCC goals. Dose percentages use the entered prescription.",
+          "recommendations": [
+            {
+              "text": "D2% <= 105%",
+              "qualifier": "tolerance",
+              "point": {
+                "metric": "D",
+                "dose_percent": 105.0,
+                "volume": 2.0,
+                "volume_unit": "%",
+                "operator": "<="
+              }
+            },
+            {
+              "text": "D2% <= 107%",
+              "qualifier": "action",
+              "point": {
+                "metric": "D",
+                "dose_percent": 107.0,
+                "volume": 2.0,
+                "volume_unit": "%",
+                "operator": "<="
+              }
+            },
+            {
+              "text": "V107% <= 2%",
+              "qualifier": "",
+              "point": {
+                "metric": "V",
+                "dose_percent": 107.0,
+                "volume": 2.0,
+                "volume_unit": "%",
+                "operator": "<="
+              }
+            },
+            {
+              "text": "D50% <= 102%",
+              "qualifier": "",
+              "point": {
+                "metric": "D",
+                "dose_percent": 102.0,
+                "volume": 50.0,
+                "volume_unit": "%",
+                "operator": "<="
+              }
+            },
+            {
+              "text": "D50% >= 98%",
+              "qualifier": "",
+              "point": {
+                "metric": "D",
+                "dose_percent": 98.0,
+                "volume": 50.0,
+                "volume_unit": "%",
+                "operator": ">="
+              }
+            },
+            {
+              "text": "V95% >= 98%",
+              "qualifier": "",
+              "point": {
+                "metric": "V",
+                "dose_percent": 95.0,
+                "volume": 98.0,
+                "volume_unit": "%",
+                "operator": ">="
+              }
+            },
+            {
+              "text": "D98% >= 95%",
+              "qualifier": "",
+              "point": {
+                "metric": "D",
+                "dose_percent": 95.0,
+                "volume": 98.0,
+                "volume_unit": "%",
+                "operator": ">="
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

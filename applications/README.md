@@ -110,11 +110,27 @@ The prescription is a user-supplied display normalization and does not change ca
 Cursor values use linear interpolation of the same provisional cumulative histogram used for calculated volume-at-dose queries.
 Changing the plan, source or contour-boundary setting clears both the table and plot until the next calculation.
 
-### eviQ recommendation points
+### DVH goal libraries
 
-The plot tab loads the committed eviQ catalogue automatically, so the protocol list is available offline immediately.
-An existing local refresh at `~/.hyperio/eviq.json` takes precedence over the bundled snapshot.
-Use **Load eviQ JSON…** to select another catalogue.
+The **Goal library** dropdown lists JSON files in `src/hyperio/data/dvh/`, including `eviq.json` and `TCC.json`.
+Libraries with a single protocol, prescription or structure goal select those choices automatically, so TCC opens directly to its PTV goals.
+Select a library, filter the protocol radio list (for example, type `prostate`), select a protocol, then select its prescription.
+All structure goals for that prescription become available together.
+Selecting a plan structure automatically overlays every matching goal group in that prescription.
+Selecting a structure-goal radio button always enables its goal points.
+When structures match, Show switches to only those structures; an active matching structure is retained, otherwise the first match becomes active.
+When no structures match, the active structure and Show selections stay unchanged, and the goal points still display using the active structure for volume conversion.
+Show checkboxes remain manually adjustable after selection.
+Selecting a different plan structure resumes automatic name matching.
+Matching uses case-insensitive shell-style `structure_patterns`, for example `["*PTV*"]`.
+Broad patterns can match subtraction structures or PRVs too; edit them for local naming conventions.
+**Advanced: load JSON…** below the goal selection lists loads a library from another location, including a local refresh.
+
+TCC contains the seven user-supplied PTV goals, with separate tolerance and action D2% limits.
+Relative-dose goals require the prescription entered in Gy and work with either dose-axis unit.
+V95% ≥ 98% and D98% ≥ 95% express the same coverage boundary for an ideal continuous monotone DVH; both requested forms remain in the file.
+D2% ≤ 107% and V107% ≤ 2% similarly describe a hotspot boundary, although plateaus, interpolation and equality conventions can affect numerical equivalence.
+
 The updater needs Beautiful Soup in addition to the application dependencies:
 
 ```sh
@@ -127,7 +143,7 @@ The Nix shell includes its dependencies.
 By default the updater discovers protocols in eviQ's public radiation-oncology category listing, including its embedded JSON tree, and writes `~/.hyperio/eviq.json`.
 Listing entries explicitly labelled discontinued, superseded or archived are excluded from that tree.
 Redirect aliases are deduplicated using the protocol ID displayed in the fetched page.
-The app loads that file automatically on launch when present.
+Load that refreshed file with **Advanced: load JSON…**, or refresh the bundled file explicitly as below.
 Run the command again whenever you want to refresh the catalogue, then reload it in the app.
 Refreshing needs an internet connection; plotting a saved catalogue works offline.
 The app does not contact eviQ or send plan data to it.
@@ -135,10 +151,10 @@ The app does not contact eviQ or send plan data to it.
 To refresh the snapshot kept in Git, run this command from the checkout and review the resulting diff:
 
 ```sh
-python scripts/update_eviq.py --output src/hyperio/data/eviq.json --verbose
+python scripts/update_eviq.py --output src/hyperio/data/dvh/eviq.json --verbose
 ```
 
-Commit `src/hyperio/data/eviq.json` after reviewing the update.
+Commit `src/hyperio/data/dvh/eviq.json` after reviewing the update.
 The snapshot is also included in installed packages.
 
 For a smaller catalogue or a different location, supply one or more protocol URLs:
@@ -148,15 +164,14 @@ python scripts/update_eviq.py --output ./eviq.json --cache ./eviq-sources \
   --url https://www.eviq.org.au/radiation-oncology/urogenital/prostate/235-prostate-adenocarcinoma-definitive-ebrt-high-r
 ```
 
-Select a protocol, then an **organ / regimen** entry from the second dropdown.
-Select the corresponding plan structure using its radio button, and enable **Overlay on selected structure**.
-This is an explicit mapping: organ names, combined organs, subtraction structures and PRVs are not matched automatically.
-Open circles mark recommendation limits in the selected curve's colour, with the original inequality and qualifier in the label.
-The displayed recommendation text includes entries that need manual review and therefore have no plotted point.
-Scroll within the text area to read the full list.
-Changing the protocol, organ/regimen, selected structure or plan disables the overlay until you enable it again.
+Goal selection lists sit above the plot, with wrapping labels and independent scrollbars.
+Numbered axis ticks use an explicit dark text colour on the white plot canvas.
+Selecting a structure immediately displays its calculated volume and min/mean/max dose beneath the plot; cursor values appear on a second line.
+Goal markers point toward the allowed side on the current axes: `V ≤` uses `v`, `V ≥` uses `^`, `D ≤` uses `<`, and `D ≥` uses `>`.
+Goal markers and labels are black by default, orange for explicit ideal/tolerance qualifiers, and red for acceptable/action qualifiers (case-insensitive).
+Labels retain the source expression and qualifier.
+Recommendations without a parsed point remain in the JSON for manual review.
 Switching the volume axis converts percent and absolute volume using the selected structure's calculated volume.
-Relative dose uses the entered prescription solely to scale the axis; source doses stay in physical cGy.
 Plot limits expand to include recommendation points.
 An absolute-volume threshold larger than the selected structure can consequently appear above 100%.
 
@@ -171,13 +186,14 @@ The output is UTF-8 JSON with `schema_version`, `generated_at`, `source`, `scope
 Each protocol contains its URL, title, protocol ID, version and dates when available, source SHA-256, complete OAR section text, extraction warnings and organ/regimen groups.
 Each group retains its organ, expanded table-column heading, adjacent contouring notes and recommendation records.
 Each record contains the original text, qualifier, `point_expression`, extraction status and either a point or `null`.
-Points contain `metric` (`V` or `D`), `dose_cgy`, `volume`, `volume_unit` (`%` or `cm3`) and `operator`.
+Points contain `metric` (`V` or `D`), either `dose_cgy` or `dose_percent`, `volume`, `volume_unit` (`%` or `cm3`) and `operator`.
 `point_expression` records the complete metric when eviQ splits a Dx heading from its limits on following lines.
 The local source snapshots retain the full protocol, including prescription, version history and references, under `<sha256>.html` in the cache directory.
 The hash is of the UTF-8 encoded downloaded text.
 
 Supported points are complete numeric `Vx Gy < y%`, `Vx Gy < y cc`, `Dx% < y Gy` and `Dx cc < y Gy` expressions, with cGy, comparison variants and selected explicit Dx-heading layouts also supported.
-Mean doses, Dmax, relative prescription doses, EQD2/BED limits, ranges, conditional expressions and unfamiliar notation remain text for manual review.
+The generic loader also supports explicit relative-dose expressions such as `D2% <= 105%` and `V95% >= 98%`.
+The eviQ extractor continues to leave relative prescription doses, mean doses, Dmax, EQD2/BED limits, ranges, conditional expressions and unfamiliar notation as text for manual review.
 They are not replaced with invented coordinates.
 Extraction covers the current **Organs at risk** tables, rather than historical changes, evidence tables or target prescription recommendations.
 Unrecognised table layouts remain in `section_text` and produce warnings.
@@ -191,7 +207,7 @@ A download, robots or discovery-limit failure leaves the previous catalogue inta
 The fresh discovery inventory replaces the old one, so protocols no longer linked are not silently retained as current.
 Using `--url` deliberately replaces the output with only those selected protocols.
 Keep prior catalogue files when you need a historical comparison.
-The generated JSON catalogue is versioned in `src/hyperio/data/eviq.json`; full HTML source snapshots stay in the local cache and are not committed.
+The generated JSON catalogue is versioned in `src/hyperio/data/dvh/eviq.json`; full HTML source snapshots stay in the local cache and are not committed.
 Use of eviQ content is subject to its [terms](https://www.eviq.org.au/terms) and [disclaimer and copyright notice](https://www.eviq.org.au/copyright).
 That notice describes noncommercial reuse with attribution, exceptions for third-party material, and separate permission for commercial entities.
 
