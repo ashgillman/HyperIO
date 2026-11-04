@@ -10,6 +10,124 @@ from hyperio.application_io import discover_plans, load_red_mapping, apply_red_m
 from hyperio.dvh_export import display_rows, export_dvh_csv, export_dvh_xlsx
 
 
+def test_named_red_outputs_start_from_original_and_preserve_header_bytes():
+    from hyperio.application_io import prepare_red_output
+    from hyperio.core import plan_metadata
+    original = plan_bytes()
+    first, _, _ = prepare_red_output(original, {'Insert': 1.1}, 'Example RED')
+    second, changes, _ = prepare_red_output(original, {}, 'Example retained')
+    assert plan_metadata(first, 'first')['name'] == 'Example RED'
+    assert second == original.replace(b'Example\r\n', b'Example retained\r\n', 1)
+    assert changes == []
+    assert plan_metadata(second, 'second')['density_overrides'][0]['uniform_ed'] == 1
+    assert original == plan_bytes()
+    assert prepare_red_output(original, {}, 'Example')[0] == original
+
+
+@pytest.mark.parametrize('name', ['', ' ', 'bad\nname', 'bad\rname', 'bad\tname',
+                                  'bad/name', 'bad\\name', '..', 'CON', 'name.', '😀'])
+def test_red_output_rejects_unsafe_plan_names(name):
+    from hyperio.application_io import prepare_red_output
+    with pytest.raises(ValueError):
+        prepare_red_output(plan_bytes(), {}, name)
+
+
+@pytest.mark.parametrize('source_zip', [False, True])
+@pytest.mark.parametrize('output_zip', [False, True])
+def test_red_patient_export_replaces_and_clones_from_original(tmp_path, source_zip, output_zip):
+    from hyperio.application_io import export_red_patient
+    from hyperio.core import Export, plan_metadata
+    members = {}
+    for name, study in [('PlanA', 'CT1'), ('PlanB', 'CT1'), ('PlanC', 'CT2'), ('PlanD', 'CT2')]:
+        prefix = f'Patient/plan/{name}/'
+        members[prefix + 'plan'] = plan_bytes(name).replace(b'Study', study.encode())
+        members[prefix + 'patient.hyp'] = b'original settings'
+        members[prefix + 'dose.1'] = b'original dose'
+    members['Patient/CT1/structures'] = b'CT1 structures'
+    members['Patient/CT2/structures'] = b'CT2 structures'
+    source = tmp_path / ('source.zip' if source_zip else 'source')
+    if source_zip:
+        with zipfile.ZipFile(source, 'w') as archive:
+            archive.writestr('Patient/plan/PlanC/empty/', b'')
+            for member, data in members.items():
+                archive.writestr(member, data)
+    else:
+        for member, data in members.items():
+            target = source / member
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        (source / 'Patient/plan/PlanC/empty').mkdir()
+    destination = tmp_path / ('output.zip' if output_zip else 'output')
+    edits = [dict(member='Patient/plan/PlanC/plan', name='', mapping={'Insert': 1.1}),
+             dict(member='Patient/plan/PlanC/plan', name='PlanCAlt', mapping={'Insert': 1.2})]
+    export_red_patient(source, edits, destination, zipped=output_zip)
+    if output_zip:
+        with zipfile.ZipFile(destination) as archive:
+            assert 'Patient/plan/PlanC/empty/' in archive.namelist()
+            assert 'Patient/plan/PlanCAlt/empty/' in archive.namelist()
+    else:
+        assert (destination / 'Patient/plan/PlanC/empty').is_dir()
+        assert (destination / 'Patient/plan/PlanCAlt/empty').is_dir()
+    with Export(destination) as output:
+        for member, data in members.items():
+            if member != 'Patient/plan/PlanC/plan':
+                assert output.read(member) == data
+        for name, red in [('PlanC', 1.1), ('PlanCAlt', 1.2)]:
+            prefix = f'Patient/plan/{name}/'
+            metadata = plan_metadata(output.read(prefix + 'plan'), prefix)
+            assert metadata['name'] == name
+            assert metadata['studyset'] == 'CT2'
+            assert next(r for r in metadata['density_overrides'] if r['name'] == 'Insert')['uniform_ed'] == red
+            assert output.read(prefix + 'patient.hyp') == b'original settings'
+            assert output.read(prefix + 'dose.1') == b'original dose'
+        assert len(output.sizes) == len(members) + 3
+    with Export(source) as original:
+        assert {member: original.read(member) for member in original.sizes} == members
+    with pytest.raises(FileExistsError):
+        export_red_patient(source, edits, destination, zipped=output_zip)
+
+
+def test_red_patient_export_rejects_conflicts_and_nested_output(tmp_path):
+    from hyperio.application_io import export_red_patient
+    source = tmp_path / 'source'
+    for name in ('PlanC', 'PlanD'):
+        path = source / 'plan' / name / 'plan'
+        path.parent.mkdir(parents=True)
+        path.write_bytes(plan_bytes(name))
+    edit = dict(member='plan/PlanC/plan', name='', mapping={'Insert': 1.1})
+    destination = tmp_path / 'output'
+    for edits in ([edit, edit], [dict(edit, name='PlanD')], [dict(edit, name='planc')],
+                  [dict(edit, name='../bad')], [dict(edit, member='plan/missing/plan')]):
+        with pytest.raises((ValueError, KeyError)):
+            export_red_patient(source, edits, destination)
+        assert not destination.exists()
+    with pytest.raises(ValueError, match='outside'):
+        export_red_patient(source, [edit], source / 'output')
+
+
+@pytest.mark.parametrize('zipped', [False, True])
+def test_red_patient_export_copy_failure_does_not_publish_partial_patient(tmp_path, monkeypatch, zipped):
+    from hyperio.application_io import export_red_patient
+    from hyperio.core import Export
+    source = tmp_path / 'source'
+    plan = source / 'plan/Example/plan'
+    plan.parent.mkdir(parents=True)
+    plan.write_bytes(plan_bytes())
+    (source / 'CT').write_bytes(b'CT data')
+    original_open = Export.open
+    def broken_open(self, name):
+        if name == 'CT':
+            raise OSError('copy failed')
+        return original_open(self, name)
+    monkeypatch.setattr(Export, 'open', broken_open)
+    destination = tmp_path / ('output.zip' if zipped else 'output')
+    with pytest.raises(OSError, match='copy failed'):
+        export_red_patient(source, [dict(member='plan/Example/plan', name='', mapping={})],
+                           destination, zipped=zipped)
+    assert not destination.exists()
+    assert not list(tmp_path.glob('.hyperio-red-*'))
+
+
 def plan_bytes(name='Example', patient='PHANTOM'):
     return (f'00d5101a\r\n\r\n{name}\r\nunknown\r\n{patient}\r\n1\r\nStudy\r\n'
             '2\r\nPatient\r\n1,2,1,1,2\r\nInsert\r\n3,1,1,0.8,9\r\n').encode()

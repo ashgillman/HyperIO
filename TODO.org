@@ -15,7 +15,8 @@ Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the
 
 ** Useful work while TPS review is paused
 - Review the eviQ updater's manual-review records and unsupported layouts against their source snapshots before expanding parser support; validate extracted criteria and DVH overlays independently, including native Windows/macOS use and fractionation/structure mapping.
-- Smoke-test applications/ RED preset preview/copy saving and DVH calculation/plot cursor/XLSX/CSV export on Windows and macOS with Python/Tk; confirm installed GUI launchers, native dialogs, scrolling, responsiveness and error recovery.
+- Smoke-test applications/ RED per-tab input selection and complete-patient folder/ZIP saving (replacement and cloned plans), plus DVH calculation/plot cursor/XLSX/CSV export on Windows and macOS with Python/Tk; confirm installed GUI launchers, native dialogs, scrolling, responsiveness and error recovery.
+  Validate renamed full-plan copies through Monaco load/save and recalculation; companion files and inherited dose/checksums are copied without claiming freshness.
 - Resolve the remaining D291026AG OAR volume/mean residual by establishing Monaco's contour-boundary/rasterization convention.
   The independent review in reports/vmat-2026-10-29.md records boundary and floating-point sensitivity; changing the global include/exclude rule does not reproduce all structures.
   Validate the inferred interval-midpoint histogram convention on held-out plans or a controlled change in bin width; all supplied Dx values now meet the shared 0.1 cGy tolerance.

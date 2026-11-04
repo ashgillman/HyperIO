@@ -66,10 +66,32 @@ Native GUI smoke testing on both Windows and macOS remains required before distr
 ## RED preset overrides
 
 1. Choose a directory containing a Monaco patient set (or multiple patient sets), or use **Choose ZIP…** to select a patient-set archive.
-2. Select a plan using its patient ID, studyset, name and member path, then choose **Load plan**.
-3. Choose a CSV or TSV preset containing `structure` and `red` headers.
-4. Review the table: matching structures are highlighted and show the resulting forced mode and preset RED.
-5. Choose **Save modified plan copy…** and select a new output filename.
+2. In each output tab, choose an **Input plan** using its patient ID, studyset, name and member path.
+3. Choose a CSV or TSV preset containing `structure` and `red` headers and review the highlighted matches.
+4. Leave **Output plan name** blank to replace that input plan in the exported copy, or enter a new name to add a cloned plan alongside it.
+5. Choose **Add output** for additional edits or variants; each tab has its own input plan, output name and preset.
+6. Choose **Folder** or **ZIP** under **Save as**, then choose **Save patient…** and a new output path.
+
+Saving always applies every tab to a complete copy of the chosen source.
+All other plans, CTs, structure sets and companion files retain their original contents.
+The source patient folder or ZIP is never modified.
+The source's relative folder layout is retained, including any enclosing patient folders in an archive.
+The new folder receives the source folder's contents directly, without an additional wrapper folder.
+
+Each tab starts from its original input plan, so overrides do not accumulate between tabs.
+For example, select PlanC in two tabs, leave the first output name blank and name the second PlanCAlt.
+The exported patient contains modified PlanC and a separate modified PlanCAlt, while PlanA, PlanB and PlanD remain unchanged.
+A new name clones the entire input plan folder, including its companion files, and updates the native `plan` header name.
+Leave the preset empty (or choose **Clear preset**) to retain the input plan's RED settings.
+**Remove output** removes the selected tab when more than one exists.
+Choosing a different source resets the tabs.
+
+Output names must use characters supported by the native Windows encoding and valid Windows/macOS folder names.
+Two tabs cannot target the same plan path (case-insensitive).
+A new name cannot collide with another existing plan in that patient.
+The same name in different patient folders remains distinct.
+Existing output folders and ZIP files are refused, and output must be outside the source patient folder.
+All edits are checked and the complete export is staged before publishing it at the selected path.
 
 ```csv
 structure,red
@@ -83,13 +105,14 @@ Duplicate preset names and nonfinite or out-of-range values are rejected.
 The supported experimental RED range is 0.01–15, matching the existing density editor.
 Unmatched preset names appear in the status message.
 Unmatched plan structures keep their existing settings.
-Matched records receive forced mode 2 and the requested uniform RED, preserving their fill value, layer and every other source byte.
+Matched records receive forced mode 2 and the requested uniform RED, preserving their fill value and layer.
+Only the requested density fields and the output plan-name header line are edited; other source bytes are retained.
 The application refuses to overwrite the original or an existing output file.
-ZIP archives are read directly without extracting or modifying them; the output remains a separate native plan file.
+ZIP inputs are read directly without modifying them; folder and ZIP output are both available regardless of the input format.
 
-The output is a separate native `plan` file, not a complete independently identified Monaco plan or patient package.
-Any subsequent installation into a copied patient set must preserve the required native filename and plan association.
+Companion files, including saved dose, logs and checksums, are copied verbatim.
 The application does not change studyset defaults, resolve density-layer precedence, update checksums or recalculate dose.
+Saved dose must be recalculated after density edits; copying it does not establish that it matches the new RED settings.
 Native edits remain experimental pending Monaco load/save and recalculation review.
 
 ## DVH spreadsheet exporter

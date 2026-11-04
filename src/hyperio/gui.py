@@ -9,8 +9,7 @@ from pathlib import Path
 import queue
 import threading
 
-from .application_io import discover_plans, load_red_mapping, apply_red_mapping, save_plan_copy
-from .core import Export, plan_metadata
+from .application_io import discover_plans, load_red_plans, export_red_patient
 from .dvh_export import (HEADERS, display_rows, export_dvh_csv, export_dvh_xlsx,
                          safe_filename_component, calculate_for_export, batch_export_dvh)
 
@@ -42,7 +41,7 @@ def _launch(mode):
             self.controls = []
             self.directory = tk.StringVar()
             self.plan = tk.StringVar()
-            self.preset = tk.StringVar()
+            self.output_format = tk.StringVar(value='Folder')
             self.boundary = tk.StringVar(value='include')
             self.status = tk.StringVar(value='Choose a patient-set directory or ZIP archive to begin.')
 
@@ -53,18 +52,20 @@ def _launch(mode):
             ttk.Entry(controls, textvariable=self.directory, state='readonly').grid(row=0, column=1, sticky='ew', padx=8)
             self.button(controls, 'Choose directory…', self.choose_directory).grid(row=0, column=2)
             self.button(controls, 'Choose ZIP…', self.choose_zip).grid(row=0, column=3, padx=(8, 0))
-            ttk.Label(controls, text='Plan').grid(row=1, column=0, sticky='w', pady=8)
-            self.plan_box = ttk.Combobox(controls, textvariable=self.plan, state='readonly')
-            self.plan_box.grid(row=1, column=1, sticky='ew', padx=8)
-            self.plan_box.bind('<<ComboboxSelected>>', self.select_plan)
-            self.controls.append((self.plan_box, 'readonly'))
-            self.load_button = self.button(controls, 'Load plan' if self.is_red else 'Calculate DVH', self.load)
-            self.load_button.grid(row=1, column=2)
             if self.is_red:
-                ttk.Label(controls, text='RED preset').grid(row=2, column=0, sticky='w')
-                ttk.Entry(controls, textvariable=self.preset, state='readonly').grid(row=2, column=1, sticky='ew', padx=8)
-                self.button(controls, 'Choose CSV / TSV…', self.choose_preset).grid(row=2, column=2)
+                ttk.Label(controls, text='Save as').grid(row=1, column=0, sticky='w', pady=8)
+                output_box = ttk.Combobox(controls, textvariable=self.output_format,
+                                         values=['Folder', 'ZIP'], state='readonly', width=12)
+                output_box.grid(row=1, column=1, sticky='w', padx=8)
+                self.controls.append((output_box, 'readonly'))
             else:
+                ttk.Label(controls, text='Plan').grid(row=1, column=0, sticky='w', pady=8)
+                self.plan_box = ttk.Combobox(controls, textvariable=self.plan, state='readonly')
+                self.plan_box.grid(row=1, column=1, sticky='ew', padx=8)
+                self.plan_box.bind('<<ComboboxSelected>>', self.select_plan)
+                self.controls.append((self.plan_box, 'readonly'))
+                self.load_button = self.button(controls, 'Calculate DVH', self.load)
+                self.load_button.grid(row=1, column=2)
                 advanced = ttk.Menubutton(controls, text='Advanced…')
                 advanced.grid(row=1, column=3, padx=(8, 0), sticky='w')
                 menu = tk.Menu(advanced, tearoff=False)
@@ -78,14 +79,22 @@ def _launch(mode):
 
             actions = ttk.Frame(root, padding=(12, 0, 12, 8))
             actions.grid(row=1, column=0, sticky='ew')
+            status_host = actions
             if self.is_red:
-                self.button(actions, 'Preview preset', self.preview).pack(side='left')
-            self.save_button = self.button(actions, 'Save modified plan copy…' if self.is_red else 'Export spreadsheet…', self.save)
+                actions = ttk.Frame(status_host)
+                actions.pack(fill='x')
+                self.button(actions, 'Add output', lambda: self.red_outputs.add_output()).pack(side='left')
+                self.button(actions, 'Remove output', lambda: self.red_outputs.remove_output()).pack(side='left', padx=(8, 0))
+                self.button(actions, 'Preview output', self.preview).pack(side='left', padx=(8, 0))
+            self.save_button = self.button(actions, 'Save patient…' if self.is_red else 'Export spreadsheet…', self.save)
             self.save_button.pack(side='left', padx=(8, 0))
             if not self.is_red:
                 self.batch_button = self.button(actions, 'Batch export XLSX…', self.batch_export)
                 self.batch_button.pack(side='left', padx=(8, 0))
-            ttk.Label(actions, textvariable=self.status, wraplength=850).pack(side='left', padx=12)
+            if self.is_red:
+                ttk.Label(status_host, textvariable=self.status, wraplength=1100).pack(fill='x', pady=(8, 0))
+            else:
+                ttk.Label(actions, textvariable=self.status, wraplength=850).pack(side='left', padx=12)
 
             host = ttk.Frame(root, padding=(12, 0, 12, 8))
             host.grid(row=2, column=0, sticky='nsew')
@@ -104,21 +113,26 @@ def _launch(mode):
                 from .dvh_plot import DVHPlot
                 self.plot = DVHPlot(plot_host)
                 host = table_host
-            headers = ['Structure', 'Current mode', 'Current RED', 'Preset RED', 'Resulting mode'] if self.is_red else HEADERS
-            self.table = ttk.Treeview(host, columns=list(range(len(headers))), show='headings')
-            for index, name in enumerate(headers):
-                self.table.heading(index, text=name)
-                self.table.column(index, width=240 if index == 0 or name == 'Dosimetric Criterion' else 145, stretch=False)
-            self.table.grid(row=0, column=0, sticky='nsew')
-            vertical = ttk.Scrollbar(host, orient='vertical', command=self.table.yview)
-            horizontal = ttk.Scrollbar(host, orient='horizontal', command=self.table.xview)
-            vertical.grid(row=0, column=1, sticky='ns')
-            horizontal.grid(row=1, column=0, sticky='ew')
-            self.table.configure(yscrollcommand=vertical.set, xscrollcommand=horizontal.set)
-            self.table.tag_configure('changed', background='#DCE6F1')
+            if self.is_red:
+                from .red_outputs import REDOutputs
+                self.red_outputs = REDOutputs(host, self.update_actions)
+            else:
+                headers = HEADERS
+                self.table = ttk.Treeview(host, columns=list(range(len(headers))), show='headings')
+                for index, name in enumerate(headers):
+                    self.table.heading(index, text=name)
+                    self.table.column(index, width=240 if index == 0 or name == 'Dosimetric Criterion' else 145, stretch=False)
+                self.table.grid(row=0, column=0, sticky='nsew')
+                vertical = ttk.Scrollbar(host, orient='vertical', command=self.table.yview)
+                horizontal = ttk.Scrollbar(host, orient='horizontal', command=self.table.xview)
+                vertical.grid(row=0, column=1, sticky='ns')
+                horizontal.grid(row=1, column=0, sticky='ew')
+                self.table.configure(yscrollcommand=vertical.set, xscrollcommand=horizontal.set)
+                self.table.tag_configure('changed', background='#DCE6F1')
             if self.is_red:
                 note = ('Preset matches use exact structure names and force the plan-level RED. '
-                        'Save creates a separate plan file. Studyset defaults and saved dose are unchanged. '
+                        'Save writes a complete patient copy with every output tab applied. Blank output names replace the input plan in that copy. '
+                        'Studyset defaults and saved dose are unchanged; dose must be recalculated after RED edits. '
                         'Native density editing remains experimental and requires Monaco load/save/recalculation review.')
                 ttk.Label(root, text=note, wraplength=1100, padding=12).grid(row=3, column=0, sticky='ew')
             self.update_actions()
@@ -130,12 +144,18 @@ def _launch(mode):
             return widget
 
         def update_actions(self):
-            self.load_button.configure(state='normal' if self.selected and not self.busy else 'disabled')
-            self.save_button.configure(state='normal' if self.result is not None and not self.busy else 'disabled')
-            if not self.is_red:
+            if self.is_red:
+                ready = bool(self.plans)
+            else:
+                self.load_button.configure(state='normal' if self.selected and not self.busy else 'disabled')
+                ready = self.result is not None
                 self.batch_button.configure(state='normal' if self.plans and not self.busy else 'disabled')
+            self.save_button.configure(state='normal' if ready and not self.busy else 'disabled')
 
         def clear_table(self):
+            if self.is_red:
+                self.red_outputs.set_plans([])
+                return
             self.table.delete(*self.table.get_children())
             if self.plot is not None:
                 self.plot.set_result()
@@ -201,13 +221,19 @@ def _launch(mode):
             self.directory.set(path)
             self.selected = self.data = self.result = None
             self.plans = []
-            self.plan.set('')
-            self.plan_box.configure(values=[])
             self.clear_table()
-            self.work(lambda: discover_plans(path), self.found_plans, 'Scanning patient sets…')
+            if not self.is_red:
+                self.plan.set('')
+                self.plan_box.configure(values=[])
+            discover = load_red_plans if self.is_red else discover_plans
+            self.work(lambda: discover(path), self.found_plans, 'Scanning patient sets…')
 
         def found_plans(self, plans):
             self.plans = plans
+            if self.is_red:
+                self.red_outputs.set_plans(plans)
+                self.status.set(f'Found {len(plans)} plan(s). Configure input plans and overrides in each tab.')
+                return
             self.plan_box.configure(values=[plan['label'] for plan in plans])
             self.status.set(f'Found {len(plans)} plan(s). Select a plan.' if plans else 'No Monaco plans found in this source.')
             if len(plans) == 1:
@@ -231,57 +257,13 @@ def _launch(mode):
                 messagebox.showerror('Unreadable plan', selected['error'])
                 self.update_actions()
                 return
-            if self.is_red:
-                def read():
-                    with Export(source) as export:
-                        return export.read(selected['member'])
-                self.work(read, self.loaded_red, 'Loading plan density table…')
-            else:
-                boundary = self.boundary.get()
-                def calculate():
-                    return calculate_for_export(source, selected, boundary)
-                self.work(calculate, self.loaded_dvh, 'Calculating DVH statistics from saved dose…')
-
-        def loaded_red(self, data):
-            self.data = data
-            self.preview()
-
-        def choose_preset(self):
-            path = filedialog.askopenfilename(title='Choose RED preset', filetypes=[('RED presets', '*.csv *.tsv'), ('All files', '*.*')])
-            if path:
-                self.preset.set(path)
-                self.result = None
-                self.clear_table()
-                if self.data is not None:
-                    self.preview()
-                self.update_actions()
+            boundary = self.boundary.get()
+            def calculate():
+                return calculate_for_export(source, selected, boundary)
+            self.work(calculate, self.loaded_dvh, 'Calculating DVH statistics from saved dose…')
 
         def preview(self):
-            self.result = None
-            self.clear_table()
-            try:
-                if self.data is None:
-                    self.status.set('Load a plan before previewing a preset.')
-                    return
-                mapping = load_red_mapping(self.preset.get()) if self.preset.get() else {}
-                edited, changes, missing = apply_red_mapping(self.data, mapping)
-                for record in plan_metadata(self.data, '<selected-plan>')['density_overrides']:
-                    match = record['name'] in mapping
-                    self.table.insert('', 'end', values=[record['name'], record['mode'], record['uniform_ed'],
-                                      mapping.get(record['name'], ''), 'forced' if match else record['mode']],
-                                      tags=('changed',) if match else ())
-                self.result = edited if changes else None
-                text = f'{len(changes)} matching structure(s) will receive forced REDs.'
-                if missing:
-                    text += ' Unmatched preset entries: ' + ', '.join(missing)
-                if not mapping:
-                    text = 'Plan loaded. Choose a RED preset to preview changes.'
-                self.status.set(text)
-            except Exception as exc:
-                messagebox.showerror('Invalid preset', str(exc))
-                self.status.set(f'Failed: {exc}')
-            finally:
-                self.update_actions()
+            self.red_outputs.refresh(self.red_outputs.current())
 
         def loaded_dvh(self, result):
             self.result = result
@@ -310,27 +292,39 @@ def _launch(mode):
                 messagebox.showinfo('Batch export results', summary)
 
         def save(self):
+            if self.is_red:
+                try:
+                    edits = self.red_outputs.prepared()
+                except ValueError as exc:
+                    messagebox.showerror('Invalid output', str(exc))
+                    return
+                zipped = self.output_format.get() == 'ZIP'
+                path = filedialog.asksaveasfilename(title='Save complete patient ZIP' if zipped else 'Save new patient folder',
+                    initialfile=self.source.stem + '-RED' + ('.zip' if zipped else ''),
+                    defaultextension='.zip' if zipped else '',
+                    filetypes=[('ZIP archive', '*.zip')] if zipped else [('Patient folder', '*')])
+                if path:
+                    source = self.source
+                    self.work(lambda: export_red_patient(source, edits, path, zipped=zipped),
+                              lambda _: self.status.set(f'Saved complete patient copy to {path}'), 'Saving patient…')
+                return
             if self.result is None:
                 return
             selected_type = tk.StringVar(value='Excel workbook')
             path = filedialog.asksaveasfilename(
-                title='Save modified plan copy' if self.is_red else 'Export DVH spreadsheet',
-                initialfile='plan.RED-overridden' if self.is_red else safe_filename_component(self.selected['name']),
-                defaultextension='' if self.is_red else '.xlsx',
+                title='Export DVH spreadsheet',
+                initialfile=safe_filename_component(self.selected['name']),
+                defaultextension='.xlsx',
                 typevariable=selected_type,
-                filetypes=[('Plan copy', '*.*')] if self.is_red else [('Excel workbook', '*.xlsx'), ('CSV (comma-separated)', '*.csv')])
+                filetypes=[('Excel workbook', '*.xlsx'), ('CSV (comma-separated)', '*.csv')])
             if not path:
                 return
-            if self.is_red:
-                original = self.source if self.source.is_file() else self.source / self.selected['member']
-                operation = lambda: save_plan_copy(self.result, original, path)
-            else:
-                suffix = Path(path).suffix.lower()
-                if suffix not in ('.xlsx', '.csv'):
-                    messagebox.showerror('Unsupported export format', 'Choose an .xlsx or .csv filename.')
-                    return
-                exporter = export_dvh_csv if suffix == '.csv' else export_dvh_xlsx
-                operation = lambda: exporter(self.result, path, source=self.source)
+            suffix = Path(path).suffix.lower()
+            if suffix not in ('.xlsx', '.csv'):
+                messagebox.showerror('Unsupported export format', 'Choose an .xlsx or .csv filename.')
+                return
+            exporter = export_dvh_csv if suffix == '.csv' else export_dvh_xlsx
+            operation = lambda: exporter(self.result, path, source=self.source)
             self.work(operation, lambda _: self.status.set(f'Saved {path}'), 'Saving…')
 
     try:
