@@ -225,9 +225,16 @@ def _shape(lines, start, widths):
 
 
 def plan_metadata(data: bytes, source: str):
+    """Read identities and a unique five-value density table in observed layouts.
+
+    00be101a is observed in the supplied Unity phantom export.
+    This does not establish support for its other native plan records.
+    """
     lines = _lines(data)
-    if len(lines) < 7 or lines[0] != "00d5101a" or lines[5] != "1":
-        raise FormatError("unsupported plan header or prescription layout")
+    if not lines or lines[0] not in {"00d5101a", "00be101a"}:
+        raise FormatError(f"unsupported plan header {lines[0] if lines else '<empty>'!r}")
+    if len(lines) < 7 or lines[5] != "1":
+        raise FormatError("unsupported plan identity or prescription layout (expected one prescription)")
     result = {"name": lines[2], "patient_id": lines[4], "studyset": lines[6],
               "identity_source": {"file": source, "lines": [3, 5, 7]}, "density_overrides": []}
     candidates = []

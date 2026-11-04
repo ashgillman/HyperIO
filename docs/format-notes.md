@@ -38,6 +38,17 @@ A CT file count does not by itself establish slice ordering or equivalence of th
 | `checksum.1`, status files | Retained and compared by snapshots | Freshness semantics and checksum algorithms not yet mapped |
 
 The library reads ZIP members directly and never extracts them as part of inspection.
+
+### Unity phantom plan header
+
+The supplied `1~cellIrrad.zip` inspected on 4 November 2026 contains five plans with header `00be101a`.
+All five have the same identity positions (plan, patient and studyset on lines 3, 5 and 7), single-prescription marker on line 6, and one unambiguous five-value density table used by the existing `00d5101a` reader.
+The RED workflow accepts these two explicit headers and preserves the original header on output.
+Unknown headers, multiple prescriptions, malformed tables and ambiguous table matches remain rejected.
+`CellTesting` contains two density records named `patient`; a name-based RED preset targeting that name is rejected as ambiguous.
+Uniquely named structures can be edited while unrelated duplicate records are retained verbatim.
+The observed layout supports reading and selective token edits; it does not identify the Monaco release number or validate other Unity records, native reloading, effective material assignment or recalculated dose.
+The supplied-archive regression can be run with `HYPERIO_UNITY_EXAMPLE=/path/to/1~cellIrrad.zip python -m pytest tests/test_applications.py -k supplied_unity`.
 A single-Rx plan must have exactly one `.hyp` in its directory to associate settings unambiguously.
 The interpreter requires known headers and the observed record shapes and reports a diagnostic when those checks fail.
 Version headers alone are not proof that every other file with that header has an identical layout.

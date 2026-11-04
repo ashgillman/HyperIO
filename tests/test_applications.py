@@ -1,6 +1,7 @@
 """Application workflows keep native sources intact and preserve display rows."""
 import csv
 import json
+import os
 import zipfile
 from pathlib import Path
 
@@ -34,13 +35,14 @@ def test_red_output_rejects_unsafe_plan_names(name):
 
 @pytest.mark.parametrize('source_zip', [False, True])
 @pytest.mark.parametrize('output_zip', [False, True])
-def test_red_patient_export_replaces_and_clones_from_original(tmp_path, source_zip, output_zip):
+@pytest.mark.parametrize('header', [b'00d5101a', b'00be101a'])
+def test_red_patient_export_replaces_and_clones_from_original(tmp_path, source_zip, output_zip, header):
     from hyperio.application_io import export_red_patient
     from hyperio.core import Export, plan_metadata
     members = {}
     for name, study in [('PlanA', 'CT1'), ('PlanB', 'CT1'), ('PlanC', 'CT2'), ('PlanD', 'CT2')]:
         prefix = f'Patient/plan/{name}/'
-        members[prefix + 'plan'] = plan_bytes(name).replace(b'Study', study.encode())
+        members[prefix + 'plan'] = plan_bytes(name).replace(b'Study', study.encode()).replace(b'00d5101a', header)
         members[prefix + 'patient.hyp'] = b'original settings'
         members[prefix + 'dose.1'] = b'original dose'
     members['Patient/CT1/structures'] = b'CT1 structures'
@@ -74,6 +76,7 @@ def test_red_patient_export_replaces_and_clones_from_original(tmp_path, source_z
                 assert output.read(member) == data
         for name, red in [('PlanC', 1.1), ('PlanCAlt', 1.2)]:
             prefix = f'Patient/plan/{name}/'
+            assert output.read(prefix + 'plan').splitlines()[0] == header
             metadata = plan_metadata(output.read(prefix + 'plan'), prefix)
             assert metadata['name'] == name
             assert metadata['studyset'] == 'CT2'
@@ -131,6 +134,77 @@ def test_red_patient_export_copy_failure_does_not_publish_partial_patient(tmp_pa
 def plan_bytes(name='Example', patient='PHANTOM'):
     return (f'00d5101a\r\n\r\n{name}\r\nunknown\r\n{patient}\r\n1\r\nStudy\r\n'
             '2\r\nPatient\r\n1,2,1,1,2\r\nInsert\r\n3,1,1,0.8,9\r\n').encode()
+
+
+def test_unity_header_discovery_and_red_edit_preserve_other_bytes(tmp_path):
+    original = plan_bytes().replace(b'00d5101a', b'00be101a')
+    path = tmp_path / 'plan/Example/plan'
+    path.parent.mkdir(parents=True)
+    path.write_bytes(original)
+    selected, = discover_plans(tmp_path)
+    assert selected['error'] is None
+    assert selected['name'] == 'Example'
+    assert selected['studyset'] == 'Study'
+    edited, changes, missing = apply_red_mapping(original, {'Insert': 1.25})
+    assert edited == original.replace(b'3,1,1,0.8,9', b'2,1,1.25,0.8,9')
+    assert len(changes) == 1
+    assert missing == []
+    assert path.read_bytes() == original
+
+
+@pytest.mark.parametrize('header,prescriptions', [(b'ffffffff', b'1'), (b'00be101a', b'2')])
+def test_red_discovery_rejects_unknown_header_and_multiple_prescriptions(tmp_path, header, prescriptions):
+    data = plan_bytes().replace(b'00d5101a', header).replace(b'PHANTOM\r\n1\r\n', b'PHANTOM\r\n' + prescriptions + b'\r\n')
+    path = tmp_path / 'plan/Example/plan'
+    path.parent.mkdir(parents=True)
+    path.write_bytes(data)
+    selected, = discover_plans(tmp_path)
+    assert selected['error']
+
+
+def test_red_mapping_rejects_only_matched_duplicate_names():
+    from hyperio.core import FormatError
+    original = plan_bytes().replace(b'Patient\r\n', b'Insert\r\n')
+    assert apply_red_mapping(original, {}) == (original, [], [])
+    assert apply_red_mapping(original, {'Absent': 1.25}) == (original, [], ['Absent'])
+    with pytest.raises(FormatError, match='Duplicate.*Insert'):
+        apply_red_mapping(original, {'Insert': 1.25})
+
+
+UNITY_EXAMPLE = Path(os.environ.get('HYPERIO_UNITY_EXAMPLE', 'reference/1~cellIrrad.zip'))
+
+
+@pytest.mark.skipif(not UNITY_EXAMPLE.is_file(), reason='local Unity phantom archive is not distributed')
+def test_supplied_unity_plans_discover_and_edit_only_density_tokens():
+    from hyperio.application_io import load_red_plans, prepare_red_output
+    from hyperio.core import plan_metadata
+    plans = load_red_plans(UNITY_EXAMPLE)
+    assert {p.get('name') for p in plans} == {'Cells1', 'CellTesting', 'CraneR', 'test', 'WaterandAir'}
+    for plan in plans:
+        assert plan['error'] is None
+        original = plan['data']
+        assert original.splitlines()[0] == b'00be101a'
+        records = plan['density_overrides']
+        assert records
+        # Exercise each actual record, comparing against the original byte rows
+        # independently of the metadata reader's interpretation of the edit.
+        for record in records:
+            if sum(r['name'] == record['name'] for r in records) > 1:
+                from hyperio.core import FormatError
+                with pytest.raises(FormatError, match='Duplicate.*patient'):
+                    prepare_red_output(original, {record['name']: 1.25}, plan['name'])
+                continue
+            edited, changes, missing = prepare_red_output(original, {record['name']: 1.25}, plan['name'])
+            expected = original.splitlines(keepends=True)
+            index = record['source']['line'] - 1
+            tokens = expected[index].split(b',')
+            tokens[0], tokens[2] = b'2', b'1.25'
+            expected[index] = b','.join(tokens)
+            assert edited == b''.join(expected)
+            assert len(changes) == 1 and missing == []
+            result = plan_metadata(edited, plan['member'])
+            updated = next(r for r in result['density_overrides'] if r['name'] == record['name'])
+            assert updated['mode'] == 'forced' and updated['uniform_ed'] == 1.25
 
 
 def test_discovery_retains_duplicate_names_and_source_paths(tmp_path):

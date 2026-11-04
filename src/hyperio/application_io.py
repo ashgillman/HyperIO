@@ -76,13 +76,15 @@ def apply_red_mapping(data, mapping):
 
     Matched structures receive mode 2 (forced) and the preset uniform RED.
     Unmatched structures, fill values and layer settings are retained verbatim.
+    A preset may only target names with exactly one density record.
     """
     for value in mapping.values():
         _positive_ed(value)
     records = plan_metadata(data, '<selected-plan>')['density_overrides']
     names = [record['name'] for record in records]
-    if len(names) != len(set(names)):
-        raise FormatError('Duplicate structure names in plan density table')
+    duplicates = sorted(name for name in mapping if names.count(name) > 1)
+    if duplicates:
+        raise FormatError(f'Duplicate structure names in plan density table: {", ".join(duplicates)}')
     edited, changes = data, []
     for record in records:
         name = record['name']

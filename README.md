@@ -21,7 +21,8 @@ See [the observed results](reports/supplied-plans.md), [the field map](docs/form
 - Preserve `.hyp` bytes and produce an edited in-memory copy of an existing supported scalar setting.
 - Hash and compare complete exports to support controlled save experiments, including binary files.
 
-The interpreted layouts are limited to the supplied header identifiers: `.hyp` `000610b6`, `plan` `00d5101a`, `tel.1` `00d5101d`, `contournames` `00131027`, and `info` `00271016`.
+The interpreted layouts are limited to the supplied header identifiers: `.hyp` `000610b6`, `plan` `00d5101a` and `00be101a`, `tel.1` `00d5101d`, `contournames` `00131027`, and `info` `00271016`.
+The `00be101a` identity and RED-table layout was checked against the five plans in the supplied Unity phantom export; acceptance and effective density after editing still require Monaco validation.
 These identifiers are literal file headers; their relationship to Monaco release numbers is not established.
 The library reports diagnostics for missing, ambiguous, unsupported, and malformed settings instead of supplying presumed Monaco defaults.
 The current perpetual-suite UI review identifies Monaco 6.2.3.0; mappings remain scoped to the supplied fixtures and recorded observations.
