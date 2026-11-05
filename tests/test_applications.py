@@ -218,6 +218,95 @@ def test_discovery_retains_duplicate_names_and_source_paths(tmp_path):
     assert all('Example' in p['label'] and 'Study' in p['label'] for p in plans)
 
 
+@pytest.mark.parametrize('zipped', [False, True])
+def test_lazy_discovery_reads_only_bounded_identity_headers(tmp_path, monkeypatch, zipped):
+    from hyperio.core import Export
+    data = plan_bytes().split(b'2\r\nPatient')[0] + b'x' * 100_000
+    source = tmp_path / ('source.zip' if zipped else 'source')
+    if zipped:
+        with zipfile.ZipFile(source, 'w') as archive:
+            archive.writestr('plan/Example/plan', data)
+            archive.writestr('images/ct.dcm', b'unread image')
+    else:
+        path = source / 'plan/Example/plan'
+        path.parent.mkdir(parents=True)
+        path.write_bytes(data)
+        image = source / 'images/ct.dcm'
+        image.parent.mkdir()
+        image.write_bytes(b'unread image')
+    monkeypatch.setattr(Export, 'read', lambda *a, **k: pytest.fail('full read during discovery'))
+    original_open = Export.open
+    reads = []
+    class HeaderStream:
+        def __init__(self, stream):
+            self.stream = stream
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            self.stream.close()
+        def readline(self, limit):
+            assert limit == 4096
+            row = self.stream.readline(limit)
+            reads.append(row)
+            return row
+    def open_header(export, member):
+        assert member == 'plan/Example/plan'
+        return HeaderStream(original_open(export, member))
+    monkeypatch.setattr(Export, 'open', open_header)
+    original_stat = Path.stat
+    def stat(path, *args, **kwargs):
+        assert path.name not in ('ct.dcm', 'plan'), 'file stat during discovery'
+        return original_stat(path, *args, **kwargs)
+    monkeypatch.setattr(Path, 'stat', stat)
+    selected, = discover_plans(source, lazy=True)
+    assert selected['name'] == 'Example'
+    assert selected['error'] is None
+    assert 'density_overrides' not in selected
+    assert len(reads) == 7
+    assert sum(map(len, reads)) < 100
+
+
+def test_scoped_inspection_does_not_read_other_plans_or_studies(tmp_path, monkeypatch):
+    from hyperio.core import Export, inspect_export
+    for patient in ('A', 'B'):
+        path = tmp_path / patient / 'plan/Example/plan'
+        path.parent.mkdir(parents=True)
+        path.write_bytes(plan_bytes(patient=patient))
+        study = tmp_path / patient / '1~Study/contournames'
+        study.parent.mkdir()
+        study.write_bytes(b'unsupported')
+    original = Export.read
+    def read(export, member, *args, **kwargs):
+        assert member.startswith('B/')
+        return original(export, member, *args, **kwargs)
+    monkeypatch.setattr(Export, 'read', read)
+    result = inspect_export(tmp_path, plan_path='B/plan/Example')
+    assert [p['patient_id'] for p in result['plans']] == ['B']
+    assert [s['path'] for s in result['studysets']] == ['B/1~Study']
+
+
+def test_export_reuses_structure_order_from_calculation(monkeypatch):
+    from hyperio import core, dvh
+    from hyperio.dvh_export import calculate_for_export
+    monkeypatch.setattr(core, 'inspect_export', lambda *a, **k: pytest.fail('repeated inspection'))
+    def calculate(source, name, **kwargs):
+        assert kwargs == {'plan_path': 'plan/Example', 'boundary': 'exclude'}
+        return {'structures': [{'structure': 'B'}, {'structure': 'A'}],
+                'structure_order': ['A', 'B']}
+    monkeypatch.setattr(dvh, 'calculate_plan_dvh', calculate)
+    result = calculate_for_export('source', {'name': 'Example', 'path': 'plan/Example'}, 'exclude')
+    assert [row['structure'] for row in result['structures']] == ['A', 'B']
+
+
+@pytest.mark.parametrize('data', [b'00d5101a\n', plan_bytes().replace(b'Example', b'x' * 5000)])
+def test_lazy_discovery_rejects_truncated_or_overlong_headers(tmp_path, data):
+    path = tmp_path / 'plan/Example/plan'
+    path.parent.mkdir(parents=True)
+    path.write_bytes(data)
+    selected, = discover_plans(tmp_path, lazy=True)
+    assert selected['error']
+
+
 def test_red_preset_can_read_archive_without_extracting_or_changing_it(tmp_path):
     from hyperio.core import Export
     source = tmp_path / 'patient.zip'
@@ -383,7 +472,7 @@ def test_xlsx_retains_numbers_blanks_literal_names_and_formatting(tmp_path):
 def test_dvh_path_disambiguates_identically_named_plans(monkeypatch):
     pytest.importorskip('numpy')
     from hyperio import dvh
-    monkeypatch.setattr(dvh, 'inspect_export', lambda _: {'plans': [
+    monkeypatch.setattr(dvh, 'inspect_export', lambda _, **kwargs: {'plans': [
         {'name': 'Example', 'path': 'A/plan/Example', 'diagnostics': ['selected A']},
         {'name': 'Example', 'path': 'B/plan/Example', 'diagnostics': ['selected B']}]})
     with pytest.raises(ValueError, match='expected one uniquely named plan'):

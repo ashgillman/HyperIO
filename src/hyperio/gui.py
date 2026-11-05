@@ -269,7 +269,7 @@ def _launch(mode):
             if not self.is_red:
                 self.plan.set('')
                 self.plan_box.configure(values=[])
-            discover = load_red_plans if self.is_red else discover_plans
+            discover = load_red_plans if self.is_red else lambda source: discover_plans(source, lazy=True)
             self.work(lambda: discover(path), self.found_plans, 'Scanning patient sets…')
 
         def found_plans(self, plans):

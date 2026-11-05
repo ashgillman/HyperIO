@@ -250,6 +250,11 @@ A results dialog lists plans that could not be exported; other plans continue.
 The exporter calculates the structures enabled in the saved isodose configuration.
 The source can be a patient directory, its parent directory, or a ZIP containing either layout.
 ZIP contents are read directly without writing an extracted patient set.
+Opening the source reads only bounded plan identity headers to populate the plan selector.
+Directory entries are enumerated, but unrelated image and dose files are not opened or queried for their sizes.
+Full metadata validation, native dose loading and contour reading wait until **Calculate DVH** or batch export.
+Calculation inspects the selected plan and its linked studyset without parsing every other plan in the source.
+Consequently, errors beyond the identity header are reported when that plan is calculated.
 It follows the structure order in that configuration and retains repeated reference requests.
 Both formats follow the supplied Monaco screenshot's columns and group reference requests beneath each structure.
 Matching criteria are placed beside their reference rows; remaining criteria are retained as additional rows.

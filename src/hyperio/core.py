@@ -1,7 +1,9 @@
 """Small, evidence-preserving readers for the supplied Monaco text layouts."""
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass
+import os
 import math
 from pathlib import Path, PurePosixPath
 import re
@@ -150,6 +152,43 @@ class HypDocument:
         return HypDocument(b"".join(lines), self.source)
 
 
+class _DirectorySizes(Mapping):
+    """Index names with scandir; stat a file only when its size is requested."""
+
+    def __init__(self, root):
+        self.paths = {}
+        self.cache = {}
+        pending = [root]
+        while pending:
+            with os.scandir(pending.pop()) as entries:
+                for entry in entries:
+                    if entry.is_symlink():
+                        raise FormatError("directory exports must not contain symbolic links")
+                    path = Path(entry.path)
+                    if entry.is_dir(follow_symlinks=False):
+                        pending.append(path)
+                    elif entry.is_file(follow_symlinks=False):
+                        name = path.relative_to(root).as_posix()
+                        parts = PurePosixPath(name).parts
+                        if not parts or name.startswith('/') or '..' in parts or '\\' in name or ':' in parts[0]:
+                            raise FormatError(f'unsafe export member {name!r}')
+                        self.paths[name] = path
+
+    def __iter__(self):
+        return iter(self.paths)
+
+    def __len__(self):
+        return len(self.paths)
+
+    def __contains__(self, name):
+        return name in self.paths
+
+    def __getitem__(self, name):
+        if name not in self.cache:
+            self.cache[name] = self.paths[name].stat().st_size
+        return self.cache[name]
+
+
 class Export:
     """Read a directory or ZIP without unpacking or modifying the source."""
 
@@ -162,11 +201,9 @@ class Export:
             else:
                 if not self.path.is_dir():
                     raise FileNotFoundError(self.path)
-                paths = sorted(self.path.rglob("*"))
-                if any(p.is_symlink() for p in paths):
-                    raise FormatError("directory exports must not contain symbolic links")
-                items = [(p.relative_to(self.path).as_posix(), p.stat().st_size) for p in paths if p.is_file()]
-            self.sizes: dict[str, int] = {}
+                self.sizes = _DirectorySizes(self.path)
+                return
+            self.sizes: Mapping[str, int] = {}
             for name, size in items:
                 parts = PurePosixPath(name).parts
                 if not parts or name.startswith("/") or ".." in parts or "\\" in name or ":" in parts[0]:
@@ -224,6 +261,21 @@ def _shape(lines, start, widths):
     )
 
 
+def plan_identity(data: bytes, source: str):
+    """Read only the supported seven-line plan identity header."""
+    return _plan_identity(_lines(data), source)
+
+
+def _plan_identity(lines, source):
+    if not lines or lines[0] not in {"00d5101a", "00be101a"}:
+        raise FormatError(f"unsupported plan header {lines[0] if lines else '<empty>'!r}")
+    if len(lines) < 7 or lines[5] != "1":
+        raise FormatError("unsupported plan identity or prescription layout (expected one prescription)")
+    result = {"name": lines[2], "patient_id": lines[4], "studyset": lines[6],
+              "identity_source": {"file": source, "lines": [3, 5, 7]}}
+    return result
+
+
 def plan_metadata(data: bytes, source: str):
     """Read identities and a unique five-value density table in observed layouts.
 
@@ -231,12 +283,7 @@ def plan_metadata(data: bytes, source: str):
     This does not establish support for its other native plan records.
     """
     lines = _lines(data)
-    if not lines or lines[0] not in {"00d5101a", "00be101a"}:
-        raise FormatError(f"unsupported plan header {lines[0] if lines else '<empty>'!r}")
-    if len(lines) < 7 or lines[5] != "1":
-        raise FormatError("unsupported plan identity or prescription layout (expected one prescription)")
-    result = {"name": lines[2], "patient_id": lines[4], "studyset": lines[6],
-              "identity_source": {"file": source, "lines": [3, 5, 7]}, "density_overrides": []}
+    result = {**_plan_identity(lines, source), "density_overrides": []}
     candidates = []
     for start, line in enumerate(lines):
         if not line.isdecimal() or not 1 <= int(line) <= 10000:
@@ -382,7 +429,11 @@ def study_metadata(export: Export, prefix: str):
     return result
 
 
-def inspect_export(path: str | Path) -> dict:
+def inspect_export(path: str | Path, *, plan_path: str | None = None) -> dict:
+    """Inspect all metadata, or only one plan and its linked studyset.
+
+    Scoped inspection omits the total byte count to avoid statting unrelated files.
+    """
     from .logs import calculation_log
     from .review import dvh_parameters, isodose_settings
 
@@ -393,6 +444,8 @@ def inspect_export(path: str | Path) -> dict:
             if p.name != "plan" or p.parent.parent.name != "plan":
                 continue
             prefix = str(p.parent)
+            if plan_path is not None and prefix != plan_path:
+                continue
             plan = {"name": p.parent.name, "path": prefix, "settings": {}, "beams": [],
                     "density_overrides": [], "diagnostics": [], "studyset": None,
                     "cost_functions": None, "dose_reference_points": None,
@@ -464,6 +517,11 @@ def inspect_export(path: str | Path) -> dict:
             plans.append(plan)
         prefixes = sorted({str(PurePosixPath(n).parent) for n in export.sizes
                            if PurePosixPath(n).name == "contournames"})
+        if plan_path is not None:
+            prefixes = [prefix for prefix in prefixes if any(
+                PurePosixPath(prefix).name.split("~", 1)[-1] == plan['studyset']
+                and PurePosixPath(prefix).parent == PurePosixPath(plan['path']).parent.parent
+                for plan in plans)]
         studies = [study_metadata(export, p) for p in prefixes]
         for plan in plans:
             matches = [s for s in studies if s["name"] == plan["studyset"]
@@ -473,7 +531,7 @@ def inspect_export(path: str | Path) -> dict:
             elif matches[0]["diagnostics"]:
                 plan["diagnostics"].append("linked studyset has diagnostics")
         return {"schema_version": 1, "source": str(path), "file_count": len(export.sizes),
-                "uncompressed_bytes": sum(export.sizes.values()), "plans": plans,
+                "uncompressed_bytes": sum(export.sizes.values()) if plan_path is None else None, "plans": plans,
                 "studysets": studies,
                 "limitations": ["Saved settings do not establish which settings generated saved dose.",
                                 "Only supplied single-Rx text layouts are interpreted.",

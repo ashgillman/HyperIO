@@ -186,7 +186,8 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
     import numpy as np
     if boundary not in ('include', 'exclude'):
         raise ValueError('boundary must be include or exclude')
-    plans = [plan for plan in inspect_export(source)['plans'] if plan['name'] == plan_name
+    inspection = inspect_export(source, plan_path=plan_path) if plan_path is not None else inspect_export(source)
+    plans = [plan for plan in inspection['plans'] if plan['name'] == plan_name
              and (plan_path is None or plan['path'] == plan_path)]
     if len(plans) != 1:
         raise FormatError('expected one uniquely named plan')
@@ -294,6 +295,7 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
         limitations.append('Unity full-grid decoding has CellIrrad beam/plan reference-dose consistency evidence; '
                            'independent Monaco DVH statistics agreement has not been established.')
     return {'plan': plan_name, 'plan_path': plan['path'], 'structures': results, 'dose_grid': grid.metadata,
+            'structure_order': [row['structure'] for row in settings['structures']],
             'dose_reference_point_samples': drp_checks,
             'sampling': {'resolution_mm': resolution, 'bin_width_cgy': bin_width,
                          'origin_xyz_mm': grid.origin_xyz_mm, 'boundary': boundary,

@@ -208,12 +208,10 @@ def safe_filename_component(value):
 def calculate_for_export(source, selected, boundary):
     """Calculate a plan and retain its saved structure display order."""
     from .dvh import calculate_plan_dvh
-    from .core import inspect_export
 
     result = calculate_plan_dvh(source, selected['name'], plan_path=selected['path'], boundary=boundary)
     result['plan_path'] = selected['path']
-    plan = next(p for p in inspect_export(source)['plans'] if p['path'] == selected['path'])
-    order = {c['structure']: i for i, c in enumerate(plan['isodose_settings']['structures'])}
+    order = {name: i for i, name in enumerate(result['structure_order'])}
     result['structures'].sort(key=lambda row: order[row['structure']])
     return result
 
