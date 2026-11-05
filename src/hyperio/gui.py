@@ -59,6 +59,77 @@ def show_message(parent, title, message):
     return dialog
 
 
+def select_batch_plans(parent, plans):
+    """Return checked plans in source order, or None when the dialog is cancelled."""
+    import tkinter as tk
+    from tkinter import ttk
+
+    dialog = tk.Toplevel(parent)
+    dialog.title('Select plans for batch export')
+    dialog.transient(parent)
+    dialog.columnconfigure(0, weight=1)
+    dialog.rowconfigure(1, weight=1)
+    width = min(800, max(320, parent.winfo_screenwidth() - 80))
+    height = min(500, max(240, parent.winfo_screenheight() - 100))
+    dialog.geometry(f'{width}x{height}')
+    ttk.Label(dialog, text='Tick the plans to export.', padding=12).grid(row=0, column=0, sticky='w')
+
+    host = ttk.Frame(dialog, padding=(12, 0, 12, 0))
+    host.grid(row=1, column=0, sticky='nsew')
+    host.columnconfigure(0, weight=1)
+    host.rowconfigure(0, weight=1)
+    canvas = tk.Canvas(host, highlightthickness=0)
+    canvas.grid(row=0, column=0, sticky='nsew')
+    scroll = ttk.Scrollbar(host, orient='vertical', command=canvas.yview)
+    scroll.grid(row=0, column=1, sticky='ns')
+    canvas.configure(yscrollcommand=scroll.set)
+    choices = ttk.Frame(canvas)
+    window = canvas.create_window((0, 0), window=choices, anchor='nw')
+    choices.bind('<Configure>', lambda event: canvas.configure(scrollregion=canvas.bbox('all')))
+    canvas.bind('<Configure>', lambda event: canvas.itemconfigure(window, width=event.width))
+    selections = [tk.BooleanVar(master=dialog, value=True) for plan in plans]
+    result = None
+
+    def update_selection():
+        count = sum(variable.get() for variable in selections)
+        count_label.configure(text=f'{count} of {len(plans)} plans selected')
+        proceed.configure(state='normal' if count else 'disabled')
+
+    for plan, variable in zip(plans, selections):
+        ttk.Checkbutton(choices, text=plan['label'], variable=variable,
+                        command=update_selection).pack(anchor='w', fill='x', pady=3)
+
+    def set_all(value):
+        for variable in selections:
+            variable.set(value)
+        update_selection()
+
+    def accept():
+        nonlocal result
+        selected = [plan for plan, variable in zip(plans, selections) if variable.get()]
+        if selected:
+            result = selected
+            dialog.destroy()
+
+    actions = ttk.Frame(dialog, padding=12)
+    actions.grid(row=3, column=0, sticky='ew')
+    ttk.Button(actions, text='Select all', command=lambda: set_all(True)).pack(side='left')
+    ttk.Button(actions, text='Clear all', command=lambda: set_all(False)).pack(side='left', padx=8)
+    count_label = ttk.Label(dialog, padding=(12, 8, 12, 0))
+    count_label.grid(row=2, column=0, sticky='w')
+    proceed = ttk.Button(actions, text='Continue…', command=accept)
+    proceed.pack(side='right')
+    ttk.Button(actions, text='Cancel', command=dialog.destroy).pack(side='right', padx=8)
+    dialog.protocol('WM_DELETE_WINDOW', dialog.destroy)
+    dialog.bind('<Escape>', lambda event: dialog.destroy())
+    update_selection()
+    dialog.wait_visibility()
+    dialog.grab_set()
+    proceed.focus_set()
+    parent.wait_window(dialog)
+    return result
+
+
 def _launch(mode):
     try:
         import tkinter as tk
@@ -337,10 +408,13 @@ def _launch(mode):
             self.status.set(f'Calculated {len(result["structures"])} structures. Ready to export.')
 
         def batch_export(self):
-            destination = filedialog.askdirectory(title='Choose a folder for the DVH spreadsheets')
+            plans = select_batch_plans(self.root, self.plans)
+            if not plans:
+                return
+            destination = filedialog.askdirectory(parent=self.root, title='Choose a folder for the DVH spreadsheets')
             if not destination:
                 return
-            source, plans, boundary = self.source, list(self.plans), self.boundary.get()
+            source, boundary = self.source, self.boundary.get()
             self.work(lambda: batch_export_dvh(source, plans, destination, boundary=boundary),
                       self.batch_finished, 'Calculating and exporting DVHs…')
 

@@ -261,6 +261,10 @@ ZIP contents are read directly without writing an extracted patient set.
 Opening the source reads only bounded plan identity headers to populate the plan selector.
 Directory entries are enumerated, but unrelated image and dose files are not opened or queried for their sizes.
 Full metadata validation, native dose loading and contour reading wait until **Calculate DVH** or batch export.
+**Batch export XLSX…** opens a scrollable plan checklist with all plans selected by default.
+Untick any plans to omit, then choose **Continue…** and select the destination folder.
+**Select all** and **Clear all** change the whole checklist; at least one plan must be selected to continue.
+Cancelling either dialog leaves the export unstarted.
 Calculation inspects the selected plan and its linked studyset without parsing every other plan in the source.
 Consequently, errors beyond the identity header are reported when that plan is calculated.
 It follows the structure order in that configuration and retains repeated reference requests.
