@@ -6,6 +6,7 @@ Unsupported Monaco CI values remain blank.
 from __future__ import annotations
 
 import json
+import traceback
 from pathlib import Path
 
 
@@ -245,5 +246,6 @@ def batch_export_dvh(source, plans, destination, *, boundary='include'):
                 raise
             outcomes.append({'path': path, 'output': str(target), 'error': None})
         except Exception as exc:
-            outcomes.append({'path': path, 'output': None, 'error': str(exc)})
+            outcomes.append({'path': path, 'output': None, 'error': str(exc),
+                             'traceback': traceback.format_exc()})
     return outcomes

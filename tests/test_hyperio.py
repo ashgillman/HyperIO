@@ -293,3 +293,16 @@ def test_unity_metadata_uses_observed_record_shapes(tmp_path):
     assert report['plans'][0]['dose_reference_points'][0]['saved_beam_dose_cgy'] == 123.4
     assert report['studysets'][0]['ct_to_ed_name']['value'] == 'CalibrationName'
     assert report['studysets'][0]['structures'][0]['uniform_ed'] == .3
+
+
+@pytest.mark.parametrize('scoped', [False, True])
+def test_linked_studyset_diagnostics_retain_path_and_all_causes(tmp_path, scoped):
+    _, study_dir = synthetic_export(tmp_path)
+    (study_dir / 'info').unlink()
+    (study_dir / 'contournames').write_text('ffffffff\n')
+    kwargs = {'plan_path': '1~PHANTOM/plan/Test'} if scoped else {}
+    report = inspect_export(tmp_path, **kwargs)
+    assert report['plans'][0]['diagnostics'] == [
+        'linked studyset 1~PHANTOM/1~Study: missing info',
+        'linked studyset 1~PHANTOM/1~Study: unsupported contournames version',
+    ]

@@ -247,6 +247,14 @@ Each successful workbook is named `<patient ID>-<studyset>-<plan>.xlsx`.
 Invalid filename characters are replaced, existing files are never overwritten, and colliding names are reported instead of exported.
 A results dialog lists plans that could not be exported; other plans continue.
 
+Use **Export full logs…** or **Export anonymised full logs…** after an error to save a local JSON support report.
+The report collects metadata inspection diagnostics, relevant file format versions, software versions, session errors and the latest batch results without decoding dose or image arrays.
+Full logs include patient/plan/structure identifiers, source paths, raw parsed metadata and error tracebacks; treat them as patient data.
+Anonymised logs use generated plan/studyset/folder labels, counts, format versions and fixed diagnostic categories only.
+They omit names, patient IDs, paths, raw records, timestamps and tracebacks, and withhold unrecognised error text rather than trying to scrub names from arbitrary text.
+This deliberately loses some diagnostic detail; inspect the saved report before sharing it.
+Reports are saved locally and are not sent automatically.
+
 The exporter calculates the structures enabled in the saved isodose configuration.
 The source can be a patient directory, its parent directory, or a ZIP containing either layout.
 ZIP contents are read directly without writing an extracted patient set.

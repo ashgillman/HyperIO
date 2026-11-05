@@ -14,6 +14,7 @@ Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the
 6. Expand to nonzero rotations, asymmetric/oblique geometry, other models/energies and broader commissioning matrices after independent geometry/dose interpretation works.
 
 ** Useful work while TPS review is paused
+- Investigate the 18-plan Unity batch-export failure using the new anonymised diagnostic report when available; the source cannot be shared, and the supplied generic log does not identify the unsupported or missing studyset records.
 - Validate the reconstructed CellIrrad Unity DVH statistics against Monaco statistics or an independent dose/structure export; the [[file:reports/unity-dvh-2026-11-05.md][5 November implementation]] exports the three saved-dose plans and checks their summed beam reference doses, but independent DVH agreement remains open.
 - Investigate the separate missing .hyp diagnostic in the screenshot patient; all five CellIrrad plans have one .hyp each, while CellTesting and test have no saved dose.
 - Validate RED output from the supplied Unity `00be101a` phantom plans through Monaco load/save and recalculation; parser discovery and byte-preserving token edits have been checked, but effective density and native acceptance remain open.

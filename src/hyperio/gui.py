@@ -8,6 +8,7 @@ from __future__ import annotations
 from pathlib import Path
 import queue
 import threading
+import traceback
 
 from .application_io import discover_plans, load_red_plans, export_red_patient
 from .dvh_export import (HEADERS, display_rows, export_dvh_csv, export_dvh_xlsx,
@@ -81,6 +82,8 @@ def _launch(mode):
             self.data = None
             self.result = None
             self.busy = False
+            self.log_events = []
+            self.batch_outcomes = []
             self.messages = queue.Queue()
             self.controls = []
             self.directory = tk.StringVar()
@@ -120,6 +123,16 @@ def _launch(mode):
                 menu.add_cascade(label='Contour boundary', menu=boundary_menu)
                 advanced.configure(menu=menu)
                 self.controls.append((advanced, 'normal'))
+
+            log_actions = ttk.Frame(controls)
+            log_actions.grid(row=2, column=0, columnspan=4, sticky='w', pady=(4, 0))
+            self.log_buttons = [
+                self.button(log_actions, 'Export full logs…', lambda: self.export_logs(False)),
+                self.button(log_actions, 'Export anonymised full logs…', lambda: self.export_logs(True)),
+            ]
+            for widget in self.log_buttons:
+                widget.pack(side='left', padx=(0, 8))
+            ttk.Label(log_actions, text='Full logs include identifiers; anonymised logs omit free text.').pack(side='left')
 
             actions = ttk.Frame(root, padding=(12, 0, 12, 8))
             actions.grid(row=1, column=0, sticky='ew')
@@ -188,6 +201,8 @@ def _launch(mode):
             return widget
 
         def update_actions(self):
+            for widget in self.log_buttons:
+                widget.configure(state='normal' if self.source and not self.busy else 'disabled')
             if self.is_red:
                 ready = bool(self.plans)
             else:
@@ -235,12 +250,15 @@ def _launch(mode):
                 for widget, state in self.controls:
                     widget.configure(state=state)
                 if error is not None:
+                    self.log_events.append({'error': str(error),
+                                            'traceback': ''.join(traceback.format_exception(error))})
                     self.status.set(f'Failed: {error}')
                     show_message(self.root, 'HyperIO error', str(error))
                 else:
                     try:
                         success(value)
                     except Exception as exc:
+                        self.log_events.append({'error': str(exc), 'traceback': traceback.format_exc()})
                         self.result = None
                         self.status.set(f'Failed: {exc}')
                         show_message(self.root, 'HyperIO error', str(exc))
@@ -262,6 +280,8 @@ def _launch(mode):
             if not path:
                 return
             self.source = Path(path)
+            self.log_events = []
+            self.batch_outcomes = []
             self.directory.set(path)
             self.selected = self.data = self.result = None
             self.plans = []
@@ -325,6 +345,7 @@ def _launch(mode):
                       self.batch_finished, 'Calculating and exporting DVHs…')
 
         def batch_finished(self, outcomes):
+            self.batch_outcomes = outcomes
             failures = [item for item in outcomes if item['error']]
             count = len(outcomes) - len(failures)
             summary = f'Exported {count} of {len(outcomes)} plans.'
@@ -334,6 +355,22 @@ def _launch(mode):
                 show_message(self.root, 'Batch export results', summary + '\n\n' + details)
             else:
                 messagebox.showinfo('Batch export results', summary)
+
+        def export_logs(self, anonymised):
+            if not self.source:
+                return
+            path = filedialog.asksaveasfilename(
+                title='Export anonymised full logs' if anonymised else 'Export full logs (contains identifiers)',
+                initialfile='hyperio-anonymised-logs.json' if anonymised else 'hyperio-full-logs.json',
+                defaultextension='.json', filetypes=[('JSON support report', '*.json')])
+            if not path:
+                return
+            from .diagnostics import export_diagnostic_report
+            source, events, outcomes = self.source, list(self.log_events), list(self.batch_outcomes)
+            self.work(lambda: export_diagnostic_report(source, path, anonymised=anonymised,
+                                                       events=events, outcomes=outcomes),
+                      lambda _: self.status.set(f'Saved diagnostic logs to {path}'),
+                      'Collecting diagnostic metadata…')
 
         def save(self):
             if self.is_red:

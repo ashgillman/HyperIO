@@ -529,7 +529,10 @@ def inspect_export(path: str | Path, *, plan_path: str | None = None) -> dict:
             if len(matches) != 1:
                 plan["diagnostics"].append(f"expected one linked studyset, found {len(matches)}")
             elif matches[0]["diagnostics"]:
-                plan["diagnostics"].append("linked studyset has diagnostics")
+                study = matches[0]
+                plan["diagnostics"].extend(
+                    f"linked studyset {study['path']}: {diagnostic}"
+                    for diagnostic in study["diagnostics"])
         return {"schema_version": 1, "source": str(path), "file_count": len(export.sizes),
                 "uncompressed_bytes": sum(export.sizes.values()) if plan_path is None else None, "plans": plans,
                 "studysets": studies,

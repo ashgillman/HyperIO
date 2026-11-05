@@ -558,6 +558,7 @@ def test_batch_dvh_exports_and_reports_failures(tmp_path, monkeypatch):
     assert (tmp_path / 'id-ss-existing.xlsx').read_text() == 'keep'
     assert outcomes[0]['error'] is None
     assert 'missing dose' in outcomes[1]['error']
+    assert 'ValueError: missing dose' in outcomes[1]['traceback']
     assert outcomes[2]['error']
 
 
