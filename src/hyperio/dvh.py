@@ -13,6 +13,7 @@ from pathlib import PurePosixPath
 from .core import Export, FormatError, inspect_export, _numbers
 from .contours import contour_slice
 from .dose import native_dose
+from .diagnostics import classify_dvh_diagnostics
 
 
 class DVH:
@@ -192,8 +193,10 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
     if len(plans) != 1:
         raise FormatError('expected one uniquely named plan')
     plan = plans[0]
-    if plan['diagnostics']:
-        raise FormatError('; '.join(plan['diagnostics']))
+    diagnostics = classify_dvh_diagnostics(plan['diagnostics'])
+    errors = [row['message'] for row in diagnostics if row['severity'] == 'ERROR']
+    if errors:
+        raise FormatError('; '.join(errors))
     parameters, settings = plan['dvh_parameters'], plan['isodose_settings']
     if parameters is None or settings is None or not plan['beams']:
         raise FormatError('plan is missing DVH configuration or beam geometry')
@@ -209,8 +212,12 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
         study_prefix = str(patient_prefix / ('1~' + plan['studyset']))
         from .core import study_metadata
         study = study_metadata(export, study_prefix)
-        if study['diagnostics']:
-            raise FormatError('; '.join(study['diagnostics']))
+        study_diagnostics = classify_dvh_diagnostics(
+            [f"linked studyset {study_prefix}: {message}" for message in study['diagnostics']])
+        errors = [row['message'] for row in study_diagnostics if row['severity'] == 'ERROR']
+        if errors:
+            raise FormatError('; '.join(errors))
+        diagnostics.extend(row for row in study_diagnostics if row not in diagnostics)
         slices = sorted((contour_slice(export.read(member), member) for member in export.sizes
                          if str(PurePosixPath(member).parent) == study_prefix and member.endswith('.WC')),
                         key=lambda section: section['y_mm'])
@@ -294,7 +301,8 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
     if grid.metadata.get('format_version') == '00be301e':
         limitations.append('Unity full-grid decoding has CellIrrad beam/plan reference-dose consistency evidence; '
                            'independent Monaco DVH statistics agreement has not been established.')
-    return {'plan': plan_name, 'plan_path': plan['path'], 'structures': results, 'dose_grid': grid.metadata,
+    return {'plan': plan_name, 'plan_path': plan['path'], 'diagnostics': diagnostics,
+            'structures': results, 'dose_grid': grid.metadata,
             'structure_order': [row['structure'] for row in settings['structures']],
             'dose_reference_point_samples': drp_checks,
             'sampling': {'resolution_mm': resolution, 'bin_width_cgy': bin_width,

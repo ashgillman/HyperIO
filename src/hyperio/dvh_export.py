@@ -150,6 +150,7 @@ def export_dvh_xlsx(result, destination, *, source=''):
                ('Dose grid', json.dumps(result['dose_grid'], default=str)),
                ('CI', 'Unavailable: Monaco formula has not been established')]
     entries += [('Limitation', text) for text in result['limitations']]
+    entries += [(row['severity'], row['message']) for row in result.get('diagnostics', [])]
     entries += [('Criterion colours', 'Reconstructed primary-bound results, not clinical approval; blank means unavailable')]
     for key, value in entries:
         provenance.append([key, value])
@@ -228,6 +229,7 @@ def batch_export_dvh(source, plans, destination, *, boundary='include'):
             names.setdefault(name.casefold(), []).append(plan['path'])
     for plan in plans:
         path = plan['path']
+        diagnostics = []
         try:
             if plan.get('error'):
                 raise ValueError(plan['error'])
@@ -236,6 +238,7 @@ def batch_export_dvh(source, plans, destination, *, boundary='include'):
                 raise ValueError(f'Filename collision: {name}')
             target = destination / name
             result = calculate_for_export(source, plan, boundary)
+            diagnostics = result.get('diagnostics', [])
             # Reserve the output exclusively; remove a partial file if export fails.
             with target.open('xb'):
                 pass
@@ -244,8 +247,10 @@ def batch_export_dvh(source, plans, destination, *, boundary='include'):
             except Exception:
                 target.unlink()
                 raise
-            outcomes.append({'path': path, 'output': str(target), 'error': None})
+            outcomes.append({'path': path, 'output': str(target), 'error': None,
+                             'severity': 'WARN' if diagnostics else 'INFO', 'diagnostics': diagnostics})
         except Exception as exc:
             outcomes.append({'path': path, 'output': None, 'error': str(exc),
+                             'severity': 'ERROR', 'diagnostics': diagnostics,
                              'traceback': traceback.format_exc()})
     return outcomes

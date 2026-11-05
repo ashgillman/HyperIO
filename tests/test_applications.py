@@ -576,3 +576,70 @@ def test_batch_dvh_rejects_collisions_and_handles_unreadable(tmp_path, monkeypat
     assert 'unreadable' in outcomes[2]['error']
     assert not list(tmp_path.iterdir())
     assert dvh_export.safe_filename_component('CON') == '_CON'
+
+
+def test_ct_to_ed_warning_does_not_block_saved_dvh(tmp_path):
+    from hyperio import dvh
+    from test_hyperio import synthetic_export
+    _, study = synthetic_export(tmp_path)
+    (study / 'info').write_text('00271016\n0\n')
+    # Reach the next required input check, rather than failing on CT-to-ED.
+    with pytest.raises(ValueError, match='missing DVH configuration'):
+        dvh.calculate_plan_dvh(tmp_path, 'Test')
+    (study / 'contournames').write_text('ffffffff\n')
+    with pytest.raises(ValueError, match='unsupported contournames version'):
+        dvh.calculate_plan_dvh(tmp_path, 'Test')
+
+
+def test_dvh_diagnostic_severity_is_conservative():
+    from hyperio.diagnostics import classify_dvh_diagnostics
+    messages = ['linked studyset private/path: CT-to-ED selection absent or ambiguous',
+                'missing info', 'unsupported info version',
+                'linked studyset private/path: missing contournames',
+                'expected one linked studyset, found 2', 'unknown future diagnostic']
+    rows = classify_dvh_diagnostics(messages)
+    assert [row['severity'] for row in rows] == ['WARN'] * 3 + ['ERROR'] * 3
+    assert [row['message'] for row in rows] == messages
+
+
+def test_batch_dvh_retains_warning_on_success(tmp_path, monkeypatch):
+    from hyperio import dvh_export
+    diagnostic = {'severity': 'WARN', 'message': 'CT-to-ED selection absent or ambiguous'}
+    plan = {'path': 'a', 'patient_id': 'id', 'studyset': 'ss', 'name': 'good'}
+    monkeypatch.setattr(dvh_export, 'calculate_for_export',
+                        lambda *args: {'diagnostics': [diagnostic]})
+    monkeypatch.setattr(dvh_export, 'export_dvh_xlsx', lambda *args, **kwargs: None)
+    outcomes = dvh_export.batch_export_dvh('source', [plan], tmp_path)
+    assert outcomes[0]['error'] is None
+    assert outcomes[0]['severity'] == 'WARN'
+    assert outcomes[0]['diagnostics'] == [diagnostic]
+
+
+def test_saved_dvh_values_unchanged_when_ct_selection_is_unreadable(tmp_path):
+    from hyperio.dvh import calculate_plan_dvh
+    source = Path(__file__).parents[1] / 'reference/plan-library/D291026AG.zip'
+    if not source.exists():
+        pytest.skip('private returned plan is local only')
+    baseline = calculate_plan_dvh(source, 'D291026AG')
+    modified = tmp_path / 'unreadable-calibration.zip'
+    with zipfile.ZipFile(source) as original, zipfile.ZipFile(modified, 'w') as target:
+        for member in original.infolist():
+            data = original.read(member)
+            if member.filename.endswith('/info'):
+                data = b'00271016\n0\n'
+            target.writestr(member, data)
+    result = calculate_plan_dvh(modified, 'D291026AG')
+    assert result['structures'] == baseline['structures']
+    assert len(result['diagnostics']) == 1
+    assert result['diagnostics'][0]['severity'] == 'WARN'
+    assert 'CT-to-ED selection absent or ambiguous' in result['diagnostics'][0]['message']
+    output = tmp_path / 'with-warning.xlsx'
+    export_dvh_xlsx(result, output, source=modified)
+    from openpyxl import load_workbook
+    with output.open('rb') as stream:
+        book = load_workbook(stream)
+        assert ('WARN', result['diagnostics'][0]['message']) in list(
+            book['Provenance'].values)
+        book.close()
+    sidecar = export_dvh_csv(result, tmp_path / 'with-warning.csv', source=modified)
+    assert json.loads(sidecar.read_text())['diagnostics'] == result['diagnostics']

@@ -54,3 +54,18 @@ def test_report_writes_json_and_limits_xml_version_to_numeric_metadata(tmp_path)
     report = json.loads(target.read_text())
     assert 'SECRET' not in target.read_text()
     assert next(row for row in report['files'] if row['kind'] == 'dvhparam.xml')['version'] == '97'
+
+
+def test_anonymous_report_retains_warning_severity_without_free_text(tmp_path):
+    _, study = synthetic_export(tmp_path)
+    (study / 'info').write_text('00271016\n0\n')
+    report = build_diagnostic_report(tmp_path, anonymised=True, outcomes=[{
+        'path': '1~PHANTOM/plan/Test', 'error': None,
+        'diagnostics': [{'severity': 'WARN', 'message':
+                         'linked studyset PRIVATE: CT-to-ED selection absent or ambiguous'}]}])
+    assert report['outcomes'][0]['severity'] == 'WARN'
+    assert report['outcomes'][0]['exported'] is True
+    assert report['outcomes'][0]['diagnostics'] == [
+        {'severity': 'WARN', 'codes': ['ct_to_ed_selection_absent_or_ambiguous']}]
+    assert report['plans'][0]['dvh_diagnostics'][0]['severity'] == 'WARN'
+    assert 'PRIVATE' not in json.dumps(report)

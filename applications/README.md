@@ -246,8 +246,14 @@ Unity reconstruction has reference-dose consistency evidence; compare exported D
 Each successful workbook is named `<patient ID>-<studyset>-<plan>.xlsx`.
 Invalid filename characters are replaced, existing files are never overwritten, and colliding names are reported instead of exported.
 A results dialog lists plans that could not be exported; other plans continue.
+Results use **INFO** for successful exports, **WARN** for successful exports with non-critical metadata diagnostics, and **ERROR** for failures.
+For reconstruction from saved dose, unreadable CT-to-ED selection metadata, missing studyset `info`, and unsupported `info` versions are warnings because the DVH calculation does not use CT calibration.
+Warnings remain visible after calculation and in batch results, spreadsheet provenance, CSV provenance JSON, and diagnostic reports.
+Missing or invalid required inputs and unclassified diagnostics still prevent export.
 
 Use **Export full logs…** or **Export anonymised full logs…** after an error to save a local JSON support report.
+These buttons appear below the Patient set and Plan controls, and directly in batch-failure and application-error dialogs when a source has been selected.
+After updating an installed copy, close and reopen the application to load the new controls.
 The report collects metadata inspection diagnostics, relevant file format versions, software versions, session errors and the latest batch results without decoding dose or image arrays.
 Full logs include patient/plan/structure identifiers, source paths, raw parsed metadata and error tracebacks; treat them as patient data.
 Anonymised logs use generated plan/studyset/folder labels, counts, format versions and fixed diagnostic categories only.
@@ -287,7 +293,7 @@ The companion `<filename>.csv.provenance.json` records the source directory, sel
 
 The calculation uses the existing experimental native-dose and contour reconstruction, not the screenshot's transcribed numerical results.
 It supports the existing observed native full-grid dose profile and nonoblique WC contour layout.
-Unsupported layouts, missing dose/configuration, ambiguous plan identity and existing reader diagnostics produce an error rather than a fabricated export.
+Unsupported required layouts, missing dose/configuration, ambiguous plan identity and critical reader diagnostics produce an error rather than a fabricated export.
 Full member paths distinguish identically named plans in different patient sets.
 No Monaco dose calculation is triggered, and saved dose freshness is not established.
 Contour-boundary and histogram conventions remain provisional; a small OAR volume/mean residual remains in the supplied reference case.

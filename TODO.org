@@ -14,6 +14,8 @@ Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the
 6. Expand to nonzero rotations, asymmetric/oblique geometry, other models/energies and broader commissioning matrices after independent geometry/dose interpretation works.
 
 ** Useful work while TPS review is paused
+- Extend CT-to-ED metadata parsing for studyset 1~CT260424PE if a de-identified info record becomes available; its supported-version file has zero or multiple selection-record matches.
+  Saved-dose DVH export now retains this as WARN and proceeds when required inputs are valid; the metadata layout itself remains unresolved.
 - Investigate the 18-plan Unity batch-export failure using the new anonymised diagnostic report when available; the source cannot be shared, and the supplied generic log does not identify the unsupported or missing studyset records.
 - Validate the reconstructed CellIrrad Unity DVH statistics against Monaco statistics or an independent dose/structure export; the [[file:reports/unity-dvh-2026-11-05.md][5 November implementation]] exports the three saved-dose plans and checks their summed beam reference doses, but independent DVH agreement remains open.
 - Investigate the separate missing .hyp diagnostic in the screenshot patient; all five CellIrrad plans have one .hyp each, while CellTesting and test have no saved dose.

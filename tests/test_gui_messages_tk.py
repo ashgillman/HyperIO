@@ -13,7 +13,9 @@ def test_message_dialog_retains_and_copies_complete_report():
     try:
         root.withdraw()
         message = 'Exported 0 of 11 plans.\n\n' + 'Unsupported version — details\n' * 200
-        dialog = show_message(root, 'Batch export results', message)
+        exports = []
+        dialog = show_message(root, 'Batch export results', message,
+                              actions=[('Export anonymised full logs…', lambda: exports.append(True))])
         root.update_idletasks()
         def descendants(parent):
             for child in parent.winfo_children():
@@ -28,6 +30,9 @@ def test_message_dialog_retains_and_copies_complete_report():
         assert root.clipboard_get() == 'Exported'
         next(w for w in widgets if isinstance(w, ttk.Button) and w['text'] == 'Copy all').invoke()
         assert root.clipboard_get() == message
+        next(w for w in widgets if isinstance(w, ttk.Button)
+             and w['text'] == 'Export anonymised full logs…').invoke()
+        assert exports == [True]
         assert dialog.resizable() == (1, 1)
         dialog.destroy()
     finally:

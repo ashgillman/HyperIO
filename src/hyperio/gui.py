@@ -15,7 +15,7 @@ from .dvh_export import (HEADERS, display_rows, export_dvh_csv, export_dvh_xlsx,
                          safe_filename_component, calculate_for_export, batch_export_dvh)
 
 
-def show_message(parent, title, message):
+def show_message(parent, title, message, *, actions=()):
     """Show selectable, scrollable details with an explicit full-report copy action."""
     import tkinter as tk
     from tkinter import ttk
@@ -50,10 +50,12 @@ def show_message(parent, title, message):
 
     for sequence in ('<Control-a>', '<Command-a>'):
         text.bind(sequence, select_all)
-    actions = ttk.Frame(dialog, padding=(12, 0, 12, 12))
-    actions.grid(row=1, column=0, sticky='ew')
-    ttk.Button(actions, text='Copy all', command=copy_all).pack(side='left')
-    ttk.Button(actions, text='Close', command=dialog.destroy).pack(side='right')
+    action_bar = ttk.Frame(dialog, padding=(12, 0, 12, 12))
+    action_bar.grid(row=1, column=0, sticky='ew')
+    ttk.Button(action_bar, text='Copy all', command=copy_all).pack(side='left')
+    for label, command in actions:
+        ttk.Button(action_bar, text=label, command=command).pack(side='left', padx=(8, 0))
+    ttk.Button(action_bar, text='Close', command=dialog.destroy).pack(side='right')
     dialog.bind('<Escape>', lambda event: dialog.destroy())
     text.focus_set()
     return dialog
@@ -324,7 +326,7 @@ def _launch(mode):
                     self.log_events.append({'error': str(error),
                                             'traceback': ''.join(traceback.format_exception(error))})
                     self.status.set(f'Failed: {error}')
-                    show_message(self.root, 'HyperIO error', str(error))
+                    self.show_error('HyperIO error', str(error))
                 else:
                     try:
                         success(value)
@@ -332,7 +334,7 @@ def _launch(mode):
                         self.log_events.append({'error': str(exc), 'traceback': traceback.format_exc()})
                         self.result = None
                         self.status.set(f'Failed: {exc}')
-                        show_message(self.root, 'HyperIO error', str(exc))
+                        self.show_error('HyperIO error', str(exc))
                 self.update_actions()
             self.root.after(100, self.poll)
 
@@ -406,6 +408,10 @@ def _launch(mode):
             for row in display_rows(result):
                 self.table.insert('', 'end', values=['' if value is None else f'{value:.3f}' if isinstance(value, float) else value for value in row])
             self.status.set(f'Calculated {len(result["structures"])} structures. Ready to export.')
+            if result.get('diagnostics'):
+                self.status.set(self.status.get() + f' WARN: {len(result["diagnostics"])} metadata warning(s).')
+                self.show_error('DVH warnings', '\n'.join(
+                    f"{row['severity']}: {row['message']}" for row in result['diagnostics']))
 
         def batch_export(self):
             plans = select_batch_plans(self.root, self.plans)
@@ -423,14 +429,36 @@ def _launch(mode):
             failures = [item for item in outcomes if item['error']]
             count = len(outcomes) - len(failures)
             summary = f'Exported {count} of {len(outcomes)} plans.'
+            warned = sum(bool(item.get('diagnostics')) and not item['error'] for item in outcomes)
+            if warned or failures:
+                summary += f' WARN: {warned} exported with warnings. ERROR: {len(failures)} failed.'
             self.status.set(summary)
-            if failures:
-                details = '\n'.join(f"{item['path']}: {item['error']}" for item in failures)
-                show_message(self.root, 'Batch export results', summary + '\n\n' + details)
+            if failures or warned:
+                details = []
+                for item in outcomes:
+                    if item['error']:
+                        details.append(f"ERROR — {item['path']}: {item['error']}")
+                    elif item.get('diagnostics'):
+                        details.append(f"WARN — {item['path']}: exported successfully")
+                    else:
+                        details.append(f"INFO — {item['path']}: exported successfully")
+                    details.extend(f"  {row['severity']}: {row['message']}"
+                                   for row in item.get('diagnostics', []))
+                details = '\n'.join(details)
+                self.show_error('Batch export results', summary + '\n\n' + details)
             else:
                 messagebox.showinfo('Batch export results', summary)
 
+        def show_error(self, title, message):
+            actions = []
+            if self.source:
+                actions = [('Export full logs…', lambda: self.export_logs(False)),
+                           ('Export anonymised full logs…', lambda: self.export_logs(True))]
+            show_message(self.root, title, message, actions=actions)
+
         def export_logs(self, anonymised):
+            if self.busy:
+                return
             if not self.source:
                 return
             path = filedialog.asksaveasfilename(

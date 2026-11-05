@@ -45,6 +45,23 @@ def _error_codes(text):
     return codes or ['unclassified_error_details_withheld']
 
 
+def classify_dvh_diagnostics(messages):
+    """Classify metadata diagnostics for reconstruction from saved dose only.
+
+    Studyset info describes CT calibration, which saved-dose sampling does not
+    consume. Unknown diagnostics remain errors; other workflows keep their
+    existing validation policy.
+    """
+    warnings = {'CT-to-ED selection absent or ambiguous', 'missing info',
+                'unsupported info version'}
+    rows = []
+    for message in messages:
+        cause = message.rsplit(': ', 1)[-1] if message.startswith('linked studyset ') else message
+        rows.append({'severity': 'WARN' if cause in warnings else 'ERROR',
+                     'message': message})
+    return rows
+
+
 def build_diagnostic_report(source, *, anonymised=False, events=(), outcomes=()):
     """Inspect metadata without decoding dose/images or modifying the source.
 
@@ -99,6 +116,8 @@ categories and software versions, so even unidentified free-text PHI is excluded
         key = 'inventory_error_codes' if anonymised else 'inventory_error'
         report[key] = _error_codes(str(exc)) if anonymised else str(exc)
 
+    for plan in inspection['plans']:
+        plan['dvh_diagnostics'] = classify_dvh_diagnostics(plan['diagnostics'])
     if not anonymised:
         report.update(inspection=inspection, events=list(events), outcomes=list(outcomes))
         return report
@@ -123,10 +142,17 @@ categories and software versions, so even unidentified free-text PHI is excluded
             'id': plan_id, 'folder_id': groups.get(plan['path']),
             'studyset_id': f'studyset_{linked[0]:03d}' if len(linked) == 1 else None,
             'beam_count': len(plan['beams']),
+            'dvh_diagnostics': [{'severity': row['severity'], 'codes': _error_codes(row['message'])}
+                                for row in plan['dvh_diagnostics']],
             'error_codes': sorted({code for text in plan['diagnostics'] for code in _error_codes(text)})})
     report['events'] = [{'error_codes': _error_codes(event.get('error'))} for event in events]
     report['outcomes'] = [{'plan_id': plan_ids.get(outcome['path']),
                            'exported': not bool(outcome.get('error')),
+                           'severity': 'ERROR' if outcome.get('error') else
+                                       'WARN' if outcome.get('diagnostics') else 'INFO',
+                           'diagnostics': [{'severity': row['severity'] if row.get('severity') in {'WARN', 'ERROR'} else 'ERROR',
+                                            'codes': _error_codes(row.get('message'))}
+                                           for row in outcome.get('diagnostics', [])],
                            'error_codes': _error_codes(outcome.get('error'))} for outcome in outcomes]
     return report
 
