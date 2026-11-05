@@ -80,6 +80,12 @@ def _rows_and_statuses(result):
                 relative = actual if kind in (9, 11) else actual / volume * 100
                 row[5:8] = [relative / 100 * volume, relative, float(goal['raw']['Dose'])]
             append(row, criterion)
+    for failure in result.get('structure_failures', []):
+        row = [None] * len(HEADERS)
+        row[0] = failure['structure']
+        row[8] = f'DVH unavailable: {failure["message"]}'
+        rows.append(row)
+        statuses.append(None)
     return rows, statuses
 
 
@@ -103,7 +109,9 @@ def export_dvh_xlsx(result, destination, *, source=''):
     sheet.title = 'DVH Statistics'
     sheet.append([f'HyperIO DVH reconstruction — {result["plan"]}'])
     sheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(HEADERS))
-    sheet.append(['Reconstructed saved dose; Monaco CI unavailable. See Provenance for policies and limitations.'])
+    failures = result.get('structure_failures', [])
+    summary = f'{len(failures)} structure(s) failed; see unavailable rows and Provenance. ' if failures else ''
+    sheet.append([summary + 'Reconstructed saved dose; Monaco CI unavailable. See Provenance for policies and limitations.'])
     sheet.merge_cells(start_row=2, start_column=1, end_row=2, end_column=len(HEADERS))
     sheet.append(HEADERS)
     rows, statuses = _rows_and_statuses(result)

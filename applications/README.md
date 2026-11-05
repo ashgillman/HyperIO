@@ -246,10 +246,14 @@ Unity reconstruction has reference-dose consistency evidence; compare exported D
 Each successful workbook is named `<patient ID>-<studyset>-<plan>.xlsx`.
 Invalid filename characters are replaced, existing files are never overwritten, and colliding names are reported instead of exported.
 A results dialog lists plans that could not be exported; other plans continue.
-Results use **INFO** for successful exports, **WARN** for successful exports with non-critical metadata diagnostics, and **ERROR** for failures.
+Results use **INFO** for successful exports, **WARN** for exports with warnings or unavailable structures, and **ERROR** for plan-level failures.
+If a structure has an invalid contour polygon or fails sampling, its entire DVH is omitted and the remaining structures continue calculating.
+The warning identifies the structure and failure reason; invalid-polygon warnings also identify the WC file, record line and geometry problem.
+The table and exports retain a `DVH unavailable` row with blank numerical results for each failed structure.
+If every requested structure fails, no curves are produced and all requested structures are reported as unavailable.
 For reconstruction from saved dose, unreadable CT-to-ED selection metadata, missing studyset `info`, and unsupported `info` versions are warnings because the DVH calculation does not use CT calibration.
 Warnings remain visible after calculation and in batch results, spreadsheet provenance, CSV provenance JSON, and diagnostic reports.
-Missing or invalid required inputs and unclassified diagnostics still prevent export.
+Shared failures such as unreadable contour records, invalid slice geometry, missing dose and unclassified input diagnostics still prevent export.
 
 Use **Export full logs…** or **Export anonymised full logs…** after an error to save a local JSON support report.
 These buttons appear below the Patient set and Plan controls, and directly in batch-failure and application-error dialogs when a source has been selected.

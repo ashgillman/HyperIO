@@ -101,7 +101,7 @@ def _structure_samples(grid, slices, structure_index, resolution_mm, boundary, m
     points exactly on their boundaries measurably changes small volumes.
     """
     import numpy as np
-    from shapely import Polygon, union_all, contains_xy, intersects_xy
+    from shapely import Polygon, union_all, contains_xy, intersects_xy, is_valid_reason
     include = {'include': intersects_xy, 'exclude': contains_xy}[boundary]
     sample_groups, total_points = [], 0
     for slice_index, section in enumerate(slices):
@@ -109,8 +109,11 @@ def _structure_samples(grid, slices, structure_index, resolution_mm, boundary, m
         if not records:
             continue
         polygons = [Polygon(record['points_xz_mm']) for record in records]
-        if any(not polygon.is_valid or polygon.area <= 0 for polygon in polygons):
-            raise FormatError(f'{section["source"]["file"]}: invalid contour polygon')
+        for record, polygon in zip(records, polygons):
+            if not polygon.is_valid or polygon.area <= 0:
+                source = record['source']
+                reason = is_valid_reason(polygon) if not polygon.is_valid else 'zero area'
+                raise FormatError(f'{source["file"]}:{source["line"]}: invalid contour polygon: {reason}')
         geometry = union_all(polygons)
         min_x, min_z, max_x, max_z = geometry.bounds
         x_values = _lattice_axis(min_x, max_x, grid.origin_xyz_mm[0], resolution_mm)
@@ -183,8 +186,11 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
     Policies are returned alongside results so residual differences stay visible.
     Paddick CI is optional and explicitly labelled as a candidate mapping.
     Supply plan_path to select one plan when names repeat across patient sets.
+    Structure sampling failures omit that entire DVH and return warnings plus
+    structure_failures; shared input and geometry failures still raise.
     """
     import numpy as np
+    from shapely.errors import GEOSException
     if boundary not in ('include', 'exclude'):
         raise ValueError('boundary must be include or exclude')
     inspection = inspect_export(source, plan_path=plan_path) if plan_path is not None else inspect_export(source)
@@ -236,12 +242,21 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
     unknown = requested - structures_by_name.keys()
     if unknown:
         raise ValueError(f'unknown structure names: {sorted(unknown)}')
-    results = []
+    results, structure_failures = [], []
     histograms = {}
     for name in sorted(requested):
         structure_index = structures_by_name[name]['index']
-        samples, all_count = _structure_samples(grid, slices, structure_index, resolution, boundary, max_samples)
-        histogram = DVH(samples, resolution_mm=resolution, bin_width_cgy=bin_width)
+        try:
+            samples, all_count = _structure_samples(grid, slices, structure_index, resolution, boundary, max_samples)
+            histogram = DVH(samples, resolution_mm=resolution, bin_width_cgy=bin_width)
+        except (ValueError, GEOSException) as exc:
+            # Discard the entire structure, including any earlier valid slices.
+            # Shared dose/geometry/input errors above remain plan-level failures.
+            structure_failures.append({'structure': name, 'structure_index': structure_index,
+                                       'message': str(exc)})
+            diagnostics.append({'severity': 'WARN',
+                                'message': f'Structure {name!r} (index {structure_index}): DVH unavailable; {exc}'})
+            continue
         histograms[name] = histogram
         config = configs.get(name, {})
         high_ref, min_ref = config.get('high_dose_ref_percent'), config.get('min_dose_ref_percent')
@@ -268,7 +283,7 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
                                             for section in (slices[0], slices[-1]) for p in section['polygons']),
                         'criterion_results': criterion_results, 'reference_requests': references,
                         'paddick_conformity_index': None})
-    if include_conformity:
+    if include_conformity and results:
         # Sample the same lattice throughout the calculated volume. This is an
         # optional, potentially larger operation used only for a CI candidate.
         axes = [_lattice_axis(low, high, low, resolution)
@@ -302,7 +317,7 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
         limitations.append('Unity full-grid decoding has CellIrrad beam/plan reference-dose consistency evidence; '
                            'independent Monaco DVH statistics agreement has not been established.')
     return {'plan': plan_name, 'plan_path': plan['path'], 'diagnostics': diagnostics,
-            'structures': results, 'dose_grid': grid.metadata,
+            'structures': results, 'structure_failures': structure_failures, 'dose_grid': grid.metadata,
             'structure_order': [row['structure'] for row in settings['structures']],
             'dose_reference_point_samples': drp_checks,
             'sampling': {'resolution_mm': resolution, 'bin_width_cgy': bin_width,

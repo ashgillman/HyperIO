@@ -408,8 +408,10 @@ def _launch(mode):
             for row in display_rows(result):
                 self.table.insert('', 'end', values=['' if value is None else f'{value:.3f}' if isinstance(value, float) else value for value in row])
             self.status.set(f'Calculated {len(result["structures"])} structures. Ready to export.')
+            if result.get('structure_failures'):
+                self.status.set(self.status.get() + f' {len(result["structure_failures"])} structure(s) failed.')
             if result.get('diagnostics'):
-                self.status.set(self.status.get() + f' WARN: {len(result["diagnostics"])} metadata warning(s).')
+                self.status.set(self.status.get() + f' WARN: {len(result["diagnostics"])} warning(s).')
                 self.show_error('DVH warnings', '\n'.join(
                     f"{row['severity']}: {row['message']}" for row in result['diagnostics']))
 

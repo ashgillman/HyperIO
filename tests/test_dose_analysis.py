@@ -148,3 +148,60 @@ def test_unity_contour_slice_uses_same_polygon_records():
     assert parsed['polygons'][0]['structure_index'] == 7
     assert parsed['polygons'][0]['points_xz_mm'] == [[0, 0], [2, 0], [2, 2], [0, 2]]
     assert parsed['unparsed_tail'] == ['0', 'Bart']
+
+
+@pytest.mark.parametrize('all_invalid', [False, True])
+def test_dvh_reports_failed_structures_and_keeps_other_complete_dvhs(tmp_path, monkeypatch, all_invalid):
+    from hyperio import core, dvh
+    from hyperio.dvh_export import export_dvh_csv, export_dvh_xlsx
+    from openpyxl import load_workbook
+    import csv
+
+    study = tmp_path / 'Patient/1~CT'
+    study.mkdir(parents=True)
+    plan_path = 'Patient/plan/Test'
+    (tmp_path / plan_path).mkdir(parents=True)
+    (tmp_path / plan_path / 'dose.1').write_bytes(b'synthetic')
+    square = '1,1,3,1,3,3,1,3'
+    crossing = '1,1,3,3,1,3,3,1'
+    for y in (1, 3):
+        # Bad has a valid earlier slice: none of it may become a partial DVH.
+        bad = square if y == 1 else crossing
+        good = crossing if all_invalid else square
+        (study / f'T.{y}.WC').write_text(
+            '00071013\nSynthetic\n0\n0,0,0\n0,0,4,4\n0,0,0\n1,0,0,0,1,0\n'
+            f'4\n1\n{bad}\n4\n2\n{good}\n')
+    settings = {'structures': [{'structure': name, 'enabled': True} for name in ('Bad', 'Good')],
+                'dose_goals': []}
+    plan = {'name': 'Test', 'path': plan_path, 'studyset': 'CT', 'diagnostics': [],
+            'dvh_parameters': {'resolution_mm': 1, 'bin_width_cgy': 1},
+            'isodose_settings': settings, 'beams': [{'isocentre_raw': [0, 0, 0]}],
+            'dose_reference_points': []}
+    monkeypatch.setattr(dvh, 'inspect_export', lambda *args, **kwargs: {'plans': [plan]})
+    monkeypatch.setattr(core, 'study_metadata', lambda *args: {
+        'diagnostics': [], 'structures': [{'name': 'Bad', 'index': 1}, {'name': 'Good', 'index': 2}]})
+    monkeypatch.setattr(dvh, 'native_dose', lambda *args: DoseGrid(np.ones((5, 5, 5)), (0, 0, 0), (1, 1, 1)))
+    result = dvh.calculate_plan_dvh(tmp_path, 'Test', include_conformity=True)
+    assert [row['structure'] for row in result['structures']] == ([] if all_invalid else ['Good'])
+    if not all_invalid:
+        assert result['structures'][0]['volume_cm3'] == .036
+        assert result['structures'][0]['mean_dose_cgy'] == 1
+    assert len(result['structure_failures']) == (2 if all_invalid else 1)
+    failure = result['structure_failures'][0]
+    assert failure['structure'] == 'Bad'
+    assert 'T.3.WC:8' in failure['message']
+    assert 'Self-intersection' in failure['message']
+    assert all(row['severity'] == 'WARN' for row in result['diagnostics'])
+    assert 'Bad' in result['diagnostics'][0]['message']
+    sidecar = export_dvh_csv(result, tmp_path / 'result.csv')
+    assert json.loads(sidecar.read_text())['structure_failures'] == result['structure_failures']
+    with (tmp_path / 'result.csv').open(encoding='utf-8-sig') as stream:
+        rows = list(csv.reader(stream))
+    failed_row = next(row for row in rows[1:] if row[0] == 'Bad')
+    assert failed_row[1:8] == [''] * 7
+    assert 'DVH unavailable' in failed_row[8]
+    export_dvh_xlsx(result, tmp_path / 'result.xlsx')
+    book = load_workbook(tmp_path / 'result.xlsx')
+    assert ('WARN', result['diagnostics'][0]['message']) in list(book['Provenance'].values)
+    assert 'failed' in book['DVH Statistics']['A2'].value
+    book.close()
