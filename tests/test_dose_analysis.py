@@ -150,8 +150,9 @@ def test_unity_contour_slice_uses_same_polygon_records():
     assert parsed['unparsed_tail'] == ['0', 'Bart']
 
 
+@pytest.mark.parametrize('recoverable', [False, True])
 @pytest.mark.parametrize('all_invalid', [False, True])
-def test_dvh_reports_failed_structures_and_keeps_other_complete_dvhs(tmp_path, monkeypatch, all_invalid):
+def test_dvh_reports_failed_structures_and_keeps_other_complete_dvhs(tmp_path, monkeypatch, all_invalid, recoverable):
     from hyperio import core, dvh
     from hyperio.dvh_export import export_dvh_csv, export_dvh_xlsx
     from openpyxl import load_workbook
@@ -163,7 +164,7 @@ def test_dvh_reports_failed_structures_and_keeps_other_complete_dvhs(tmp_path, m
     (tmp_path / plan_path).mkdir(parents=True)
     (tmp_path / plan_path / 'dose.1').write_bytes(b'synthetic')
     square = '1,1,3,1,3,3,1,3'
-    crossing = '1,1,3,3,1,3,3,1'
+    crossing = '1,1,3,3,1,3,3,1' if recoverable else '1,1,2,2,3,3,2,2'
     for y in (1, 3):
         # Bad has a valid earlier slice: none of it may become a partial DVH.
         bad = square if y == 1 else crossing
@@ -182,6 +183,23 @@ def test_dvh_reports_failed_structures_and_keeps_other_complete_dvhs(tmp_path, m
         'diagnostics': [], 'structures': [{'name': 'Bad', 'index': 1}, {'name': 'Good', 'index': 2}]})
     monkeypatch.setattr(dvh, 'native_dose', lambda *args: DoseGrid(np.ones((5, 5, 5)), (0, 0, 0), (1, 1, 1)))
     result = dvh.calculate_plan_dvh(tmp_path, 'Test', include_conformity=True)
+    if recoverable:
+        assert [row['structure'] for row in result['structures']] == ['Bad', 'Good']
+        assert result['structure_failures'] == []
+        assert len(result['diagnostics']) == (3 if all_invalid else 1)
+        assert all(row['severity'] == 'WARN' for row in result['diagnostics'])
+        assert 'Bad' in result['diagnostics'][0]['message']
+        assert 'T.3.WC:8' in result['diagnostics'][0]['message']
+        assert 'filled footprint' in result['diagnostics'][0]['message']
+        assert result['structures'][0]['volume_cm3'] == .032
+        assert result['structures'][1]['volume_cm3'] == (.028 if all_invalid else .036)
+        sidecar = export_dvh_csv(result, tmp_path / 'result.csv')
+        assert json.loads(sidecar.read_text())['diagnostics'] == result['diagnostics']
+        export_dvh_xlsx(result, tmp_path / 'result.xlsx')
+        book = load_workbook(tmp_path / 'result.xlsx')
+        assert ('WARN', result['diagnostics'][0]['message']) in list(book['Provenance'].values)
+        book.close()
+        return
     assert [row['structure'] for row in result['structures']] == ([] if all_invalid else ['Good'])
     if not all_invalid:
         assert result['structures'][0]['volume_cm3'] == .036
@@ -190,7 +208,7 @@ def test_dvh_reports_failed_structures_and_keeps_other_complete_dvhs(tmp_path, m
     failure = result['structure_failures'][0]
     assert failure['structure'] == 'Bad'
     assert 'T.3.WC:8' in failure['message']
-    assert 'Self-intersection' in failure['message']
+    assert 'invalid contour polygon' in failure['message']
     assert all(row['severity'] == 'WARN' for row in result['diagnostics'])
     assert 'Bad' in result['diagnostics'][0]['message']
     sidecar = export_dvh_csv(result, tmp_path / 'result.csv')
@@ -205,3 +223,32 @@ def test_dvh_reports_failed_structures_and_keeps_other_complete_dvhs(tmp_path, m
     assert ('WARN', result['diagnostics'][0]['message']) in list(book['Provenance'].values)
     assert 'failed' in book['DVH Statistics']['A2'].value
     book.close()
+
+
+@pytest.mark.parametrize('reverse', [False, True])
+@pytest.mark.parametrize('points, area, inside, outside', [
+    # Outer square, retraced connector, inner loop: fill the inner square too.
+    ([(0, 0), (6, 0), (6, 6), (0, 6), (0, 0), (2, 2),
+      (2, 4), (4, 4), (4, 2), (2, 2), (0, 0)], 36, (3, 3), (7, 3)),
+    # Both figure-eight lobes survive, without filling the convex hull.
+    ([(0, 0), (4, 4), (0, 4), (4, 0)], 8, (2, 1), (.5, 2)),
+    # A retraced outward spur contributes no area.
+    ([(0, 0), (4, 0), (6, 0), (4, 0), (4, 4), (0, 4)], 16, (2, 2), (5, 1)),
+    # A valid concave ring must remain unchanged.
+    ([(0, 0), (4, 0), (4, 1), (1, 1), (1, 4), (0, 4)], 7, (.5, 3), (3, 3)),
+])
+def test_contour_footprint_fills_internal_loops_and_preserves_outer_edges(reverse, points, area, inside, outside):
+    from hyperio.dvh import _contour_footprint
+    from shapely import Polygon, contains_xy
+    record = {'points_xz_mm': points[::-1] if reverse else points,
+              'source': {'file': 'T.1.WC', 'line': 8}}
+    repairs = []
+    geometry = _contour_footprint(record, repairs)
+    assert geometry.is_valid
+    assert geometry.area == pytest.approx(area)
+    assert contains_xy(geometry, *inside)
+    assert not contains_xy(geometry, *outside)
+    assert len(repairs) == (0 if Polygon(points).is_valid else 1)
+    if repairs:
+        assert 'T.1.WC:8' in repairs[0]
+        assert 'filled footprint' in repairs[0]

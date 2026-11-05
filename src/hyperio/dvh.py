@@ -93,7 +93,32 @@ def _lattice_axis(lower, upper, origin, spacing):
     return origin + np.arange(first, last + 1) * spacing
 
 
-def _structure_samples(grid, slices, structure_index, resolution_mm, boundary, max_samples):
+def _contour_footprint(record, repairs):
+    """Fill every enclosed face of an invalid ring, without cancelling loops.
+
+    Noding splits crossings before polygonisation; unioning all bounded faces
+    fills internal loops while retaining outer concavities and separate lobes.
+    Valid rings are unchanged, and collapsed linework remains an error.
+    """
+    from shapely import Polygon, union_all, is_valid_reason
+    from shapely.ops import polygonize
+    polygon = Polygon(record['points_xz_mm'])
+    if polygon.is_valid and polygon.area > 0:
+        return polygon
+    source = record['source']
+    reason = is_valid_reason(polygon) if not polygon.is_valid else 'zero area'
+    location = f'{source["file"]}:{source["line"]}'
+    if reason.startswith(('Ring Self-intersection', 'Self-intersection')):
+        noded = union_all([polygon.boundary])
+        geometry = union_all(list(polygonize(noded)))
+        if not geometry.is_empty and geometry.is_valid and geometry.area > 0:
+            repairs.append(f'{location}: repaired invalid contour polygon: {reason}; '
+                           'filled footprint from union of all enclosed faces; internal loops filled')
+            return geometry
+    raise FormatError(f'{location}: invalid contour polygon: {reason}; no usable filled footprint')
+
+
+def _structure_samples(grid, slices, structure_index, resolution_mm, boundary, max_samples, *, repairs=None):
     """Hold each native contour over its nearest-slice slab; union its polygons.
 
     This is a declared reconstruction policy, not a documented Monaco rule.
@@ -101,19 +126,16 @@ def _structure_samples(grid, slices, structure_index, resolution_mm, boundary, m
     points exactly on their boundaries measurably changes small volumes.
     """
     import numpy as np
-    from shapely import Polygon, union_all, contains_xy, intersects_xy, is_valid_reason
+    from shapely import union_all, contains_xy, intersects_xy
+    if repairs is None:
+        repairs = []
     include = {'include': intersects_xy, 'exclude': contains_xy}[boundary]
     sample_groups, total_points = [], 0
     for slice_index, section in enumerate(slices):
         records = [p for p in section['polygons'] if p['structure_index'] == structure_index]
         if not records:
             continue
-        polygons = [Polygon(record['points_xz_mm']) for record in records]
-        for record, polygon in zip(records, polygons):
-            if not polygon.is_valid or polygon.area <= 0:
-                source = record['source']
-                reason = is_valid_reason(polygon) if not polygon.is_valid else 'zero area'
-                raise FormatError(f'{source["file"]}:{source["line"]}: invalid contour polygon: {reason}')
+        polygons = [_contour_footprint(record, repairs) for record in records]
         geometry = union_all(polygons)
         min_x, min_z, max_x, max_z = geometry.bounds
         x_values = _lattice_axis(min_x, max_x, grid.origin_xyz_mm[0], resolution_mm)
@@ -246,8 +268,10 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
     histograms = {}
     for name in sorted(requested):
         structure_index = structures_by_name[name]['index']
+        repairs = []
         try:
-            samples, all_count = _structure_samples(grid, slices, structure_index, resolution, boundary, max_samples)
+            samples, all_count = _structure_samples(grid, slices, structure_index, resolution, boundary, max_samples,
+                                                   repairs=repairs)
             histogram = DVH(samples, resolution_mm=resolution, bin_width_cgy=bin_width)
         except (ValueError, GEOSException) as exc:
             # Discard the entire structure, including any earlier valid slices.
@@ -257,6 +281,10 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
             diagnostics.append({'severity': 'WARN',
                                 'message': f'Structure {name!r} (index {structure_index}): DVH unavailable; {exc}'})
             continue
+        finally:
+            diagnostics.extend({'severity': 'WARN',
+                                'message': f'Structure {name!r} (index {structure_index}): {repair}'}
+                               for repair in repairs)
         histograms[name] = histogram
         config = configs.get(name, {})
         high_ref, min_ref = config.get('high_dose_ref_percent'), config.get('min_dose_ref_percent')
@@ -323,6 +351,7 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
             'sampling': {'resolution_mm': resolution, 'bin_width_cgy': bin_width,
                          'origin_xyz_mm': grid.origin_xyz_mm, 'boundary': boundary,
                          'contours': 'union polygons; nearest-slice slabs [lower,upper)',
+                         'invalid_rings': 'node self-intersections; polygonize; union all enclosed faces; fill internal loops',
                          'dose': 'SciPy trilinear interpolation',
                          'bins': 'half-open dose intervals; cumulative counts at midpoints; linear inversion'},
             'limitations': limitations}

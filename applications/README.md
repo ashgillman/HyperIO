@@ -247,7 +247,12 @@ Each successful workbook is named `<patient ID>-<studyset>-<plan>.xlsx`.
 Invalid filename characters are replaced, existing files are never overwritten, and colliding names are reported instead of exported.
 A results dialog lists plans that could not be exported; other plans continue.
 Results use **INFO** for successful exports, **WARN** for exports with warnings or unavailable structures, and **ERROR** for plan-level failures.
-If a structure has an invalid contour polygon or fails sampling, its entire DVH is omitted and the remaining structures continue calculating.
+Self-intersecting contour rings are repaired for sampling by splitting edges at intersections, polygonising the resulting linework, and unioning all enclosed faces.
+This filled-footprint policy fills internal loops rather than subtracting them as holes, keeps all figure-eight lobes, and preserves outer concavities; it does not use a bounding box or convex hull.
+Valid rings are unchanged, and the source contour files are not modified.
+Each repaired ring produces a WARN identifying the structure, WC file, record line, original geometry problem and repair policy; warnings remain in exported provenance.
+This is an explicit reconstruction convention; compare affected slices and DVH statistics against Monaco to validate agreement.
+If a contour has no usable area after repair, remains invalid, or fails sampling, its entire structure's DVH is omitted and the remaining structures continue calculating.
 The warning identifies the structure and failure reason; invalid-polygon warnings also identify the WC file, record line and geometry problem.
 The table and exports retain a `DVH unavailable` row with blank numerical results for each failed structure.
 If every requested structure fails, no curves are produced and all requested structures are reported as unavailable.

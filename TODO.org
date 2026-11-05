@@ -14,6 +14,8 @@ Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the
 6. Expand to nonzero rotations, asymmetric/oblique geometry, other models/energies and broader commissioning matrices after independent geometry/dose interpretation works.
 
 ** Useful work while TPS review is paused
+- Compare the filled-footprint repair of self-intersecting WC rings against Monaco on the affected CTV, DCAV, femoral-head and prostate slices; check contour overlays and recovered DVH volumes/statistics.
+  Synthetic tests establish internal-loop filling, both figure-eight lobes, preserved concavities, orientation independence and repair-warning export; agreement with Monaco on these supplied contours remains open.
 - Resolve CT-to-ED selection parsing using the [[file:reports/ct-to-ed-selection-diagnostic-2026-11-05.md][anonymised-report investigation and numeric-identifier reproduction]].
   The report is now available: 33 of 34 studysets have the diagnostic, and all seven attempted exports link to studyset_002; obtain de-identified failing/passing info records with numeric/text field types preserved before changing the parser.
   Saved-dose DVH export retains this as WARN; the actual metadata layout remains unresolved, and the separate plan_007 .hyp/beam diagnostics remain critical.
