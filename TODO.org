@@ -14,9 +14,9 @@ Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the
 6. Expand to nonzero rotations, asymmetric/oblique geometry, other models/energies and broader commissioning matrices after independent geometry/dose interpretation works.
 
 ** Useful work while TPS review is paused
-- Extend CT-to-ED metadata parsing for studyset 1~CT260424PE if a de-identified info record becomes available; its supported-version file has zero or multiple selection-record matches.
-  Saved-dose DVH export now retains this as WARN and proceeds when required inputs are valid; the metadata layout itself remains unresolved.
-- Investigate the 18-plan Unity batch-export failure using the new anonymised diagnostic report when available; the source cannot be shared, and the supplied generic log does not identify the unsupported or missing studyset records.
+- Resolve CT-to-ED selection parsing using the [[file:reports/ct-to-ed-selection-diagnostic-2026-11-05.md][anonymised-report investigation and numeric-identifier reproduction]].
+  The report is now available: 33 of 34 studysets have the diagnostic, and all seven attempted exports link to studyset_002; obtain de-identified failing/passing info records with numeric/text field types preserved before changing the parser.
+  Saved-dose DVH export retains this as WARN; the actual metadata layout remains unresolved, and the separate plan_007 .hyp/beam diagnostics remain critical.
 - Validate the reconstructed CellIrrad Unity DVH statistics against Monaco statistics or an independent dose/structure export; the [[file:reports/unity-dvh-2026-11-05.md][5 November implementation]] exports the three saved-dose plans and checks their summed beam reference doses, but independent DVH agreement remains open.
 - Investigate the separate missing .hyp diagnostic in the screenshot patient; all five CellIrrad plans have one .hyp each, while CellTesting and test have no saved dose.
 - Validate RED output from the supplied Unity `00be101a` phantom plans through Monaco load/save and recalculation; parser discovery and byte-preserving token edits have been checked, but effective density and native acceptance remain open.
