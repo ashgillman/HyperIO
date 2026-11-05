@@ -269,3 +269,27 @@ def test_log_values_are_separate_from_requested_settings():
     assert len(result["completion_events"]) == 1
     with pytest.raises(FormatError):
         calculation_log(b"<Log><Message>truncated", "bad.xlog")
+
+
+def test_unsupported_tel_reports_version_without_spurious_beam_mismatch(tmp_path):
+    plan_dir, _ = synthetic_export(tmp_path)
+    (plan_dir / 'tel.1').write_bytes(b'ffffffff\n')
+    diagnostics = inspect_export(tmp_path)['plans'][0]['diagnostics']
+    assert any("unsupported tel.1 version 'ffffffff'" in d for d in diagnostics)
+    assert not any('beam definition count' in d for d in diagnostics)
+
+
+def test_unity_metadata_uses_observed_record_shapes(tmp_path):
+    plan_dir, study_dir = synthetic_export(tmp_path)
+    for path, old, new in [(plan_dir / 'plan', '00d5101a', '00be101a'),
+                            (plan_dir / 'tel.1', '00d5101d', '00be101d'),
+                            (study_dir / 'info', '00271016', '00241016'),
+                            (study_dir / 'contournames', '00131027', '00121027')]:
+        path.write_text(path.read_text().replace(old, new, 1))
+    report = inspect_export(tmp_path)
+    assert not report['plans'][0]['diagnostics']
+    assert not report['studysets'][0]['diagnostics']
+    assert report['plans'][0]['beams'][0]['isocentre_raw'] == [1, 2, 3]
+    assert report['plans'][0]['dose_reference_points'][0]['saved_beam_dose_cgy'] == 123.4
+    assert report['studysets'][0]['ct_to_ed_name']['value'] == 'CalibrationName'
+    assert report['studysets'][0]['structures'][0]['uniform_ed'] == .3

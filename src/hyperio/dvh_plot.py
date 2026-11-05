@@ -179,7 +179,7 @@ class DVHPlot:
         button.bind('<Configure>', lambda e: button.configure(wraplength=max(60, e.width - 30)))
 
     def load_goals(self, path=None):
-        from tkinter import filedialog, messagebox
+        from tkinter import filedialog
         from pathlib import Path
         from .dvh_goals import load_catalogue
         path = path or filedialog.askopenfilename(title='Load DVH goal library', filetypes=[('JSON', '*.json')])
@@ -188,7 +188,8 @@ class DVHPlot:
         try:
             catalogue = load_catalogue(path)
         except (OSError, ValueError, KeyError, TypeError) as error:
-            messagebox.showerror('Cannot load DVH goals', str(error))
+            from .gui import show_message
+            show_message(self.canvas.winfo_toplevel(), 'Cannot load DVH goals', str(error))
             return
         self.goal_library.set(Path(path).name)
         self.goal_pages = catalogue['protocols']

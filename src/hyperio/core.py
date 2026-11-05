@@ -268,8 +268,9 @@ def plan_metadata(data: bytes, source: str):
 
 def beam_headers(data: bytes, source: str):
     lines = _lines(data)
-    if not lines or lines[0] != "00d5101d":
-        raise FormatError("unsupported tel.1 version")
+    if not lines or lines[0] not in {"00d5101d", "00be101d"}:
+        version = lines[0] if lines else '<empty>'
+        raise FormatError(f"{source}: unsupported tel.1 version {version!r}; supported versions are '00d5101d', '00be101d'")
     beams = []
     # Arity and numeric anchors from the PlanCheck beam-header approach.
     for i in range(len(lines)):
@@ -303,7 +304,7 @@ def beam_headers(data: bytes, source: str):
 def dose_reference_points(data: bytes, source: str = '<memory>') -> list[dict]:
     """Read DRP records anchored to each supported tel.1 beam header.
 
-    Offsets belong to the 00d5101d layout, not to a particular beam or plan.
+    Offsets match the observed 00d5101d and 00be101d layouts.
     Native positions are mm; the convenience coordinates are cm.
     Saved beam-dose values are retained separately from any dose sampling.
     """
@@ -343,7 +344,7 @@ def study_metadata(export: Export, prefix: str):
     info = prefix + "/info"
     if info in export.sizes:
         lines = _lines(export.read(info))
-        if not lines or lines[0] != "00271016":
+        if not lines or lines[0] not in {"00271016", "00241016"}:
             result["diagnostics"].append("unsupported info version")
         else:
             hits = [i for i in range(len(lines)) if _shape(lines, i, [1, None, None, None] + [1] * 13)
@@ -360,7 +361,7 @@ def study_metadata(export: Export, prefix: str):
         result["diagnostics"].append("missing contournames")
         return result
     lines = _lines(export.read(contour))
-    if not lines or lines[0] != "00131027":
+    if not lines or lines[0] not in {"00131027", "00121027"}:
         result["diagnostics"].append("unsupported contournames version")
         return result
     for i in range(len(lines) - 3):
@@ -427,8 +428,9 @@ def inspect_export(path: str | Path) -> dict:
                     plan["beams"] = beam_headers(export.read(tel), tel)
                 except FormatError as exc:
                     plan["diagnostics"].append(str(exc))
-                if plan.get("hyp_beam_definition_count") is not None and len(plan["beams"]) != plan["hyp_beam_definition_count"]:
-                    plan["diagnostics"].append(".hyp beam definition count differs from parsed tel.1 beam count")
+                else:
+                    if plan.get("hyp_beam_definition_count") is not None and len(plan["beams"]) != plan["hyp_beam_definition_count"]:
+                        plan["diagnostics"].append(".hyp beam definition count differs from parsed tel.1 beam count")
                 try:
                     plan['dose_reference_points'] = dose_reference_points(export.read(tel), tel)
                 except FormatError as exc:

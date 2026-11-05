@@ -121,3 +121,30 @@ def test_contour_boundary_policy_changes_raw_volume_and_mean_before_binning():
     assert len(excluded) == interior == 4
     assert DVH(included).statistics['mean_dose_cgy'] == pytest.approx(14 / 3)
     assert DVH(excluded).statistics['mean_dose_cgy'] == 4
+
+
+def test_unity_native_dose_profile_has_no_timestamp_and_keeps_geometry_and_scaling():
+    fixture = json.loads((Path(__file__).parent / 'fixtures/native-dose-small.json').read_text())
+    original = base64.b64decode(fixture['data_base64'])
+    _, _, body = original.split(b'\n', 2)
+    data = b'00be301e\n' + body
+    grid = native_dose(data, 'unity/dose.1')
+    assert grid.metadata['format_version'] == '00be301e'
+    assert len(grid.metadata['raw_header']) == 38
+    assert grid.origin_xyz_mm == (-1, 10, 2)
+    assert grid.spacing_xyz_mm == (2, 3, 4)
+    np.testing.assert_allclose(grid.values_cgy, np.arange(24).reshape(2, 3, 4) / 10)
+    assert grid.sample([0, 11.5, 4]) == pytest.approx(.85)
+    with pytest.raises(FormatError, match='header profile'):
+        native_dose(data.replace(b'00be301e', b'ffffffff', 1))
+    with pytest.raises(FormatError, match='truncated'):
+        native_dose(data[:-20])
+
+
+def test_unity_contour_slice_uses_same_polygon_records():
+    data = (b'00071013\nSlice\n0\n0,0,0\n0,0,2,2\n0,0,10\n'
+            b'1,0,0,0,1,0\n4\n7\n0,0,2,0,2,2,0,2\n0\nBart\n')
+    parsed = contour_slice(data, 'T.10.WC')
+    assert parsed['polygons'][0]['structure_index'] == 7
+    assert parsed['polygons'][0]['points_xz_mm'] == [[0, 0], [2, 0], [2, 2], [0, 2]]
+    assert parsed['unparsed_tail'] == ['0', 'Bart']

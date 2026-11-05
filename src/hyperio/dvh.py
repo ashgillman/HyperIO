@@ -287,6 +287,12 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
             row['paddick_conformity_index'] = covered ** 2 / (row['volume_cm3'] * prescription_volume) if prescription_volume else None
     drp_checks = [{'description': point['description'], 'sampled_dose_cgy': grid.sample(np.asarray(point['xyz_cm']) * 10),
                    'saved_beam_dose_cgy': point['saved_beam_dose_cgy']} for point in plan['dose_reference_points'] or []]
+    limitations = ['Contour boundary and histogram conventions remain provisional; inspect residual differences.',
+                   'Paddick CI is a candidate mapping, not a documented Monaco formula.',
+                   'A decoded saved dose does not establish dose freshness or validity.']
+    if grid.metadata.get('format_version') == '00be301e':
+        limitations.append('Unity full-grid decoding has CellIrrad beam/plan reference-dose consistency evidence; '
+                           'independent Monaco DVH statistics agreement has not been established.')
     return {'plan': plan_name, 'plan_path': plan['path'], 'structures': results, 'dose_grid': grid.metadata,
             'dose_reference_point_samples': drp_checks,
             'sampling': {'resolution_mm': resolution, 'bin_width_cgy': bin_width,
@@ -294,6 +300,4 @@ def calculate_plan_dvh(source, plan_name, *, plan_path=None, structures=None, bo
                          'contours': 'union polygons; nearest-slice slabs [lower,upper)',
                          'dose': 'SciPy trilinear interpolation',
                          'bins': 'half-open dose intervals; cumulative counts at midpoints; linear inversion'},
-            'limitations': ['Contour boundary and histogram conventions remain provisional; inspect residual differences.',
-                            'Paddick CI is a candidate mapping, not a documented Monaco formula.',
-                            'A decoded saved dose does not establish dose freshness or validity.']}
+            'limitations': limitations}

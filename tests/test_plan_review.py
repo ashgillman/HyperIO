@@ -269,3 +269,25 @@ def test_objective_units_follow_type_instead_of_fixture_values(kind, unit, scale
     assert row['effect_unit'] == unit
     assert row['isoeffect'] == 12.75 * scale
     assert row['isoconstraint'] == 35 * scale
+
+
+def test_unsupported_xml_version_reports_actual_and_supported_versions():
+    data = b'<XmlFileIo><Metadata><Version>4</Version></Metadata><Data><IsodoseSettings/></Data></XmlFileIo>'
+    with pytest.raises(FormatError, match=r"unsupported XML metadata version \['4'\]; supported IsodoseSettings versions are \('3', '5'\)"):
+        isodose_settings(data, 'isodosesettings.xml')
+
+
+def test_unity_isodose_xml_v3_preserves_enabled_structure_and_reference_units():
+    data = b'''<XmlFileIo><Metadata><Version>3</Version></Metadata><Data><IsodoseSettings>
+    <DoseStructureParametersList><DoseStructureParameter><StructureName>Target</StructureName>
+    <Enabled>1</Enabled><HighDoseRef>5</HighDoseRef><MinDoseRef>95</MinDoseRef>
+    <PrescribedDose>400</PrescribedDose><RefDoseList><RefDose><RefType>0</RefType>
+    <RefValue>300</RefValue></RefDose></RefDoseList><DoseGoalList/>
+    </DoseStructureParameter></DoseStructureParametersList></IsodoseSettings></Data></XmlFileIo>'''
+    settings = isodose_settings(data)
+    structure = settings['structures'][0]
+    assert structure['enabled'] is True
+    assert structure['prescribed_dose_cgy'] == 400
+    assert structure['reference_doses'][0]['quantity'] == 'dose'
+    assert structure['reference_doses'][0]['unit'] == 'cGy'
+    assert structure['reference_doses'][0]['value'] == 300

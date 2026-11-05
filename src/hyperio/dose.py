@@ -75,9 +75,10 @@ class DoseGrid:
 
 
 def native_dose(data: bytes, source: str = '<memory>', *, max_voxels=25_000_000) -> DoseGrid:
-    """Read the observed 00d5301e full-grid dose profile using unlzw3.
+    """Read the observed 00d5301e and 00be301e full-grid profiles using unlzw3.
 
-    This profile has 39 text header lines and five length-prefixed compressed
+    The newer profile has 39 text header lines; Unity's older profile has 38,
+    omitting the timestamp after the magic. Both have five length-prefixed compressed
     blocks. Four leading zero placeholders precede a full big-endian uint32
     array. Non-placeholder leading blocks are not yet interpreted.
     Scaling/order have DRP and screenshot evidence for the supplied VMAT case;
@@ -87,16 +88,23 @@ def native_dose(data: bytes, source: str = '<memory>', *, max_voxels=25_000_000)
     from unlzw3 import unlzw
     stream = BytesIO(data)
     try:
-        header = [stream.readline(4096).decode('ascii').rstrip('\r\n') for _ in range(39)]
+        version = stream.readline(4096).decode('ascii').rstrip('\r\n')
+        header_count = {'00d5301e': 39, '00be301e': 38}.get(version)
+        if header_count is None:
+            raise FormatError(f'{source}: unsupported native dose header profile {version!r}')
+        header = [version] + [stream.readline(4096).decode('ascii').rstrip('\r\n')
+                              for _ in range(header_count - 1)]
     except UnicodeDecodeError as exc:
         raise FormatError(f'{source}: invalid native dose text header') from exc
-    if header[0] != '00d5301e' or header[2] != '0,2' or header[8] != '5':
+    # Use offsets relative to the format record, retaining the actual raw header.
+    offset = 1 if version == '00d5301e' else 0
+    if header[1 + offset] != '0,2' or header[7 + offset] != '5':
         raise FormatError(f'{source}: unsupported native dose header profile')
-    geometry = _numbers(header[9], 10)
-    scales = _numbers(header[5], 2)
+    geometry = _numbers(header[8 + offset], 10)
+    scales = _numbers(header[4 + offset], 2)
     if geometry is None or scales is None or geometry[0] != 0:
         raise FormatError(f'{source}: unsupported native dose geometry/scaling')
-    if scales[0] <= 0 or scales[1] != 1 or _numbers(header[6], 1) != [1]:
+    if scales[0] <= 0 or scales[1] != 1 or _numbers(header[5 + offset], 1) != [1]:
         raise FormatError(f'{source}: non-unit secondary dose scaling fields are not yet mapped')
     counts_xzy = geometry[7:10]
     if any(count != int(count) or count < 2 for count in counts_xzy):
@@ -137,6 +145,7 @@ def native_dose(data: bytes, source: str = '<memory>', *, max_voxels=25_000_000)
     counts_xyz = np.array(counts_xzy)[[0, 2, 1]]
     metadata = {
         'file': source, 'sha256': hashlib.sha256(data).hexdigest(), 'raw_header': header,
+        'format_version': version,
         'codec': 'unlzw3 (.Z header adapter)', 'scale_cgy_per_count': scales[0],
         'decoded_payload_sha256': hashlib.sha256(decoded).hexdigest(),
         'compressed_payload_bytes': len(payloads[-1]), 'unparsed_trailer_hex': stream.read().hex(),

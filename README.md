@@ -21,7 +21,7 @@ See [the observed results](reports/supplied-plans.md), [the field map](docs/form
 - Preserve `.hyp` bytes and produce an edited in-memory copy of an existing supported scalar setting.
 - Hash and compare complete exports to support controlled save experiments, including binary files.
 
-The interpreted layouts are limited to the supplied header identifiers: `.hyp` `000610b6`, `plan` `00d5101a` and `00be101a`, `tel.1` `00d5101d`, `contournames` `00131027`, and `info` `00271016`.
+The interpreted layouts are limited to the supplied header identifiers: `.hyp` `000610b6`, `plan` `00d5101a` and `00be101a`, `tel.1` `00d5101d` and `00be101d`, `contournames` `00131027` and `00121027`, and `info` `00271016` and `00241016`.
 The `00be101a` identity and RED-table layout was checked against the five plans in the supplied Unity phantom export; acceptance and effective density after editing still require Monaco validation.
 These identifiers are literal file headers; their relationship to Monaco release numbers is not established.
 The library reports diagnostics for missing, ambiguous, unsupported, and malformed settings instead of supplying presumed Monaco defaults.
@@ -156,7 +156,10 @@ This convention reproduces the supplied Dx references within 0.1 cGy; its precis
 Dx results are bounded by the raw sampled dose range.
 These APIs are documented by [synthetic examples](tests/test_dose_analysis.py) and [the reference-plan test library](tests/plan_library/README.md).
 
-The native reader currently supports the observed `00d5301e` profile with four zero placeholder blocks and one complete uint32 dose grid.
+The native reader supports the observed `00d5301e` and Unity `00be301e` profiles with four zero placeholder blocks and one complete uint32 dose grid.
+The Unity profile omits the timestamp line; its original header and format version are retained in export provenance.
+The supplied CellIrrad batch exports its three plans with saved dose and reports the two plans without `dose.1` individually.
+Reference-dose consistency has been checked on those three plans; independent Monaco DVH statistics agreement remains to be established.
 Other block profiles and non-unit secondary scaling fields raise diagnostics rather than acquiring guessed interpretations.
 The plan calculation requires axial WC slices and a sampling spacing commensurate with the isocentre-aligned native grid origin.
 It unions same-structure polygons and holds each contour over a nearest-slice slab; those reconstruction choices remain provisional.

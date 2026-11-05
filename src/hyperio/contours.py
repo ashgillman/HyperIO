@@ -7,7 +7,7 @@ from .core import FormatError
 
 
 def contour_slice(data: bytes, source: str, *, y_mm: float | None = None) -> dict:
-    """Read leading polygon records from a 00091013 WC slice.
+    """Read leading polygon records from a 00091013 or 00071013 WC slice.
 
     Each record starts with a point count and structure index on separate lines,
     then exactly that many x/z pairs in native mm. A structure can have several
@@ -15,7 +15,7 @@ def contour_slice(data: bytes, source: str, *, y_mm: float | None = None) -> dic
     Marker and other trailing records are preserved, not mistaken for polygons.
     """
     rows = data.decode('cp1252', errors='surrogateescape').splitlines()
-    if len(rows) < 7 or rows[0] != '00091013':
+    if len(rows) < 7 or rows[0] not in {'00091013', '00071013'}:
         raise FormatError(f'{source}: unsupported contour slice header')
     if y_mm is None:
         match = re.fullmatch(r'T\.([+-]?(?:\d+(?:\.\d*)?|\.\d+))\.WC', PurePosixPath(source).name)

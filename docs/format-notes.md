@@ -34,7 +34,7 @@ A CT file count does not by itself establish slice ordering or equivalence of th
 | `dose.1`, `tel.1.dose.*` | Optional full-grid decoding for one observed profile | 30 October VMAT array/DRP/statistic evidence below; other block profiles remain unsupported |
 | `RxA.xlog` | Labelled uncertainty and calculation completion observations | Literal XML-fragment messages; dose association unverified |
 | `dvhparam.xml` | DVH sample spacing and dose bin width | XML version 1; screenshot-associated sampling settings |
-| `isodosesettings.xml` | Structure index references, reference-dose requests, 14 mapped goal types | XML version 5; PlanCheck goal mapping plus supplied VMAT screenshot |
+| `isodosesettings.xml` | Structure index references, reference-dose requests, 14 mapped goal types | XML versions 3 and 5; v3 structure/reference records checked on CellIrrad; goal mapping has supplied VMAT evidence |
 | `checksum.1`, status files | Retained and compared by snapshots | Freshness semantics and checksum algorithms not yet mapped |
 
 The library reads ZIP members directly and never extracts them as part of inspection.
@@ -49,6 +49,14 @@ Unknown headers, multiple prescriptions, malformed tables and ambiguous table ma
 Uniquely named structures can be edited while unrelated duplicate records are retained verbatim.
 The observed layout supports reading and selective token edits; it does not identify the Monaco release number or validate other Unity records, native reloading, effective material assignment or recalculated dose.
 The supplied-archive regression can be run with `HYPERIO_UNITY_EXAMPLE=/path/to/1~cellIrrad.zip python -m pytest tests/test_applications.py -k supplied_unity`.
+The subsequent DVH implementation also accepts the observed `00be101d` beam/DRP records, `00241016` study info, `00121027` structure records, `00071013` WC polygon slices and isodose XML version 3.
+The same numeric arities, record counts and XML field parsing remain checked; unknown versions remain rejected.
+The `00be301e` dose profile has 38 text header lines, omitting the newer profile's timestamp after the magic.
+Its geometry, scale, placeholder blocks and decoded byte count use the same full-grid checks as `00d5301e`.
+The original raw header and format version are retained in dose provenance.
+All three CellIrrad plans with saved dose export successfully, and their decoded dose at the common DRP agrees with the sum of saved beam doses within 0.001 cGy.
+This checks coordinate/scaling consistency at those points; it does not establish independent agreement with Monaco's DVH volumes, statistics or contour-boundary conventions.
+The optional end-to-end regression is `HYPERIO_UNITY_EXAMPLE=/path/to/1~cellIrrad.zip python -m pytest tests/test_unity_evidence.py`.
 A single-Rx plan must have exactly one `.hyp` in its directory to associate settings unambiguously.
 The interpreter requires known headers and the observed record shapes and reports a diagnostic when those checks fail.
 Version headers alone are not proof that every other file with that header has an identical layout.

@@ -7,7 +7,7 @@ Observed layouts:
 - .hyp 000610b6: VOIDEF > COSTFUNCTION > SHRINKMARGINTARGET blocks, with
   key=value properties and an !END for each level.
 - dvhparam.xml version 1: XmlFileIo/Data/DvhParams.
-- isodosesettings.xml version 5: per-structure index settings, reference-dose
+- isodosesettings.xml versions 3 and 5: per-structure index settings, reference-dose
   requests and DoseGoal records under DoseStructureParametersList.
 
 Native objective doses are Gy, XML goal doses are cGy, and native objective
@@ -211,9 +211,11 @@ def _xml(data, source, tag):
         raise FormatError(f'{source}: unsupported XML root {root.tag!r}')
     versions = root.findall('./Metadata/Version')
     # Metadata versions belong to individual XML schemas, not a TPS release.
-    supported_version = {'DvhParams': '1', 'IsodoseSettings': '5'}[tag]
-    if len(versions) > 1 or versions and versions[0].text != supported_version:
-        raise FormatError(f'{source}: unsupported XML metadata version')
+    supported_versions = {'DvhParams': ('1',), 'IsodoseSettings': ('3', '5')}[tag]
+    if len(versions) > 1 or versions and versions[0].text not in supported_versions:
+        found = [version.text for version in versions]
+        raise FormatError(f'{source}: unsupported XML metadata version {found!r}; '
+                          f'supported {tag} versions are {supported_versions!r}')
     matches = root.findall(f'./Data/{tag}')
     if len(matches) != 1:
         raise FormatError(f'{source}: expected one {tag} element')

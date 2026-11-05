@@ -14,6 +14,50 @@ from .dvh_export import (HEADERS, display_rows, export_dvh_csv, export_dvh_xlsx,
                          safe_filename_component, calculate_for_export, batch_export_dvh)
 
 
+def show_message(parent, title, message):
+    """Show selectable, scrollable details with an explicit full-report copy action."""
+    import tkinter as tk
+    from tkinter import ttk
+
+    dialog = tk.Toplevel(parent)
+    dialog.title(title)
+    dialog.transient(parent)
+    width = min(850, max(320, parent.winfo_screenwidth() - 80))
+    height = min(500, max(240, parent.winfo_screenheight() - 100))
+    dialog.geometry(f'{width}x{height}')
+    dialog.columnconfigure(0, weight=1)
+    dialog.rowconfigure(0, weight=1)
+    body = ttk.Frame(dialog, padding=12)
+    body.grid(row=0, column=0, sticky='nsew')
+    body.columnconfigure(0, weight=1)
+    body.rowconfigure(0, weight=1)
+    text = tk.Text(body, wrap='word', padx=8, pady=8, exportselection=False)
+    text.grid(row=0, column=0, sticky='nsew')
+    scroll = ttk.Scrollbar(body, orient='vertical', command=text.yview)
+    scroll.grid(row=0, column=1, sticky='ns')
+    text.configure(yscrollcommand=scroll.set)
+    text.insert('1.0', message)
+    text.configure(state='disabled')
+
+    def select_all(event=None):
+        text.tag_add('sel', '1.0', 'end-1c')
+        return 'break'
+
+    def copy_all():
+        dialog.clipboard_clear()
+        dialog.clipboard_append(message)
+
+    for sequence in ('<Control-a>', '<Command-a>'):
+        text.bind(sequence, select_all)
+    actions = ttk.Frame(dialog, padding=(12, 0, 12, 12))
+    actions.grid(row=1, column=0, sticky='ew')
+    ttk.Button(actions, text='Copy all', command=copy_all).pack(side='left')
+    ttk.Button(actions, text='Close', command=dialog.destroy).pack(side='right')
+    dialog.bind('<Escape>', lambda event: dialog.destroy())
+    text.focus_set()
+    return dialog
+
+
 def _launch(mode):
     try:
         import tkinter as tk
@@ -192,14 +236,14 @@ def _launch(mode):
                     widget.configure(state=state)
                 if error is not None:
                     self.status.set(f'Failed: {error}')
-                    messagebox.showerror('HyperIO', str(error))
+                    show_message(self.root, 'HyperIO error', str(error))
                 else:
                     try:
                         success(value)
                     except Exception as exc:
                         self.result = None
                         self.status.set(f'Failed: {exc}')
-                        messagebox.showerror('HyperIO', str(exc))
+                        show_message(self.root, 'HyperIO error', str(exc))
                 self.update_actions()
             self.root.after(100, self.poll)
 
@@ -254,7 +298,7 @@ def _launch(mode):
             self.clear_table()
             selected, source = self.selected, self.source
             if selected.get('error'):
-                messagebox.showerror('Unreadable plan', selected['error'])
+                show_message(self.root, 'Unreadable plan', selected['error'])
                 self.update_actions()
                 return
             boundary = self.boundary.get()
@@ -287,7 +331,7 @@ def _launch(mode):
             self.status.set(summary)
             if failures:
                 details = '\n'.join(f"{item['path']}: {item['error']}" for item in failures)
-                messagebox.showwarning('Batch export results', summary + '\n\n' + details)
+                show_message(self.root, 'Batch export results', summary + '\n\n' + details)
             else:
                 messagebox.showinfo('Batch export results', summary)
 
@@ -296,7 +340,7 @@ def _launch(mode):
                 try:
                     edits = self.red_outputs.prepared()
                 except ValueError as exc:
-                    messagebox.showerror('Invalid output', str(exc))
+                    show_message(self.root, 'Invalid output', str(exc))
                     return
                 zipped = self.output_format.get() == 'ZIP'
                 path = filedialog.asksaveasfilename(title='Save complete patient ZIP' if zipped else 'Save new patient folder',
@@ -321,7 +365,7 @@ def _launch(mode):
                 return
             suffix = Path(path).suffix.lower()
             if suffix not in ('.xlsx', '.csv'):
-                messagebox.showerror('Unsupported export format', 'Choose an .xlsx or .csv filename.')
+                show_message(self.root, 'Unsupported export format', 'Choose an .xlsx or .csv filename.')
                 return
             exporter = export_dvh_csv if suffix == '.csv' else export_dvh_xlsx
             operation = lambda: exporter(self.result, path, source=self.source)

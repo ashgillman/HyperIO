@@ -238,6 +238,11 @@ That notice describes noncommercial reuse with attribution, exceptions for third
 
 For one plan, the suggested filename is the plan name.
 Alternatively, choose **Batch export XLSX…** and an output folder to calculate every discovered plan using the selected contour-boundary policy.
+Batch failure reports and application errors open in resizable, scrollable dialogs.
+Select text and use Ctrl+C (Command+C on macOS), or choose **Copy all** to copy the complete message.
+The observed Unity formats in CellIrrad are supported, including older beam/studyset records, WC slices, isodose XML version 3 and `00be301e` full-grid dose.
+Plans without saved `dose.1` are reported individually while other plans continue exporting.
+Unity reconstruction has reference-dose consistency evidence; compare exported DVH statistics against Monaco before relying on their numerical agreement.
 Each successful workbook is named `<patient ID>-<studyset>-<plan>.xlsx`.
 Invalid filename characters are replaced, existing files are never overwritten, and colliding names are reported instead of exported.
 A results dialog lists plans that could not be exported; other plans continue.
