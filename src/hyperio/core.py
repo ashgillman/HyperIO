@@ -8,11 +8,35 @@ import math
 from pathlib import Path, PurePosixPath
 import re
 from typing import Any
+import warnings
 import zipfile
 
 
 class FormatError(ValueError):
     """A layout or value cannot be interpreted without guessing."""
+
+
+class StructureMetadataWarning(UserWarning):
+    """The file contains conflicting values for the same structure identity."""
+
+
+CONTOURNAMES_CONFLICT = "conflicting contournames definitions"
+
+
+def study_structure_value(structure: dict, field: str) -> Any:
+    """Return the first record's field, warning if a later record disagrees.
+
+    Use the structure's repeated_records to inspect the alternatives.
+    """
+    value = structure[field]
+    if field in structure.get("conflicting_fields", ()):
+        warnings.warn(
+            f"{CONTOURNAMES_CONFLICT} for {structure['name']!r} field {field!r}; "
+            f"using the first record (line {structure['source']['line']})",
+            StructureMetadataWarning,
+            stacklevel=2,
+        )
+    return value
 
 
 @dataclass(frozen=True)
@@ -411,21 +435,53 @@ def study_metadata(export: Export, prefix: str):
     if not lines or lines[0] not in {"00131027", "00121027"}:
         result["diagnostics"].append("unsupported contournames version")
         return result
-    for i in range(len(lines) - 3):
+    declared_count = int(lines[1]) if len(lines) >= 2 and lines[1].isdecimal() else None
+    structures_by_name = {}
+    indices = set()
+    for i in range(2, len(lines) - 3):
         if not lines[i].strip() or _numbers(lines[i]) is not None or not _shape(lines, i, [None, 8, None, 6]):
             continue
         values = _numbers(lines[i + 1], 8)
         if values[2] not in (1, 2, 3) or any(values[j] != int(values[j]) for j in (0, 2, 3, 7)):
             result["diagnostics"].append(f"unrecognised structure record at line {i + 2}")
             continue
-        result["structures"].append({"name": lines[i], "index": int(values[0]),
-                                     "mode": {1: "none", 2: "forced", 3: "filled"}[int(values[2])],
-                                     "type_code": int(values[3]), "uniform_ed": values[1],
-                                     "fill_ed": values[6], "layer": int(values[7]),
-                                     "source": {"file": contour, "line": i + 2, "raw": lines[i + 1]},
-                                     "interpretation": "studyset defaults; use plan records for saved plan settings"})
-    if len(lines) < 2 or not lines[1].isdecimal() or len(result["structures"]) != int(lines[1]):
+        name, index = lines[i], int(values[0])
+        record = {"name": name, "index": index,
+                  "mode": {1: "none", 2: "forced", 3: "filled"}[int(values[2])],
+                  "type_code": int(values[3]), "uniform_ed": values[1],
+                  "fill_ed": values[6], "layer": int(values[7]),
+                  "source": {"file": contour, "line": i + 2, "raw": lines[i + 1]},
+                  "interpretation": "studyset defaults; use plan records for saved plan settings"}
+        primary = structures_by_name.get(name)
+        if primary is not None or index in indices:
+            # The observed 00121027 file repeats existing identities after
+            # the declared primary table. Preserve their alternate definitions.
+            if (lines[0] == "00121027" and len(indices) == declared_count
+                    and primary is not None and primary["index"] == index):
+                record["interpretation"] = "trailing definition; Monaco precedence unresolved"
+                primary.setdefault("repeated_records", []).append(record)
+                continue
+            result["diagnostics"].append(f"unrecognised structure record at line {i + 2}")
+            continue
+        structures_by_name[name] = record
+        indices.add(index)
+        result["structures"].append(record)
+    if len(result["structures"]) != declared_count:
         result["diagnostics"].append("structure count does not match contournames header")
+    conflict_count = 0
+    for record in result["structures"]:
+        if "repeated_records" in record:
+            record["conflicting_fields"] = [
+                field for field in ("mode", "type_code", "uniform_ed", "fill_ed", "layer")
+                if any(record[field] != repeat[field] for repeat in record["repeated_records"])
+            ]
+            if record["conflicting_fields"]:
+                record["interpretation"] = "first studyset record; Monaco precedence unresolved for conflicting fields"
+                conflict_count += 1
+    if conflict_count:
+        result["diagnostics"].append(
+            f"{CONTOURNAMES_CONFLICT} affecting {conflict_count} structure(s); repeated records retained"
+        )
     return result
 
 
@@ -523,6 +579,10 @@ def inspect_export(path: str | Path, *, plan_path: str | None = None) -> dict:
                 and PurePosixPath(prefix).parent == PurePosixPath(plan['path']).parent.parent
                 for plan in plans)]
         studies = [study_metadata(export, p) for p in prefixes]
+        for study in studies:
+            for diagnostic in study["diagnostics"]:
+                if diagnostic.startswith(CONTOURNAMES_CONFLICT):
+                    warnings.warn(diagnostic, StructureMetadataWarning, stacklevel=2)
         for plan in plans:
             matches = [s for s in studies if s["name"] == plan["studyset"]
                        and PurePosixPath(s["path"]).parent == PurePosixPath(plan["path"]).parent.parent]

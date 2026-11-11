@@ -4,7 +4,8 @@ import zipfile
 
 import pytest
 
-from hyperio import HypDocument, FormatError, inspect_export, compare_settings, snapshot, diff_snapshots
+from hyperio import (HypDocument, FormatError, StructureMetadataWarning, inspect_export,
+                     compare_settings, snapshot, diff_snapshots, study_structure_value)
 
 
 HYP = (b"000610b6\r\n!VOIDEF\r\n    name=Patient\r\n!END\r\n"
@@ -293,6 +294,58 @@ def test_unity_metadata_uses_observed_record_shapes(tmp_path):
     assert report['plans'][0]['dose_reference_points'][0]['saved_beam_dose_cgy'] == 123.4
     assert report['studysets'][0]['ct_to_ed_name']['value'] == 'CalibrationName'
     assert report['studysets'][0]['structures'][0]['uniform_ed'] == .3
+
+
+def test_contournames_trailing_repeats_keep_primary_structures(tmp_path):
+    from hyperio.diagnostics import classify_dvh_diagnostics
+
+    _, study_dir = synthetic_export(tmp_path)
+    fixture = Path(__file__).parent / 'fixtures' / 'monaco' / 'contournames'
+    (study_dir / 'contournames').write_bytes(fixture.read_bytes())
+
+    with pytest.warns(StructureMetadataWarning, match='conflicting contournames definitions') as warnings:
+        report = inspect_export(tmp_path, plan_path='1~PHANTOM/plan/Test')
+    assert len(warnings) == 1
+    diagnostics = classify_dvh_diagnostics(report['plans'][0]['diagnostics'])
+    assert [row['severity'] for row in diagnostics] == ['WARN']
+    study = report['studysets'][0]
+    assert len(study['structures']) == 53
+    by_name = {record['name']: record for record in study['structures']}
+    assert len(by_name) == len({record['index'] for record in study['structures']}) == 53
+    for name, index, density, layer, repeat_layer, repeat_line in [
+        ('FemHead_L', 53, 1.226016, 7, 2, 1179),
+        ('FemHead_R', 54, 1.206814, 6, 1, 1197),
+    ]:
+        record = by_name[name]
+        assert (record['index'], record['uniform_ed'], record['layer']) == (index, density, layer)
+        assert record['conflicting_fields'] == ['uniform_ed', 'layer']
+        repeat, = record['repeated_records']
+        assert (repeat['name'], repeat['index']) == (name, index)
+        assert (repeat['uniform_ed'], repeat['layer'], repeat['source']['line']) == (1, repeat_layer, repeat_line)
+        with pytest.warns(StructureMetadataWarning, match="uniform_ed.*using the first record"):
+            assert study_structure_value(record, 'uniform_ed') == density
+        assert study_structure_value(record, 'index') == index
+    for name in ('DCAV', 'Rectum+SpaceOAR'):
+        record = by_name[name]
+        assert len(record['repeated_records']) == 1
+        assert record['conflicting_fields'] == []
+
+
+@pytest.mark.parametrize('count,name,index', [
+    (2, 'Insert', 1),  # a repeat before the declared set is complete
+    (1, 'Other', 1),   # index collision
+    (1, 'Insert', 2),  # name collision
+    (1, 'Other', 2),   # extra unique structure
+])
+def test_contournames_rejects_inconsistent_structure_tables(tmp_path, count, name, index):
+    _, study_dir = synthetic_export(tmp_path)
+    (study_dir / 'contournames').write_text(
+        f'00121027\n{count}\nInsert\n1,0.3,2,1,19700101.1,0,1,1\n\n1,2,3,4,5,6\n'
+        f'{name}\n{index},1,1,1,19700101.1,0,1,1\n\n1,2,3,4,5,6\n'
+    )
+
+    report = inspect_export(tmp_path)
+    assert report['plans'][0]['diagnostics']
 
 
 @pytest.mark.parametrize('scoped', [False, True])

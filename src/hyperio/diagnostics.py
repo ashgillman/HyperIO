@@ -12,7 +12,7 @@ import traceback
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path, PurePosixPath
 
-from .core import Export, inspect_export
+from .core import CONTOURNAMES_CONFLICT, Export, inspect_export
 
 
 _ERRORS = {
@@ -22,6 +22,7 @@ _ERRORS = {
     'missing info': 'missing_info',
     'missing contournames': 'missing_contournames',
     'structure count does not match contournames header': 'structure_count_mismatch',
+    CONTOURNAMES_CONFLICT: 'conflicting_contournames_definitions',
     'unrecognised structure record': 'unrecognised_structure_record',
     'expected one .hyp': 'hyp_file_count_mismatch',
     'no supported beam headers': 'no_supported_beam_headers',
@@ -48,16 +49,16 @@ def _error_codes(text):
 def classify_dvh_diagnostics(messages):
     """Classify metadata diagnostics for reconstruction from saved dose only.
 
-    Studyset info describes CT calibration, which saved-dose sampling does not
-    consume. Unknown diagnostics remain errors; other workflows keep their
-    existing validation policy.
+    Saved-dose sampling uses structure identities and saved polygons and dose.
+    It can proceed with CT calibration diagnostics or conflicting metadata
+    attached to the same structure identity. Unknown diagnostics remain errors.
     """
     warnings = {'CT-to-ED selection absent or ambiguous', 'missing info',
                 'unsupported info version'}
     rows = []
     for message in messages:
         cause = message.rsplit(': ', 1)[-1] if message.startswith('linked studyset ') else message
-        rows.append({'severity': 'WARN' if cause in warnings else 'ERROR',
+        rows.append({'severity': 'WARN' if cause in warnings or cause.startswith(CONTOURNAMES_CONFLICT) else 'ERROR',
                      'message': message})
     return rows
 

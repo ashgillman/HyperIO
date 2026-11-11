@@ -188,6 +188,15 @@ The mapped positions are:
 | 7 | Fill relative ED value |
 | 8 | Layer value |
 
+One supplied `00121027` file contains trailing records that repeat existing name/index pairs after the declared number of structures.
+`inspect_export` returns one entry per structure, with the first record's fields at the top level and later records under `repeated_records`.
+Each record retains the raw eight-value row and its source location.
+The `conflicting_fields` list identifies interpreted fields whose values differ, and inspection emits a `StructureMetadataWarning` when any such conflict is present.
+Call `study_structure_value(structure, field)` to read the first record's value with a warning when that field conflicts.
+Direct dictionary access returns the stored value without an access warning.
+The precedence of these records in Monaco remains unresolved.
+Saved-dose DVH export reports the conflict as a warning because it uses the shared contour index to select saved polygons.
+
 The supplied plan-specific table has a structure name followed by five values.
 The mapped positions are:
 

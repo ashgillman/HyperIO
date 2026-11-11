@@ -37,3 +37,7 @@ Its full array is `arange(24) * 10000` encoded as big-endian uint32, with a 1e-5
 The payload was compressed once by the system `/usr/bin/compress -f -c` utility and its three-byte `.Z` wrapper removed to exercise the native-file adapter.
 Normal tests consume these fixture bytes and do not need the external compress executable.
 The [dose-analysis examples](../test_dose_analysis.py) verify byte order, axis mapping, physical origin/spacing, interpolation and histogram queries against independent analytic expectations.
+
+`monaco/contournames` is the user-supplied Monaco `00121027` example, preserved byte for byte.
+It declares 53 primary structures and ends with four records repeating existing name/index pairs.
+The [reader regression](../test_hyperio.py) checks that the first records supply the structure indices and density defaults for a linked studyset.
