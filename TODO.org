@@ -129,6 +129,9 @@ Source: [[https://doi.org/10.1002/acm2.13641][AAPM MPPG 5.b (2022), Commissionin
 - Parse prescription associations for multiple Rx IDs; current positional summaries support the supplied single-Rx layout only.
 - Add independent DICOM checks for CT geometry, beam geometry, MU, and exported dose.
 - Investigate dose.1 and tel.1.dose.* payloads, compression, scaling, axes, and calculation-state evidence.
+- Compare exported DVHs against Monaco for the Unity plan with a non-unit second dose scalar.
+  Multiplication gave the closest match to the two reported point doses after confirming the plan isocentre z sign.
+- Identify the purpose of the trailing compressed block in the returned Unity dose file; it decodes to the same byte length as the first grid.
 - Resolve CT-to-ED table contents from clinic-level files; the supplied archive contains the selected name only.
 - Add validated beam/control-point and structure geometry APIs beyond the initial beam header and density records.
 

@@ -81,6 +81,7 @@ def native_dose(data: bytes, source: str = '<memory>', *, max_voxels=25_000_000)
     omitting the timestamp after the magic. Both have five length-prefixed compressed
     blocks. Four leading zero placeholders precede a full big-endian uint32
     array. Non-placeholder leading blocks are not yet interpreted.
+    For the Unity profile, multiply the first scale by the second scalar.
     Scaling/order have DRP and screenshot evidence for the supplied VMAT case;
     they are not declared validated for every Monaco export with this magic.
     """
@@ -104,8 +105,13 @@ def native_dose(data: bytes, source: str = '<memory>', *, max_voxels=25_000_000)
     scales = _numbers(header[4 + offset], 2)
     if geometry is None or scales is None or geometry[0] != 0:
         raise FormatError(f'{source}: unsupported native dose geometry/scaling')
-    if scales[0] <= 0 or scales[1] != 1 or _numbers(header[5 + offset], 1) != [1]:
+    base_scale, secondary_factor = scales
+    if (_numbers(header[5 + offset], 1) != [1]
+            or (version != '00be301e' and secondary_factor != 1)):
         raise FormatError(f'{source}: non-unit secondary dose scaling fields are not yet mapped')
+    effective_scale = base_scale * secondary_factor
+    if min(base_scale, secondary_factor, effective_scale) <= 0 or not math.isfinite(effective_scale):
+        raise FormatError(f'{source}: dose scale factors and their product must be finite and positive')
     counts_xzy = geometry[7:10]
     if any(count != int(count) or count < 2 for count in counts_xzy):
         raise FormatError(f'{source}: invalid dose grid dimensions')
@@ -137,7 +143,7 @@ def native_dose(data: bytes, source: str = '<memory>', *, max_voxels=25_000_000)
     if len(decoded) != voxel_count * 4:
         raise FormatError(f'{source}: decoded dose size disagrees with grid geometry')
     x_count, z_count, y_count = (int(count) for count in counts_xzy)
-    values = np.frombuffer(decoded, dtype='>u4').reshape(y_count, z_count, x_count).astype(float) * scales[0]
+    values = np.frombuffer(decoded, dtype='>u4').reshape(y_count, z_count, x_count).astype(float) * effective_scale
     # The header orders coordinates (x,z,y). Convert geometry to public xyz;
     # extent spans the first to last grid-node centres, so there are n-1 gaps.
     centre_xyz = np.array(geometry[4:7])[[0, 2, 1]]
@@ -146,7 +152,8 @@ def native_dose(data: bytes, source: str = '<memory>', *, max_voxels=25_000_000)
     metadata = {
         'file': source, 'sha256': hashlib.sha256(data).hexdigest(), 'raw_header': header,
         'format_version': version,
-        'codec': 'unlzw3 (.Z header adapter)', 'scale_cgy_per_count': scales[0],
+        'codec': 'unlzw3 (.Z header adapter)', 'scale_cgy_per_count': effective_scale,
+        'base_scale_cgy_per_count': base_scale, 'secondary_scale_factor': secondary_factor,
         'decoded_payload_sha256': hashlib.sha256(decoded).hexdigest(),
         'compressed_payload_bytes': len(payloads[-1]), 'unparsed_trailer_hex': stream.read().hex(),
         'interpretation': 'fixture-supported full-grid mapping; dose freshness not established',

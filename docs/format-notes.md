@@ -52,7 +52,11 @@ The supplied-archive regression can be run with `HYPERIO_UNITY_EXAMPLE=/path/to/
 The subsequent DVH implementation also accepts the observed `00be101d` beam/DRP records, `00241016` study info, `00121027` structure records, `00071013` WC polygon slices and isodose XML version 3.
 The same numeric arities, record counts and XML field parsing remain checked; unknown versions remain rejected.
 The `00be301e` dose profile has 38 text header lines, omitting the newer profile's timestamp after the magic.
-Its geometry, scale, placeholder blocks and decoded byte count use the same full-grid checks as `00d5301e`.
+Its geometry, placeholder blocks and decoded byte count use the same full-grid checks as `00d5301e`.
+For `00be301e`, the two scalars on header line five multiply to give the effective cGy per count.
+In a returned plan with a second scalar of `0.999775577`, multiplication gave the closest match to the reported Monaco doses at the plan and volume isocentres.
+Those point doses support the interpretation for this profile; agreement with Monaco DVHs is pending.
+Dose grid metadata records both scalars and their effective product, and the separate scalar on line six must still be one.
 The original raw header and format version are retained in dose provenance.
 All three CellIrrad plans with saved dose export successfully, and their decoded dose at the common DRP agrees with the sum of saved beam doses within 0.001 cGy.
 This checks coordinate/scaling consistency at those points; it does not establish independent agreement with Monaco's DVH volumes, statistics or contour-boundary conventions.
