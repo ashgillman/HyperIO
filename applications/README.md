@@ -1,7 +1,8 @@
 # HyperIO desktop applications
 
 Three Python/Tk desktop applications are available for Windows and macOS.
-The reusable workflows live in `hyperio.application_io` and `hyperio.dvh_export`.
+The RED and DVH windows live in `hyperio.desktop`, and the commissioning window lives in `hyperio.commissioning_gui`.
+The headless RED and DVH export workflows are available through `hyperio.application_io` and `hyperio.dvh_export`.
 The GUI uses Tkinter, and formatted XLSX export uses openpyxl.
 Excel is not required; CSV is also available using Python's standard library.
 These are Python applications, not standalone bundled executables.

@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 
-from hyperio.gui import red_main
+from hyperio.desktop.red import main
 
 if __name__ == '__main__':
-    raise SystemExit(red_main())
+    raise SystemExit(main())

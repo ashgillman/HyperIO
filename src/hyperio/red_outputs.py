@@ -1,6 +1,7 @@
 """Independent RED output tabs; each preview is rebuilt from the source bytes."""
 from .application_io import load_red_mapping, prepare_red_output
 from .core import plan_metadata
+from .desktop.common import grid_scrollable_table
 from .experiments import _positive_ed
 
 
@@ -54,13 +55,8 @@ class REDOutputs:
         for index, title in enumerate(headers):
             table.heading(index, text=title)
             table.column(index, width=240 if index == 0 else 145, stretch=False)
-        table.grid(row=0, column=0, sticky='nsew')
+        grid_scrollable_table(table)
         table.bind('<Double-1>', lambda event: self.edit_cell(tab, event))
-        vertical = ttk.Scrollbar(table_host, orient='vertical', command=table.yview)
-        horizontal = ttk.Scrollbar(table_host, orient='horizontal', command=table.xview)
-        vertical.grid(row=0, column=1, sticky='ns')
-        horizontal.grid(row=1, column=0, sticky='ew')
-        table.configure(yscrollcommand=vertical.set, xscrollcommand=horizontal.set)
         table.tag_configure('changed', background='#DCE6F1')
         self.notebook.add(frame, text=name.get() or f'Output {number}')
         self.notebook.select(frame)

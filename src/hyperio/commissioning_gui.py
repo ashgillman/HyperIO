@@ -11,6 +11,7 @@ import webbrowser
 from .commissioning import (
     FIELDS, GROUP_NOTES, SOURCE_URL, TESTS, case_fields, load_worksheet, make_case, save_worksheet,
 )
+from .desktop.common import grid_scrollable_table
 
 
 APP_TITLE = 'HyperIO · MPPG commissioning'
@@ -114,12 +115,7 @@ class CommissioningApp:
         table.columnconfigure(0, weight=1)
         table.rowconfigure(0, weight=1)
         self.rows = ttk.Treeview(table, show='headings', selectmode='browse')
-        self.rows.grid(row=0, column=0, sticky='nsew')
-        vertical = ttk.Scrollbar(table, orient='vertical', command=self.rows.yview)
-        horizontal = ttk.Scrollbar(table, orient='horizontal', command=self.rows.xview)
-        vertical.grid(row=0, column=1, sticky='ns')
-        horizontal.grid(row=1, column=0, sticky='ew')
-        self.rows.configure(yscrollcommand=vertical.set, xscrollcommand=horizontal.set)
+        grid_scrollable_table(self.rows)
         self.rows.bind('<<TreeviewSelect>>', self.update_controls)
         self.rows.bind('<Double-1>', self.edit_clicked)
         self.rows.bind('<Return>', lambda event: self.edit_case())
