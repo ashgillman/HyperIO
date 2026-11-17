@@ -23,6 +23,7 @@ hyperio-eviq-update = "hyperio.eviq:main"
 [project.gui-scripts]
 hyperio-red-overrides = "hyperio.gui:red_main"
 hyperio-dvh-exporter = "hyperio.gui:dvh_main"
+hyperio-commissioning = "hyperio.commissioning_gui:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

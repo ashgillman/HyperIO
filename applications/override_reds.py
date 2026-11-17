@@ -1,4 +1,4 @@
-"""Launch the RED preset application directly from a HyperIO checkout."""
+"""Launch the RED override application directly from a HyperIO checkout."""
 from pathlib import Path
 import sys
 

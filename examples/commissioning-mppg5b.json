@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "protocol": {
+    "id": "AAPM MPPG 5.b",
+    "year": 2022,
+    "doi": "10.1002/acm2.13641"
+  },
+  "cases": {
+    "5.1": [
+      {
+        "id": "918af23b41a546b0ada1d4e8d7903dd7",
+        "included": true,
+        "values": {
+          "name": "Demo reference setup",
+          "machine": "Fictional Linac A",
+          "beam": "6 MV demo",
+          "model": "Fictional TPS / demo model",
+          "phantom": "Fictional water phantom",
+          "shape": "Square",
+          "field_x_cm": 10.0,
+          "field_y_cm": 10.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 90.0,
+          "sad_cm": 100.0,
+          "mu": 100.0,
+          "depths_cm": [
+            2.0,
+            10.0,
+            20.0
+          ],
+          "gantry_deg": 0.0,
+          "incidence_deg": 0.0,
+          "dose_grid_mm": 2.0,
+          "notes": "Illustrative values only; not measured or calibrated."
+        }
+      }
+    ],
+    "5.7": [
+      {
+        "id": "fda36935054d4386afd990202a522fc9",
+        "included": true,
+        "values": {
+          "name": "Demo SSD variant A",
+          "machine": "Fictional Linac A",
+          "beam": "6 MV demo",
+          "model": "Fictional TPS / demo model",
+          "phantom": "Fictional water phantom",
+          "shape": "Square",
+          "field_x_cm": 10.0,
+          "field_y_cm": 10.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 80.0,
+          "sad_cm": 100.0,
+          "mu": 100.0,
+          "depths_cm": [
+            2.0,
+            10.0,
+            20.0
+          ],
+          "gantry_deg": 0.0,
+          "incidence_deg": 0.0,
+          "dose_grid_mm": 2.0,
+          "notes": "Illustrative values only; not measured or calibrated."
+        }
+      },
+      {
+        "id": "0054d5eb3ded4ed1b115d2ee5ab6b6b9",
+        "included": true,
+        "values": {
+          "name": "Demo SSD variant B",
+          "machine": "Fictional Linac A",
+          "beam": "6 MV demo",
+          "model": "Fictional TPS / demo model",
+          "phantom": "Fictional water phantom",
+          "shape": "Square",
+          "field_x_cm": 10.0,
+          "field_y_cm": 10.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "mu": 100.0,
+          "depths_cm": [
+            2.0,
+            10.0,
+            20.0
+          ],
+          "gantry_deg": 0.0,
+          "incidence_deg": 0.0,
+          "dose_grid_mm": 2.0,
+          "notes": "Illustrative values only; not measured or calibrated."
+        }
+      }
+    ],
+    "5.8": [
+      {
+        "id": "bcb25f7c7bc642b0bb275c4f29b62c0d",
+        "included": false,
+        "values": {
+          "name": "Demo oblique setup (excluded)",
+          "machine": "Fictional Linac A",
+          "beam": "6 MV demo",
+          "model": "Fictional TPS / demo model",
+          "phantom": "Fictional water phantom",
+          "shape": "Square",
+          "field_x_cm": 10.0,
+          "field_y_cm": 10.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 90.0,
+          "sad_cm": 100.0,
+          "mu": 100.0,
+          "depths_cm": [
+            2.0,
+            10.0,
+            20.0
+          ],
+          "gantry_deg": 0.0,
+          "incidence_deg": 20.0,
+          "dose_grid_mm": 2.0,
+          "notes": "Illustrative values only; not measured or calibrated."
+        }
+      }
+    ],
+    "6.1": [
+      {
+        "id": "bfa4b90913e5446a9a01e401635e072c",
+        "included": true,
+        "values": {
+          "name": "Demo density evidence placeholder",
+          "phantom": "Fictional density phantom",
+          "model": "Fictional TPS / demo model",
+          "reference": "Demo placeholder only; no evidence attached",
+          "detector": "Illustrative material density comparison",
+          "notes": "No scan or measurement is provided."
+        }
+      }
+    ]
+  }
+}

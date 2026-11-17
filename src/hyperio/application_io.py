@@ -87,12 +87,19 @@ def load_red_mapping(path):
 def apply_red_mapping(data, mapping):
     """Return edited bytes, a preview of changes, and unmatched preset names.
 
-    Matched structures receive mode 2 (forced) and the preset uniform RED.
+    Numeric values set forced mode and uniform RED; dictionaries may independently
+    set mode and uniform RED using the keys "mode" and "red".
     Unmatched structures, fill values and layer settings are retained verbatim.
     A preset may only target names with exactly one density record.
     """
     for value in mapping.values():
-        _positive_ed(value)
+        if isinstance(value, dict):
+            if value.get("red") is not None:
+                _positive_ed(value["red"])
+            if value.get("mode") not in (None, "none", "forced", "filled"):
+                raise ValueError("density mode must be none, forced, or filled")
+        else:
+            _positive_ed(value)
     records = plan_metadata(data, '<selected-plan>')['density_overrides']
     names = [record['name'] for record in records]
     duplicates = sorted(name for name in mapping if names.count(name) > 1)
@@ -103,9 +110,14 @@ def apply_red_mapping(data, mapping):
         name = record['name']
         if name not in mapping:
             continue
-        edited = edit_plan_density(edited, name, mode=2, uniform_ed=mapping[name])
+        value = mapping[name]
+        mode = value.get('mode') if isinstance(value, dict) else 'forced'
+        red = value.get('red') if isinstance(value, dict) else value
+        mode_code = {'none': 1, 'forced': 2, 'filled': 3}.get(mode)
+        edited = edit_plan_density(edited, name, mode=mode_code, uniform_ed=red)
         changes.append({'structure': name, 'old_mode': record['mode'],
-                        'old_red': record['uniform_ed'], 'new_mode': 'forced', 'new_red': mapping[name]})
+                        'old_red': record['uniform_ed'], 'new_mode': mode or record['mode'],
+                        'new_red': red if red is not None else record['uniform_ed']})
     return edited, changes, sorted(set(mapping) - set(names))
 
 

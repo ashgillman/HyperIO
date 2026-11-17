@@ -103,3 +103,19 @@ def test_red_application_saves_all_tabs_in_complete_patient(root, monkeypatch, t
     assert (destination / 'plan' / 'PlanD' / 'plan').read_bytes() == plan_bytes('PlanD')
     assert (destination / 'CT' / 'structures').read_bytes() == b'original contours'
     assert (source / 'plan' / 'PlanC' / 'plan').read_bytes() == plan_bytes('PlanC')
+
+
+def test_manual_red_and_mode_updates_are_independent(root):
+    from tkinter import ttk
+    from hyperio.red_outputs import REDOutputs
+    from test_applications import plan_bytes
+    panel = REDOutputs(ttk.Frame(root), lambda: None)
+    panel.set_plans([dict(name='PlanC', label='PlanC', member='plan/PlanC/plan', data=plan_bytes('PlanC'))])
+    tab = panel.current()
+    tab['manual']['Insert'] = {'mode': 'forced'}
+    assert panel.prepared()[0]['mapping'] == {'Insert': {'mode': 'forced'}}
+    tab['manual']['Insert']['red'] = '1.25'
+    assert panel.prepared()[0]['mapping'] == {'Insert': {'mode': 'forced', 'red': 1.25}}
+    tab['manual']['Insert']['red'] = 'invalid'
+    with pytest.raises(ValueError):
+        panel.prepared()

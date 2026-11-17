@@ -144,7 +144,7 @@ def _launch(mode):
         def __init__(self, root):
             self.root = root
             self.is_red = mode == 'red'
-            root.title('HyperIO — RED preset overrides' if self.is_red else 'HyperIO — DVH explorer / exporter')
+            root.title('HyperIO — RED overrides' if self.is_red else 'HyperIO — DVH explorer / exporter')
             root.geometry('1250x760')
             root.minsize(850, 450)
             root.columnconfigure(0, weight=1)
@@ -260,7 +260,7 @@ def _launch(mode):
                 self.table.configure(yscrollcommand=vertical.set, xscrollcommand=horizontal.set)
                 self.table.tag_configure('changed', background='#DCE6F1')
             if self.is_red:
-                note = ('Preset matches use exact structure names and force the plan-level RED. '
+                note = ('Double-click New RED or Resulting mode to edit a structure. Presets use exact names and force the plan-level RED. '
                         'Save writes a complete patient copy with every output tab applied. Blank output names replace the input plan in that copy. '
                         'Studyset defaults and saved dose are unchanged; dose must be recalculated after RED edits. '
                         'Native density editing remains experimental and requires Monaco load/save/recalculation review.')

@@ -1,0 +1,719 @@
+{
+  "schema_version": 1,
+  "protocol": {
+    "id": "AAPM MPPG 5.b",
+    "year": 2022,
+    "doi": "10.1002/acm2.13641"
+  },
+  "cases": {
+    "5.1": [
+      {
+        "id": "805dedc8d16d5e31a58587c3446b3a1d",
+        "included": true,
+        "values": {
+          "name": "Photon absolute calibration",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Local calibration water setup",
+          "detector": "Calibrated reference chamber; compare TPS dose/MU with local calibration",
+          "notes": "Use the locally established reference field, SSD/SAD, depth, MU and calibration; these are deliberately unspecified. Repeat for each configured photon beam. No measurement recorded."
+        }
+      }
+    ],
+    "5.2": [
+      {
+        "id": "bc899013443457a5bb23463611ad1d31",
+        "included": true,
+        "values": {
+          "name": "Large-field modelling versus planning module",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Square",
+          "field_x_cm": 35.0,
+          "field_y_cm": 35.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            2.0,
+            10.0,
+            25.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "detector": "Profiles or several dose points in both modules",
+          "notes": "Proposed 35 × 35 cm field follows the Table 4 large-field example. Run once per algorithm when a separate modelling module is available. Match phantom material and geometry, and account for differences in grid and statistical uncertainty."
+        }
+      }
+    ],
+    "5.3": [
+      {
+        "id": "7f5335a3e07b548596d155fa0bdc21fa",
+        "included": true,
+        "values": {
+          "name": "Commissioning check 4 cm at 5 cm",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Square",
+          "field_x_cm": 4.0,
+          "field_y_cm": 4.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            5.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "detector": "Compare local commissioning PDD at central axis and selected depths",
+          "notes": "Proposed spot check at 5 cm depth for 4 × 4 cm. Use the same PDD normalisation as the measured dataset and record its source."
+        }
+      },
+      {
+        "id": "0ae0dd9dcd6053c6a36608c555b24ff9",
+        "included": true,
+        "values": {
+          "name": "Commissioning check 10 × 10 cm at 15 cm depth",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Square",
+          "field_x_cm": 10.0,
+          "field_y_cm": 10.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            15.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "detector": "Compare off-axis factors at ±3 cm along both axes",
+          "notes": "Proposed off-axis positions and depth. Match the local commissioning profile coordinates and use its central-axis normalisation."
+        }
+      },
+      {
+        "id": "ef2ad09da872546ead79f787609fab7f",
+        "included": true,
+        "values": {
+          "name": "Commissioning check 20 cm at 20 cm",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Square",
+          "field_x_cm": 20.0,
+          "field_y_cm": 20.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            20.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "detector": "Compare central-axis output factor relative to the local measured reference field",
+          "notes": "Proposed nonreference field and depth. If output factors were acquired at a different depth, match that depth in both fields. Record SSD, field plane, detector corrections and dose per MU for both."
+        }
+      }
+    ],
+    "5.4": [
+      {
+        "id": "9448f575bd24531091938307dd2adc66",
+        "included": true,
+        "values": {
+          "name": "Small clinically used static MLC aperture",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Square",
+          "field_x_cm": 3.0,
+          "field_y_cm": 3.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            2.0,
+            10.0,
+            25.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "aperture": "MLC-defined 3 × 3 cm at isocentre; jaws just outside leaves",
+          "detector": "Small-field appropriate detector; depth-dose and orthogonal profiles",
+          "notes": "Proposed 3 cm field; replace with smallest clinically used non-SRS/non-IMRT static aperture. Proposed design, not measured. Confirm machine travel, clearance, detector suitability and local geometry; replicate for each applicable beam. For hard wedges repeat 5.4–5.8 for each unique clinically used wedged beam; record wedge orientation and angle."
+        }
+      }
+    ],
+    "5.5": [
+      {
+        "id": "8837a8da35be5742a21806d0e9f3d007",
+        "included": true,
+        "values": {
+          "name": "MLC blocking and bank overtravel",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Custom MLC",
+          "field_x_cm": 20.0,
+          "field_y_cm": 20.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            2.0,
+            10.0,
+            25.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "aperture": "20 × 20 cm jaws; form a 4 × 4 cm opening displaced 5 cm in leaf-travel direction; leaves block remaining jaw field and cross centreline where supported",
+          "detector": "Scan high-dose, blocked and penumbra regions. Measure dose per MU in the displaced aperture and in the local reference field to test the output factor.",
+          "notes": "Proposed geometry; verify supported bank overtravel and clearance. Proposed design, not measured. Confirm machine travel, clearance, detector suitability and local geometry; replicate for each applicable beam. For hard wedges repeat 5.4–5.8 for each unique clinically used wedged beam; record wedge orientation and angle."
+        }
+      }
+    ],
+    "5.6": [
+      {
+        "id": "3a817bd0d99a502db03151617d608bda",
+        "included": true,
+        "values": {
+          "name": "Large off-axis diagonal aperture",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Asymmetric jaws",
+          "field_x_cm": 20.0,
+          "field_y_cm": 20.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            2.0,
+            10.0,
+            25.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 45.0,
+          "aperture": "At isocentre X: 0 to +20 cm; Y: 0 to +20 cm in collimator coordinates; rotate collimator 45 degrees",
+          "detector": "Diagonal and orthogonal profiles including off-axis tail",
+          "notes": "Proposed off-axis quadrant. Move the far edge as far off axis as local travel and measurement geometry permit, including primary-collimator exposure where possible. Verify signs and rotation locally. Repeat for applicable open and hard-wedged beams."
+        }
+      }
+    ],
+    "5.7": [
+      {
+        "id": "62624414ee7a5a75a4dc5a6aed1e33bc",
+        "included": true,
+        "values": {
+          "name": "Asymmetric field at short SSD",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Asymmetric jaws",
+          "field_x_cm": 15.0,
+          "field_y_cm": 10.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 80.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            2.0,
+            10.0,
+            25.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "aperture": "At isocentre X: -5 to +10 cm; Y: -5 to +5 cm",
+          "detector": "Depth-dose and profiles; sample high-dose, penumbra and tail",
+          "notes": "Proposed 80 cm SSD, not a claim about machine minimum: use locally permitted minimum SSD distinct from modelling setup. Check collision and jaw ranges. Proposed design, not measured. Confirm machine travel, clearance, detector suitability and local geometry; replicate for each applicable beam. For hard wedges repeat 5.4–5.8 for each unique clinically used wedged beam; record wedge orientation and angle."
+        }
+      }
+    ],
+    "5.8": [
+      {
+        "id": "969e01b5a7815c2fb4d5ea40396e0b4f",
+        "included": true,
+        "values": {
+          "name": "Oblique photon surface 20 degrees",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Square",
+          "field_x_cm": 10.0,
+          "field_y_cm": 10.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            2.0,
+            10.0,
+            25.0
+          ],
+          "gantry_deg": 20.0,
+          "collimator_deg": 0.0,
+          "incidence_deg": 20.0,
+          "aperture": "10 × 10 cm at isocentre. Tilt the beam 20° away from normal incidence on the level phantom surface.",
+          "detector": "Depth-dose and in-plane/cross-plane profiles",
+          "notes": "The guideline gives the 10 × 10 cm and 20° example. The proposed gantry angle assumes normal incidence at 0° in the local convention. Verify central-axis SSD to the actual entry point, clearance and matched measurement paths. Repeat for applicable open and hard-wedged beams."
+        }
+      }
+    ],
+    "5.9": [
+      {
+        "id": "32aab625387a5738b9ac3aaca8192231",
+        "included": false,
+        "values": {
+          "name": "Dynamic wedge large field",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Nonphysical wedge",
+          "phantom": "Water phantom",
+          "shape": "Square",
+          "field_x_cm": 20.0,
+          "field_y_cm": 20.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            2.0,
+            10.0,
+            25.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "modifier": "Nonphysical wedge: select local angle and orientation",
+          "detector": "Array or chamber scans of modified dose distribution",
+          "notes": "Conditional: include and duplicate for every clinically used nonphysical wedge angle. Proposed 20 × 20 cm field exceeds guideline example 15 cm; verify field limits, wedge direction and delivery. No measurement recorded."
+        }
+      }
+    ],
+    "6.1": [
+      {
+        "id": "00c3e8c51ac058dfb00131f2db612b0d",
+        "included": true,
+        "values": {
+          "name": "CT density curves for all scanners",
+          "phantom": "Density phantom with air, lung, water-equivalent and dense bone inserts",
+          "detector": "Compare TPS assigned density against known insert values",
+          "notes": "Acquire and evaluate each clinical dose-calculation scanner and applicable onboard system; document scan protocol, insert identity, known density and assigned mass/electron density. No numeric tolerance specified in Table 7; no evidence recorded."
+        }
+      }
+    ],
+    "6.2": [
+      {
+        "id": "bdca4dbf2e625d89914b3d24fb02fe8d",
+        "included": true,
+        "values": {
+          "name": "Dose beyond lung slab",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "5 cm water-equivalent, 13 cm lung-equivalent, 10 cm water-equivalent",
+          "shape": "Square",
+          "field_x_cm": 5.0,
+          "field_y_cm": 5.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            3.0,
+            22.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "detector": "Chamber central-axis distal/proximal dose ratio from the same two positions in the TPS and phantom",
+          "notes": "The 5 × 5 cm field and slab stack are guideline examples. The proposed depths, 3 and 22 cm from entry, are in the proximal and distal water-equivalent slabs. Confirm both are outside buildup/builddown and away from interfaces for the actual stack and detector. Record materials and compare for each photon energy."
+        }
+      }
+    ],
+    "7.1": [
+      {
+        "id": "77b1f406c799529cb1c6957f99d77dac",
+        "included": true,
+        "values": {
+          "name": "Small-field central-axis PDD",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Square",
+          "field_x_cm": 1.5,
+          "field_y_cm": 1.5,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            1.5,
+            5.0,
+            10.0,
+            20.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "aperture": "MLC-defined 1.5 × 1.5 cm at isocentre; jaws close to aperture",
+          "detector": "Small-field diode or plastic scintillator; PDD",
+          "notes": "Proposed 1.5 cm square, below guideline example 2 cm; verify leaf resolution and detector correction. Document normalization, sampling and uncertainty. No measurement recorded."
+        }
+      }
+    ],
+    "7.2": [
+      {
+        "id": "7cfaf086b82955cea54cd8d54eec5da2",
+        "included": true,
+        "values": {
+          "name": "Small-field output 2 × 2 cm",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Square",
+          "field_x_cm": 2.0,
+          "field_y_cm": 2.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            10.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "aperture": "MLC-defined 2 × 2 cm at isocentre; set jaws to represent clinical modulation and document jaw positions",
+          "detector": "Suitable small-field detector; output factor relative to local reference",
+          "notes": "Proposed aperture and 10 cm depth; verify machine minimum and use field-specific detector correction where needed. Record reference field, correction and uncertainty. Repeat each applicable beam. No measurement recorded."
+        }
+      },
+      {
+        "id": "b57d986fd14d543eb504f9cffc4aa162",
+        "included": true,
+        "values": {
+          "name": "Small-field output 1 × 1 cm",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Square",
+          "field_x_cm": 1.0,
+          "field_y_cm": 1.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            10.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "aperture": "MLC-defined 1 × 1 cm at isocentre; set jaws to represent clinical modulation and document jaw positions",
+          "detector": "Suitable small-field detector; output factor relative to local reference",
+          "notes": "Proposed aperture and 10 cm depth; verify machine minimum and use field-specific detector correction where needed. Record reference field, correction and uncertainty. Repeat each applicable beam. No measurement recorded."
+        }
+      },
+      {
+        "id": "3c1ee7956d8b5a398fe6562e1414d919",
+        "included": true,
+        "values": {
+          "name": "Small-field output 1 × 3 cm",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Rectangle",
+          "field_x_cm": 1.0,
+          "field_y_cm": 3.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            10.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "aperture": "MLC-defined 1 × 3 cm at isocentre; set jaws to represent clinical modulation and document jaw positions",
+          "detector": "Suitable small-field detector; output factor relative to local reference",
+          "notes": "Proposed aperture and 10 cm depth; verify machine minimum and use field-specific detector correction where needed. Record reference field, correction and uncertainty. Repeat each applicable beam. No measurement recorded."
+        }
+      },
+      {
+        "id": "b39fe381f3d251938fb7d12dfbf2fa89",
+        "included": true,
+        "values": {
+          "name": "Small-field output 3 × 1 cm",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Rectangle",
+          "field_x_cm": 3.0,
+          "field_y_cm": 1.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            10.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "aperture": "MLC-defined 3 × 1 cm at isocentre; set jaws to represent clinical modulation and document jaw positions",
+          "detector": "Suitable small-field detector; output factor relative to local reference",
+          "notes": "Proposed aperture and 10 cm depth; verify machine minimum and use field-specific detector correction where needed. Record reference field, correction and uncertainty. Repeat each applicable beam. No measurement recorded."
+        }
+      },
+      {
+        "id": "38e184d534bd5e04aa49165576d278d3",
+        "included": true,
+        "values": {
+          "name": "Small-field output 1 × 3 cm off axis",
+          "beam": "6 MV flattened (provisional; replicate for each configured photon beam)",
+          "technique": "Static open field",
+          "phantom": "Water phantom",
+          "shape": "Rectangle",
+          "field_x_cm": 1.0,
+          "field_y_cm": 3.0,
+          "field_plane": "Isocentre",
+          "ssd_cm": 100.0,
+          "sad_cm": 100.0,
+          "depths_cm": [
+            10.0
+          ],
+          "gantry_deg": 0.0,
+          "collimator_deg": 0.0,
+          "aperture": "MLC-defined opening at isocentre, X = +2.5 to +3.5 cm, Y = −1.5 to +1.5 cm. Use representative clinical jaw positions.",
+          "detector": "Suitable small-field detector; output factor relative to local reference",
+          "notes": "Proposed 3 cm displacement along leaf travel. Sample at the centre of the projected opening at measurement depth. Compare dose per MU with the matched local reference field and record the detector correction, coordinates and jaw settings."
+        }
+      }
+    ],
+    "7.3": [
+      {
+        "id": "d0097587efa8529cbe010324428b1460",
+        "included": true,
+        "values": {
+          "name": "TG-119 mock head and neck",
+          "beam": "6 MV flattened (provisional; repeat each delivery modality and energy)",
+          "technique": "TG-119 fixed-field IMRT: nine coplanar fields at 40° intervals from vertical. Repeat with each locally applicable technique.",
+          "phantom": "QA phantom and corresponding planning CT",
+          "reference": "AAPM TG-119 mock head-and-neck dataset and objectives; https://doi.org/10.1118/1.3238104 | CT, structures and instructions: https://zenodo.org/records/8037934",
+          "detector": "TG-119 chamber and film positions: isocentre and 4 cm posterior. Record patient-specific QA.",
+          "notes": "TG-119 C3 goals: PTV D90 ≥ 50 Gy, D99 ≥ 46.5 Gy and V55Gy ≤ 20%. Cord maximum ≤ 40 Gy and parotid D50 < 20 Gy. Follow the TG-119 dataset and phantom instructions. Keep plan and measured dose associated with the actual delivery technique and energy."
+        }
+      },
+      {
+        "id": "188b36c508285c2d8f9bdf305a3b92a9",
+        "included": true,
+        "values": {
+          "name": "TG-119 C-shape, easier objective set",
+          "beam": "6 MV flattened (provisional; repeat each delivery modality and energy)",
+          "technique": "TG-119 fixed-field IMRT: nine coplanar fields at 40° intervals from vertical. Repeat with each locally applicable technique.",
+          "phantom": "QA phantom and corresponding planning CT",
+          "reference": "AAPM TG-119 C-shape dataset and objectives; https://doi.org/10.1118/1.3238104 | CT, structures and instructions: https://zenodo.org/records/8037934",
+          "detector": "TG-119 chamber and film positions: isocentre and 2.5 cm anterior. Record patient-specific QA.",
+          "notes": "TG-119 C4 easier goals: PTV D95 ≥ 50 Gy and D10 ≤ 55 Gy. Core D5 ≤ 25 Gy. The harder variant changes the core objective to D5 ≤ 10 Gy and is an optional additional challenge here. Keep plan and measured dose associated with the actual delivery technique and energy."
+        }
+      }
+    ],
+    "7.4": [
+      {
+        "id": "7b75f28ac9e05ad1a0ed66bb86726d83",
+        "included": true,
+        "values": {
+          "name": "AAPM case 3: Lung right upper lobe",
+          "beam": "6 MV flattened (provisional; repeat each delivery modality and energy)",
+          "technique": "IMRT and/or VMAT as locally commissioned",
+          "phantom": "QA phantom and corresponding planning CT",
+          "reference": "AAPM MPPG TPS dataset Case 3: https://www.aapm.org/pubs/MPPG/TPS/",
+          "detector": "Target and OAR point doses, planar/volumetric comparison, and patient-specific QA",
+          "notes": "Download supplied CT, structures and sample objectives; select and document prescription, objectives and heterogeneity-aware algorithm locally. Deliver phantom plan and investigate disagreement locations. Repeat for each applicable technique and energy. No dataset, plan or result attached."
+        }
+      },
+      {
+        "id": "22d6c256342a5468a6d008c20c2ffb38",
+        "included": true,
+        "values": {
+          "name": "AAPM case 5: Head and neck simultaneous integrated boost",
+          "beam": "6 MV flattened (provisional; repeat each delivery modality and energy)",
+          "technique": "IMRT and/or VMAT as locally commissioned",
+          "phantom": "QA phantom and corresponding planning CT",
+          "reference": "AAPM MPPG TPS dataset Case 5: https://www.aapm.org/pubs/MPPG/TPS/",
+          "detector": "Target and OAR point doses, planar/volumetric comparison, and patient-specific QA",
+          "notes": "Download supplied CT, structures and sample objectives; select and document prescription, objectives and heterogeneity-aware algorithm locally. Deliver phantom plan and investigate disagreement locations. Repeat for each applicable technique and energy. No dataset, plan or result attached."
+        }
+      }
+    ],
+    "7.5": [
+      {
+        "id": "40fa88edbeea55b7ada78931baaa98af",
+        "included": true,
+        "values": {
+          "name": "External end-to-end: Head and neck",
+          "beam": "6 MV flattened (provisional)",
+          "technique": "Local clinical modulated workflow",
+          "phantom": "External anthropomorphic head and neck phantom and supplied dosimeters",
+          "reference": "IROC head and neck phantom and planning protocol: https://irochouston.mdanderson.org/rpc/services/Anthropomorphic_%20Phantoms/Anth_HNP.htm",
+          "detector": "Independent external dosimetry and review of target dose",
+          "notes": "Arrange independent external evaluation; image, contour, plan and deliver through the complete clinical chain, then submit dosimeters and retain report. If external evaluation unavailable, arrange independent physicist peer review of end-to-end results. No review or measurement completed."
+        }
+      },
+      {
+        "id": "27f102ce36e85166b952b36d53bcd5c7",
+        "included": true,
+        "values": {
+          "name": "External end-to-end: Heterogeneous thorax",
+          "beam": "6 MV flattened (provisional)",
+          "technique": "Local clinical modulated workflow",
+          "phantom": "External anthropomorphic heterogeneous thorax phantom and supplied dosimeters",
+          "reference": "IROC thorax-lung phantom and planning protocol: https://irochouston.mdanderson.org/rpc/Services/Anthropomorphic_%20Phantoms/Phantom_Thorax_lung.htm",
+          "detector": "Independent external dosimetry and review of target dose",
+          "notes": "Arrange independent external evaluation; image, contour, plan and deliver through the complete clinical chain, then submit dosimeters and retain report. If external evaluation unavailable, arrange independent physicist peer review of end-to-end results. No review or measurement completed."
+        }
+      }
+    ],
+    "8.1": [
+      {
+        "id": "0cdd279d693757beb8c66ba7e4926f4e",
+        "included": true,
+        "values": {
+          "name": "Electron absolute calibration",
+          "beam": "9 MeV electron (provisional; repeat for every configured electron energy)",
+          "technique": "Electron",
+          "phantom": "Water or water-equivalent phantom",
+          "detector": "Calibrated reference chamber; compare TPS dose/MU to calibrated output",
+          "notes": "Use local reference cone, SSD, depth, field and MU. Do not assume reference depth or output; record calibration source. No measurement recorded."
+        }
+      }
+    ],
+    "8.2": [
+      {
+        "id": "a42fdc9ebd0a5bc4a8593aafed47d3b7",
+        "included": true,
+        "values": {
+          "name": "Shaped electron cutout at 100 cm SSD",
+          "beam": "9 MeV electron (provisional; repeat for every configured electron energy)",
+          "technique": "Electron",
+          "phantom": "Water or water-equivalent phantom",
+          "shape": "Electron cutout",
+          "field_x_cm": 6.0,
+          "field_y_cm": 8.0,
+          "field_plane": "Applicator plane",
+          "ssd_cm": 100.0,
+          "aperture": "Centred 6 × 8 cm bounding rectangle with one corner clipped by 1 cm along both edges, inside a 10 × 10 cm applicator. Use the same insert at both SSDs.",
+          "cone": "10 × 10 cm applicator (proposed)",
+          "detector": "Electron PDD and orthogonal profiles",
+          "notes": "Proposed custom insert and SSD. Confirm lateral scatter equilibrium at each energy and use local standard and extended SSDs. Compare PDD and orthogonal profiles, including a profile through the shaped edge."
+        }
+      },
+      {
+        "id": "0e06c105ea3157cc80feeabbc06f2f89",
+        "included": true,
+        "values": {
+          "name": "Shaped electron cutout at 110 cm SSD",
+          "beam": "9 MeV electron (provisional; repeat for every configured electron energy)",
+          "technique": "Electron",
+          "phantom": "Water or water-equivalent phantom",
+          "shape": "Electron cutout",
+          "field_x_cm": 6.0,
+          "field_y_cm": 8.0,
+          "field_plane": "Applicator plane",
+          "ssd_cm": 110.0,
+          "aperture": "Centred 6 × 8 cm bounding rectangle with one corner clipped by 1 cm along both edges, inside a 10 × 10 cm applicator. Use the same insert at both SSDs.",
+          "cone": "10 × 10 cm applicator (proposed)",
+          "detector": "Electron PDD and orthogonal profiles",
+          "notes": "Proposed custom insert and SSD. Confirm lateral scatter equilibrium at each energy and use local standard and extended SSDs. Compare PDD and orthogonal profiles, including a profile through the shaped edge."
+        }
+      },
+      {
+        "id": "373d20447eee54e08c4c05d82ccb15d7",
+        "included": true,
+        "values": {
+          "name": "Standard-cutout electron PDD and output inventory",
+          "beam": "Each configured electron energy",
+          "technique": "Electron",
+          "phantom": "Water phantom",
+          "cone": "Each configured applicator with its standard cutout",
+          "detector": "Electron depth-dose scan and output factor relative to the local reference cone",
+          "notes": "Section 8.2 companion check. Duplicate for each cone and energy, set local standard SSD and reference geometry, and plot PDDs and output factors across the inventory."
+        }
+      }
+    ],
+    "8.3": [
+      {
+        "id": "1a6c7e55b1665115b086133c7f403e21",
+        "included": true,
+        "values": {
+          "name": "Electron oblique surface 20 degrees",
+          "beam": "9 MeV electron (provisional; repeat for every configured electron energy)",
+          "technique": "Electron",
+          "phantom": "Water or water-equivalent phantom",
+          "ssd_cm": 100.0,
+          "incidence_deg": 20.0,
+          "aperture": "Open reference applicator; phantom surface tilted 20 degrees",
+          "cone": "Local reference applicator",
+          "detector": "Electron PDD and profiles including penumbra",
+          "notes": "20 degrees and 100 cm SSD are proposed, not prescribed by guideline; use locally permitted setup and nominal clinical SSD. Repeat each energy. No measurement recorded."
+        }
+      }
+    ],
+    "8.4": [
+      {
+        "id": "8ca84f7e33865274a21ac9f01ceaae27",
+        "included": true,
+        "values": {
+          "name": "Electron heterogeneous slab",
+          "beam": "9 MeV electron (provisional; repeat for every configured electron energy)",
+          "technique": "Electron",
+          "phantom": "Heterogeneous slab phantom",
+          "ssd_cm": 100.0,
+          "cone": "Local reference applicator",
+          "detector": "Chamber measurement or heterogeneity-corrected manual calculation; qualitative distribution review",
+          "notes": "Select at least one representative electron energy and a comparison depth within range. Specify insert material, density, thickness and interface geometry, keeping the reference cone and nominal clinical SSD. Extend to other energies where warranted by local clinical use."
+        }
+      }
+    ],
+    "9": [
+      {
+        "id": "a0ba641f7e875983ad1fea8587f45e37",
+        "included": true,
+        "values": {
+          "name": "Baseline open photon",
+          "beam": "Each configured photon beam",
+          "technique": "Static open",
+          "phantom": "Reference planning image set and retained baseline dose",
+          "reference": "Commissioning case 5.4 or another locally selected reference plan",
+          "detector": "Recalculate and compare dose to retained baseline",
+          "notes": "Retain approved reference plan and dose with imaging and calculation settings. Perform annually or after upgrades; compare 1% / 1 mm per section 9 and investigate changes. Reference baseline has not yet been created."
+        }
+      },
+      {
+        "id": "4ea8e4e0ede25c4eb9f989b8dc600707",
+        "included": false,
+        "values": {
+          "name": "Baseline wedged photon",
+          "beam": "Each applicable wedged photon beam",
+          "technique": "Static physical or nonphysical wedge",
+          "phantom": "Reference planning image set and retained baseline dose",
+          "reference": "Commissioning case 5.9 or locally selected hard-wedge plan",
+          "detector": "Recalculate and compare dose to retained baseline",
+          "notes": "Conditional on clinical wedge use; include each applicable type and record orientation. Perform annually or after upgrades; compare 1% / 1 mm per section 9 and investigate changes. Reference baseline has not yet been created."
+        }
+      },
+      {
+        "id": "eba4e0d6b1775d9a8eabf3fbe53d269d",
+        "included": true,
+        "values": {
+          "name": "Baseline modulated photon",
+          "beam": "Each applicable beam and technique",
+          "technique": "IMRT or VMAT",
+          "phantom": "Reference planning image set and retained baseline dose",
+          "reference": "Accepted 7.4 AAPM Case 5 head and neck plan; https://www.aapm.org/pubs/MPPG/TPS/",
+          "detector": "Recalculate and compare dose to retained baseline",
+          "notes": "Select a completed and measured representative plan as baseline; retain all calculation settings. Perform annually or after upgrades; compare 1% / 1 mm per section 9 and investigate changes. Reference baseline has not yet been created."
+        }
+      },
+      {
+        "id": "be80ecb4668d5994875f091c9ad2c6b5",
+        "included": true,
+        "values": {
+          "name": "Baseline electron chest wall",
+          "beam": "Each configured electron energy",
+          "technique": "Electron with heterogeneous anatomy",
+          "phantom": "Reference planning image set and retained baseline dose",
+          "reference": "AAPM MPPG Case 6 chest wall; https://www.aapm.org/pubs/MPPG/TPS/",
+          "detector": "Recalculate and compare dose to retained baseline",
+          "notes": "Archive a representative curved, heterogeneous chest-wall calculation for every configured electron energy. Include separate extended-SSD and bolus variants where feasible. Compare recalculated doses to the archived baseline after upgrades and annually."
+        }
+      }
+    ]
+  }
+}

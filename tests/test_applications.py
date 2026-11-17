@@ -643,3 +643,18 @@ def test_saved_dvh_values_unchanged_when_ct_selection_is_unreadable(tmp_path):
         book.close()
     sidecar = export_dvh_csv(result, tmp_path / 'with-warning.csv', source=modified)
     assert json.loads(sidecar.read_text())['diagnostics'] == result['diagnostics']
+
+
+def test_manual_red_mapping_can_edit_mode_and_red_independently():
+    from hyperio.application_io import apply_red_mapping
+    from hyperio.core import plan_metadata
+    source = plan_bytes('PlanC')
+    original = next(r for r in plan_metadata(source, 'source')['density_overrides'] if r['name'] == 'Insert')
+    edited, _, _ = apply_red_mapping(source, {'Insert': {'mode': 'forced'}})
+    record = next(r for r in plan_metadata(edited, 'edited')['density_overrides'] if r['name'] == 'Insert')
+    assert record['mode'] == 'forced'
+    assert record['uniform_ed'] == original['uniform_ed']
+    edited, _, _ = apply_red_mapping(source, {'Insert': {'red': 1.25}})
+    record = next(r for r in plan_metadata(edited, 'edited')['density_overrides'] if r['name'] == 'Insert')
+    assert record['mode'] == original['mode']
+    assert record['uniform_ed'] == 1.25

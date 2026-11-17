@@ -234,6 +234,6 @@ No project licence has been selected; no third-party licence is assumed for coll
 
 ## Desktop applications
 
-The [applications](applications/README.md) directory contains Windows/macOS launchers for a RED preset override GUI and a Monaco-style DVH spreadsheet exporter.
+The [applications](applications/README.md) directory contains desktop launchers for a RED override GUI, a Monaco-style DVH spreadsheet exporter, and an MPPG 5.b commissioning worksheet.
 Install with `pip install -e '.[applications]'`, using Python with Tk support.
-Run `hyperio-red-overrides` or `hyperio-dvh-exporter`.
+Run `hyperio-red-overrides`, `hyperio-dvh-exporter`, or `hyperio-commissioning`.

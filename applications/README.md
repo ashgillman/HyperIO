@@ -1,6 +1,6 @@
 # HyperIO desktop applications
 
-Two Python/Tk desktop applications are available for Windows and macOS.
+Three Python/Tk desktop applications are available for Windows and macOS.
 The reusable workflows live in `hyperio.application_io` and `hyperio.dvh_export`.
 The GUI uses Tkinter, and formatted XLSX export uses openpyxl.
 Excel is not required; CSV is also available using Python's standard library.
@@ -20,6 +20,7 @@ py -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[applications]"
 .\.venv\Scripts\hyperio-red-overrides.exe
 .\.venv\Scripts\hyperio-dvh-exporter.exe
+.\.venv\Scripts\hyperio-commissioning.exe
 ```
 
 macOS Terminal:
@@ -29,6 +30,7 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -e '.[applications]'
 .venv/bin/hyperio-red-overrides
 .venv/bin/hyperio-dvh-exporter
+.venv/bin/hyperio-commissioning
 ```
 
 ## Run from the checkout without installing HyperIO
@@ -39,6 +41,7 @@ On macOS or Linux with Nix, enter the development shell from the repository dire
 nix develop
 python applications/override_reds.py
 python applications/dvh.py
+python applications/commissioning.py
 ```
 
 The flake supplies Python, Tk, the DVH and XLSX dependencies, pydicom and pytest, and adds `src/` to `PYTHONPATH`.
@@ -51,25 +54,73 @@ From the repository directory:
 ```sh
 python3 applications/override_reds.py
 python3 applications/dvh.py
+python3 applications/commissioning.py
 ```
 
 On Windows, use `py` instead of `python3` if needed.
-The RED application needs Python with Tk support only.
+The RED and commissioning applications need Python with Tk support only.
 The DVH exporter additionally needs numpy, scipy, shapely and unlzw3, plus openpyxl for XLSX export.
 These dependencies must be available in the Python environment even though HyperIO itself need not be installed.
 
 Check Tk support with `python -m tkinter` using that same Python environment.
-Both applications use native file dialogs and platform-independent paths.
-Directory scanning, dose sampling and file export run in a worker thread, with Tk updates on the main thread.
+The applications use native file dialogs and platform-independent paths.
+The RED and DVH applications run directory scanning, dose sampling and file export in a worker thread, with Tk updates on the main thread.
 Native GUI smoke testing on both Windows and macOS remains required before distribution.
 
-## RED preset overrides
+## MPPG 5.b commissioning worksheet
+
+Use **Open…** to load the [example worksheet](../examples/commissioning-mppg5b.json).
+Its fictional setups and evidence placeholder are illustrative only, not guideline defaults or calibration evidence.
+
+For a complete starting inventory of test designs, open the [MPPG 5.b plan specifications](../examples/commissioning-mppg5b-plan-set.json).
+The [plan setup guide](../docs/mppg5b-plan-set.md) describes how to expand the set for the local machine and build the plans in the TPS.
+
+Choose a test on the left and use **Add case…** to create a row in its table.
+Use **Duplicate…** to vary one part of a setup, such as SSD or field size, while retaining the rest.
+Select **Include** or **Exclude** to control which cases appear in the export.
+The count beside each test shows its included cases.
+
+For beam tests, record the machine and model, energy, field shape and dimensions, SSD/SAD, MU, depths, angles, modifiers and aperture details as applicable.
+Select the reference plane when entering field dimensions.
+Enter central-axis measurement depths from the phantom surface in centimetres, separated by commas.
+Image voxel spacing uses three XYZ values in millimetres and is independent of the dose-grid setting.
+Monte Carlo uncertainty and its mode are optional planning values.
+For arbitrary apertures, record dimensions and a description or reference to the leaf, jaw or cutout geometry.
+CT-to-density, modulated plans, external end-to-end work and routine QA have fields for the relevant phantom, plan or evidence.
+
+**Save** keeps the entire editable worksheet in JSON.
+**Export JSON…** writes a separate editable JSON containing only included cases, with the MPPG edition, test IDs, stable case IDs and entered values.
+Guideline examples stay in the reference pane and local setup values start blank.
+An included case represents an intended setup, with blank values permitted during drafting.
+Use **Build Monaco patient…** to stage a native patient folder with plans for the assigned cases.
+
+1. Choose a copy of a native Monaco phantom patient directory named `1~<patient ID>` containing the applicable studysets and saved template plans.
+2. Enter a new patient ID and a Monaco name in `Family^Given` format.
+3. Select each case you want to build and assign a template with matching machine, beam geometry, aperture, SSD and MU.
+   Use separate templates for different beam setups.
+4. Choose a staging directory.
+   Copy the resulting `1~<new patient ID>` folder into the target Monaco Installation/Clinic folder under an unused patient ID.
+5. Open the patient in Monaco and check the studyset, beam geometry, MU and calculation settings before calculation.
+
+Each assigned case creates a separate plan with the test ID and part of the case ID in its name.
+The builder copies the native studysets, uses the template beam and prescription records, and applies the worksheet dose grid and Monte Carlo settings when supplied and supported.
+Use a phantom with compatible clinic machine models and CT-to-density tables.
+The source phantom image UIDs and cached image metadata are carried over, so use a phantom without patient information.
+The builder omits inherited dose files, calculation logs and known locks.
+Native plan status and checksum records remain inherited from the templates.
+HyperIO checks the exported native metadata locally, and Monaco load, save and calculation are the next validation steps.
+Automatic beam construction from worksheet field size, SSD, MU or aperture values is pending.
+
+The catalogue follows [AAPM MPPG 5.b (2022)](https://doi.org/10.1002/acm2.13641) Tables 4–10 and Section 9.
+
+## RED overrides
 
 1. Choose a directory containing a Monaco patient set (or multiple patient sets), or use **Choose ZIP…** to select a patient-set archive.
 2. In each output tab, choose an **Input plan** using its patient ID, studyset, name and member path.
-3. Choose a CSV or TSV preset containing `structure` and `red` headers and review the highlighted matches.
+3. Double-click **New RED** or **Resulting mode** to edit individual structures.
+   Optionally choose a CSV or TSV preset containing `structure` and `red` headers to populate forced RED overrides for matching names.
 4. Leave **Output plan name** blank to replace that input plan in the exported copy, or enter a new name to add a cloned plan alongside it.
-5. Choose **Add output** for additional edits or variants; each tab has its own input plan, output name and preset.
+5. Choose **Add output** for additional edits or variants; each tab has its own input plan, output name, preset and individual edits.
 6. Choose **Folder** or **ZIP** under **Save as**, then choose **Save patient…** and a new output path.
 
 Saving always applies every tab to a complete copy of the chosen source.
@@ -82,7 +133,9 @@ Each tab starts from its original input plan, so overrides do not accumulate bet
 For example, select PlanC in two tabs, leave the first output name blank and name the second PlanCAlt.
 The exported patient contains modified PlanC and a separate modified PlanCAlt, while PlanA, PlanB and PlanD remain unchanged.
 A new name clones the entire input plan folder, including its companion files, and updates the native `plan` header name.
-Leave the preset empty (or choose **Clear preset**) to retain the input plan's RED settings.
+Without a preset or individual edits, the input plan's RED settings are retained.
+Changing only the resulting mode retains the current RED value.
+Manual edits take precedence over preset values, and changing the input plan clears those edits.
 **Remove output** removes the selected tab when more than one exists.
 Choosing a different source resets the tabs.
 

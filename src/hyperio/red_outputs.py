@@ -1,6 +1,7 @@
 """Independent RED output tabs; each preview is rebuilt from the source bytes."""
 from .application_io import load_red_mapping, prepare_red_output
 from .core import plan_metadata
+from .experiments import _positive_ed
 
 
 class REDOutputs:
@@ -23,7 +24,7 @@ class REDOutputs:
         number = len(self.tabs) + 1
         name = tk.StringVar()
         preset, status, input_plan = tk.StringVar(), tk.StringVar(), tk.StringVar()
-        tab = dict(frame=frame, name=name, preset=preset, status=status, input=input_plan)
+        tab = dict(frame=frame, name=name, preset=preset, status=status, input=input_plan, manual={})
         self.tabs.append(tab)
         ttk.Label(frame, text='Input plan').grid(row=0, column=0, sticky='w')
         combo = ttk.Combobox(frame, textvariable=input_plan, state='readonly',
@@ -47,13 +48,14 @@ class REDOutputs:
         table_host.grid(row=4, column=0, columnspan=3, sticky='nsew')
         table_host.columnconfigure(0, weight=1)
         table_host.rowconfigure(0, weight=1)
-        headers = ['Structure', 'Current mode', 'Current RED', 'Preset RED', 'Resulting mode']
+        headers = ['Structure', 'Current mode', 'Current RED', 'New RED', 'Resulting mode']
         table = ttk.Treeview(table_host, columns=list(range(len(headers))), show='headings')
         tab['table'] = table
         for index, title in enumerate(headers):
             table.heading(index, text=title)
             table.column(index, width=240 if index == 0 else 145, stretch=False)
         table.grid(row=0, column=0, sticky='nsew')
+        table.bind('<Double-1>', lambda event: self.edit_cell(tab, event))
         vertical = ttk.Scrollbar(table_host, orient='vertical', command=table.yview)
         horizontal = ttk.Scrollbar(table_host, orient='horizontal', command=table.xview)
         vertical.grid(row=0, column=1, sticky='ns')
@@ -64,7 +66,7 @@ class REDOutputs:
         self.notebook.select(frame)
         name.trace_add('write', lambda *_: self.refresh(tab))
         preset.trace_add('write', lambda *_: self.refresh(tab))
-        input_plan.trace_add('write', lambda *_: self.refresh(tab))
+        input_plan.trace_add('write', lambda *_: self.reset_manual(tab))
         self.refresh(tab)
 
     def remove_output(self):
@@ -91,6 +93,54 @@ class REDOutputs:
         self.tabs.clear()
         self.add_output()
 
+    def reset_manual(self, tab):
+        tab['manual'].clear()
+        self.refresh(tab)
+
+    def edit_cell(self, tab, event):
+        table = tab['table']
+        row, column = table.identify_row(event.y), table.identify_column(event.x)
+        if not row or column not in ('#4', '#5'):
+            return
+        box = table.bbox(row, column)
+        if not box:
+            return
+        values = table.item(row, 'values')
+        name, field = values[0], 'red' if column == '#4' else 'mode'
+        if field == 'red':
+            editor = self.ttk.Entry(table)
+            editor.insert(0, values[3])
+        else:
+            editor = self.ttk.Combobox(table, values=('none', 'forced', 'filled'), state='readonly')
+            editor.set(values[4])
+        editor.place(x=box[0], y=box[1], width=box[2], height=box[3])
+        editor.focus_set()
+        finished = False
+
+        def finish(commit=True):
+            nonlocal finished
+            if finished:
+                return
+            value = editor.get().strip()
+            if commit and field == 'red' and value:
+                try:
+                    _positive_ed(float(value))
+                except ValueError as exc:
+                    tab['status'].set(f'Invalid RED: {exc}')
+                    editor.focus_set()
+                    return
+            finished = True
+            editor.destroy()
+            if commit:
+                tab['manual'].setdefault(name, {})[field] = value or None
+                self.refresh(tab)
+
+        editor.bind('<Return>', lambda _event: finish())
+        editor.bind('<FocusOut>', lambda _event: finish())
+        editor.bind('<Escape>', lambda _event: finish(False))
+        if field == 'mode':
+            editor.bind('<<ComboboxSelected>>', lambda _event: finish())
+
     def refresh(self, tab):
         table = tab['table']
         table.delete(*table.get_children())
@@ -106,16 +156,26 @@ class REDOutputs:
                 raise ValueError(selected['error'])
             data = selected['data']
             mapping = load_red_mapping(tab['preset'].get()) if tab['preset'].get() else {}
+            for structure, manual in tab['manual'].items():
+                base = mapping.get(structure)
+                value = {'mode': 'forced', 'red': base} if base is not None else {}
+                value.update(manual)
+                if value.get('red') is not None:
+                    value['red'] = float(value['red'])
+                mapping[structure] = value
             name = tab['name'].get() or selected['name']
             _, changes, missing = prepare_red_output(data, mapping, name)
             self.notebook.tab(tab['frame'], text=tab['name'].get() or selected['name'] + ' (replace)')
             for record in plan_metadata(data, '<selected-plan>')['density_overrides']:
                 match = record['name'] in mapping
+                value = mapping.get(record['name'])
+                red = value.get('red') if isinstance(value, dict) else value
+                mode = value.get('mode') if isinstance(value, dict) else ('forced' if match else None)
                 table.insert('', 'end', values=[record['name'], record['mode'], record['uniform_ed'],
-                    mapping.get(record['name'], ''), 'forced' if match else record['mode']],
+                    red if red is not None else '', mode or record['mode']],
                     tags=('changed',) if match else ())
             tab['result'] = dict(member=selected['member'], name=tab['name'].get(), mapping=mapping)
-            text = f'{len(changes)} matching structure(s) will receive forced REDs.' if mapping else 'No preset: retain the source RED settings.'
+            text = f'{len(changes)} structure(s) have updates.' if mapping else 'No updates: retain the source RED settings.'
             if missing:
                 text += ' Unmatched preset entries: ' + ', '.join(missing)
             tab['status'].set(text)
