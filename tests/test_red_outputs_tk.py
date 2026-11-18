@@ -41,7 +41,7 @@ def test_plan_selection_autoselects_only_matching_calibration(monkeypatch, tmp_p
     match = tmp_path / 'DICOM3.Scanner'
     match.write_text('not read')
     panel = REDOutputs.__new__(REDOutputs)
-    panel.plans = [{'ct_to_ed_name': 'Scanner'}, {'ct_to_ed_name': 'Other'}]
+    panel.plans = [{'ct_to_ed_name': 'Scanner'}, {'ct_to_ed_name': 'Other'}, {'ct_to_ed_name': None}]
     tab = {'plan_box': Mock(), 'calibration': Mock(), 'manual': {'Insert': {}},
            'ct_red': {'Insert': {}}, 'generation': 2}
     tab['plan_box'].current.return_value = 0
@@ -56,6 +56,10 @@ def test_plan_selection_autoselects_only_matching_calibration(monkeypatch, tmp_p
     panel.calculate = Mock()
     panel.request_ct_red(tab)
     panel.calculate.assert_not_called()
+    tab['status'].set.assert_called_with('Choose DICOM3.Other or a ZIP containing it.')
+    tab['plan_box'].current.return_value = 2
+    panel.select_plan_calibration(tab)
+    tab['calibration'].set.assert_called_with('?? Curve name unavailable ??')
 
 
 def test_copy_ct_mean_keeps_mode_and_rejects_out_of_range_value():

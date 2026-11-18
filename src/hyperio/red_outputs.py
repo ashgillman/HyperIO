@@ -110,8 +110,15 @@ class REDOutputs:
     def request_ct_red(self, tab):
         index = tab['plan_box'].current()
         calibration = tab['calibration'].get()
-        if index < 0 or not self.plans or not calibration or calibration.startswith('?? '):
+        if not 0 <= index < len(self.plans):
             tab['status'].set('Choose an input plan and CT calibration first.')
+            return
+        curve_name = self.plans[index].get('ct_to_ed_name')
+        if not calibration or calibration.startswith('?? '):
+            if curve_name:
+                tab['status'].set(f'Choose DICOM3.{curve_name} or a ZIP containing it.')
+            else:
+                tab['status'].set('The studyset does not have a readable CT-to-ED curve name.')
             return
         if self.calculate:
             self.calculate(tab, self.plans[index], calibration)
@@ -136,13 +143,15 @@ class REDOutputs:
 
     def select_plan_calibration(self, tab):
         index = tab['plan_box'].current()
-        plan = self.plans[index] if 0 <= index < len(self.plans) else {}
-        curve_name = plan.get('ct_to_ed_name')
+        if not 0 <= index < len(self.plans):
+            tab['calibration'].set('')
+            return
+        curve_name = self.plans[index].get('ct_to_ed_name')
         path = find_calibration(curve_name)
         if path:
             tab['calibration'].set(str(path))
         else:
-            tab['calibration'].set(f'?? {curve_name} ??' if curve_name else '')
+            tab['calibration'].set(f'?? {curve_name} ??' if curve_name else '?? Curve name unavailable ??')
 
     def edit_cell(self, tab, event):
         table = tab['table']
