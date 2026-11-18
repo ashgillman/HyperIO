@@ -296,6 +296,19 @@ def test_unity_metadata_uses_observed_record_shapes(tmp_path):
     assert report['studysets'][0]['structures'][0]['uniform_ed'] == .3
 
 
+def test_unity_ct_to_ed_selection_with_numeric_patient_id(tmp_path):
+    from hyperio.application_io import load_red_plans
+
+    _, study_dir = synthetic_export(tmp_path)
+    # The supplied Unity info layout, with unrelated field values replaced.
+    fixture = Path(__file__).parent / 'fixtures' / 'monaco' / 'unity-numeric-id.info'
+    (study_dir / 'info').write_bytes(fixture.read_bytes())
+    report = inspect_export(tmp_path)
+    selection = report['studysets'][0]['ct_to_ed_name']
+    assert (selection['value'], selection['line']) == ('RoutineAug20', 82)
+    assert load_red_plans(tmp_path)[0]['ct_to_ed_name'] == 'RoutineAug20'
+
+
 def test_contournames_trailing_repeats_keep_primary_structures(tmp_path):
     from hyperio.diagnostics import classify_dvh_diagnostics
 

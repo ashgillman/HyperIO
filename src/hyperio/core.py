@@ -418,8 +418,12 @@ def study_metadata(export: Export, prefix: str):
         if not lines or lines[0] not in {"00271016", "00241016"}:
             result["diagnostics"].append("unsupported info version")
         else:
+            # Unity can store a numeric patient ID between the curve name and
+            # the studyset label. Keep the label check to reject shifted hits.
+            text_fields = (1, 3) if lines[0] == '00241016' else (1, 2, 3)
             hits = [i for i in range(len(lines)) if _shape(lines, i, [1, None, None, None] + [1] * 13)
-                    and all(lines[i + j].strip() and _numbers(lines[i + j]) is None for j in (1, 2, 3))]
+                    and lines[i + 2].strip()
+                    and all(lines[i + j].strip() and _numbers(lines[i + j]) is None for j in text_fields)]
             if len(hits) == 1:
                 i = hits[0] + 1
                 result["ct_to_ed_name"] = Field(lines[i], info, i + 1, lines[i]).as_dict()

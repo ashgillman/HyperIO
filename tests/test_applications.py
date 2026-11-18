@@ -182,6 +182,7 @@ def test_supplied_unity_plans_discover_and_edit_only_density_tokens():
     assert {p.get('name') for p in plans} == {'Cells1', 'CellTesting', 'CraneR', 'test', 'WaterandAir'}
     for plan in plans:
         assert plan['error'] is None
+        assert plan['ct_to_ed_name'] == 'RoutineAug20'
         original = plan['data']
         assert original.splitlines()[0] == b'00be101a'
         records = plan['density_overrides']

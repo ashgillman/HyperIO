@@ -16,9 +16,9 @@ Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the
 ** Useful work while TPS review is paused
 - Compare the filled-footprint repair of self-intersecting WC rings against Monaco on the affected CTV, DCAV, femoral-head and prostate slices; check contour overlays and recovered DVH volumes/statistics.
   Synthetic tests establish internal-loop filling, both figure-eight lobes, preserved concavities, orientation independence and repair-warning export; agreement with Monaco on these supplied contours remains open.
-- Resolve CT-to-ED selection parsing using the [[file:reports/ct-to-ed-selection-diagnostic-2026-11-05.md][anonymised-report investigation and numeric-identifier reproduction]].
-  The report is now available: 33 of 34 studysets have the diagnostic, and all seven attempted exports link to studyset_002; obtain de-identified failing/passing info records with numeric/text field types preserved before changing the parser.
-  Saved-dose DVH export retains this as WARN; the actual metadata layout remains unresolved, and the separate plan_007 .hyp/beam diagnostics remain critical.
+- Rerun CT-to-ED selection parsing on the batch from the [[file:reports/ct-to-ed-selection-diagnostic-2026-11-05.md][anonymised support report]] after adding support for numeric patient IDs in Unity studyset info.
+  The supplied Unity info record now resolves; verify which of the 33 previously flagged studysets still need investigation.
+  Saved-dose DVH export retains unresolved selection as WARN, and the separate plan_007 .hyp/beam diagnostics remain critical.
 - Validate the reconstructed CellIrrad Unity DVH statistics against Monaco statistics or an independent dose/structure export; the [[file:reports/unity-dvh-2026-11-05.md][5 November implementation]] exports the three saved-dose plans and checks their summed beam reference doses, but independent DVH agreement remains open.
 - Investigate the separate missing .hyp diagnostic in the screenshot patient; all five CellIrrad plans have one .hyp each, while CellTesting and test have no saved dose.
 - Validate RED output from the supplied Unity `00be101a` phantom plans through Monaco load/save and recalculation; parser discovery and byte-preserving token edits have been checked, but effective density and native acceptance remain open.
