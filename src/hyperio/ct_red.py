@@ -117,6 +117,11 @@ def calculate_ct_red(source, plan, calibration_path):
     This reports CT-derived density before fill, layer or forced overrides.
     The supplied table must match the studyset's recorded curve name.
     """
+    return _calculate_ct_red(source, plan, calibration_path)
+
+
+def _calculate_ct_red(source, plan, calibration_path, *, structure_names=None, contour_repairs=None):
+    """Sample selected structures, accepting repaired footprints only with a report collector."""
     import numpy as np
     import pydicom
     from pydicom.dataset import FileMetaDataset
@@ -130,8 +135,9 @@ def calculate_ct_red(source, plan, calibration_path):
         if not selection:
             raise FormatError('The linked studyset CT-to-ED selection is unavailable or ambiguous')
         hu_knots, red_knots = read_calibration(calibration_path, expected_name=selection['value'])
-        structures = study['structures']
-        structure_indices = {s['index'] for s in structures}
+        structures = [s for s in study['structures'] if structure_names is None or s['name'] in structure_names]
+        known_indices = {s['index'] for s in study['structures']}
+        names_by_index = {s['index']: s['name'] for s in structures}
         if len({s['name'] for s in structures}) != len(structures):
             raise FormatError('Duplicate studyset structure names prevent unambiguous CT means')
         wc_files = [n for n in export.sizes if str(PurePosixPath(n).parent) == study_path and n.endswith('.WC')]
@@ -150,7 +156,14 @@ def calculate_ct_red(source, plan, calibration_path):
         totals = {}
         for wc_name in wc_files:
             section = contour_slice(export.read(wc_name), wc_name)
-            if not section['polygons']:
+            polygons = {}
+            for record in section['polygons']:
+                index = record['structure_index']
+                if index not in known_indices:
+                    raise FormatError(f'{wc_name}: unknown WC structure index {index}')
+                if index in names_by_index:
+                    polygons.setdefault(index, []).append(record)
+            if not polygons:
                 continue
             if _numbers(section['raw_header'][6], 6) != [1, 0, 0, 0, 1, 0]:
                 raise FormatError('Only axial WC orientation is supported')
@@ -176,13 +189,17 @@ def calculate_ct_red(source, plan, calibration_path):
             # DICOM LPS (x, -z, y). WC header origin itself is in DICOM order.
             x = position[0] + np.arange(ds.Columns) * spacing[1]
             native_z = -(position[1] + np.arange(ds.Rows) * spacing[0])
-            for index in {p['structure_index'] for p in section['polygons']}:
-                if index not in structure_indices:
-                    raise FormatError(f'Unknown WC structure index {index}')
+            for index, records in polygons.items():
+                name = names_by_index[index]
                 repairs = []
-                geometry = union_all([_contour_footprint(p, repairs) for p in section['polygons'] if p['structure_index'] == index])
+                try:
+                    geometry = union_all([_contour_footprint(record, repairs) for record in records])
+                except FormatError as exc:
+                    raise FormatError(f'{name}: {exc}') from exc
                 if repairs:
-                    raise FormatError('Invalid WC contour requires repair; CT mean unavailable')
+                    if contour_repairs is None:
+                        raise FormatError(f'{name}: invalid WC contour requires repair; CT mean unavailable. {repairs[0]}')
+                    contour_repairs.extend(f'{name}: {repair}' for repair in repairs)
                 xlo, ylo, xhi, yhi = geometry.bounds
                 xi = np.flatnonzero((x >= xlo) & (x <= xhi))
                 yi = np.flatnonzero((native_z >= ylo) & (native_z <= yhi))
