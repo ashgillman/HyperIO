@@ -50,7 +50,12 @@ def test_plan_selection_autoselects_only_matching_calibration(monkeypatch, tmp_p
     tab['plan_box'].current.return_value = 1
     panel.reset_manual(tab)
     assert not tab['manual']
-    tab['calibration'].set.assert_called_with('')
+    tab['calibration'].set.assert_called_with('?? Other ??')
+    tab['calibration'].get.return_value = '?? Other ??'
+    tab['status'] = Mock()
+    panel.calculate = Mock()
+    panel.request_ct_red(tab)
+    panel.calculate.assert_not_called()
 
 
 def test_copy_ct_mean_keeps_mode_and_rejects_out_of_range_value():

@@ -109,11 +109,12 @@ class REDOutputs:
 
     def request_ct_red(self, tab):
         index = tab['plan_box'].current()
-        if index < 0 or not self.plans or not tab['calibration'].get():
+        calibration = tab['calibration'].get()
+        if index < 0 or not self.plans or not calibration or calibration.startswith('?? '):
             tab['status'].set('Choose an input plan and CT calibration first.')
             return
         if self.calculate:
-            self.calculate(tab, self.plans[index], tab['calibration'].get())
+            self.calculate(tab, self.plans[index], calibration)
 
     def set_ct_red(self, tab, generation, result):
         if tab not in self.tabs or tab['generation'] != generation:
@@ -136,8 +137,12 @@ class REDOutputs:
     def select_plan_calibration(self, tab):
         index = tab['plan_box'].current()
         plan = self.plans[index] if 0 <= index < len(self.plans) else {}
-        path = find_calibration(plan.get('ct_to_ed_name'))
-        tab['calibration'].set(str(path) if path else '')
+        curve_name = plan.get('ct_to_ed_name')
+        path = find_calibration(curve_name)
+        if path:
+            tab['calibration'].set(str(path))
+        else:
+            tab['calibration'].set(f'?? {curve_name} ??' if curve_name else '')
 
     def edit_cell(self, tab, event):
         table = tab['table']
