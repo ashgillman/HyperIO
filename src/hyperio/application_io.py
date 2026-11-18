@@ -12,7 +12,8 @@ import tempfile
 import zipfile
 from pathlib import Path, PurePosixPath
 
-from .core import Export, FormatError, plan_metadata
+from .core import Export, FormatError, plan_metadata, study_metadata
+from .ct_red import linked_study_path
 from .experiments import _positive_ed, edit_plan_density
 from .plan_discovery import discover_plans as discover_plans
 
@@ -126,9 +127,18 @@ def load_red_plans(source):
     """Load per-plan preview bytes in the application's scanning worker."""
     plans = discover_plans(source)
     with Export(source) as export:
+        selections = {}
         for plan in plans:
             if not plan.get('error'):
                 plan['data'] = export.read(plan['member'])
+                try:
+                    study_path = linked_study_path(export, plan)
+                    if study_path not in selections:
+                        selection = study_metadata(export, study_path)['ct_to_ed_name']
+                        selections[study_path] = selection['value'] if selection else None
+                    plan['ct_to_ed_name'] = selections[study_path]
+                except (FormatError, ValueError, UnicodeError, OSError):
+                    plan['ct_to_ed_name'] = None
     return plans
 
 

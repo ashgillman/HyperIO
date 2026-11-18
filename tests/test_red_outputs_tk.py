@@ -2,6 +2,81 @@
 import pytest
 
 
+@pytest.mark.parametrize('path', ['DICOM3.Scanner', 'calibrations.zip', ''])
+def test_calibration_picker_leaves_arbitrary_suffixes_selectable(path, monkeypatch, tmp_path):
+    from unittest.mock import Mock
+    from hyperio.red_outputs import REDOutputs
+    monkeypatch.setattr('hyperio.red_outputs.calibration_picker_directory', lambda: tmp_path)
+
+    panel = REDOutputs.__new__(REDOutputs)
+    panel.filedialog = Mock()
+    panel.filedialog.askopenfilename.return_value = path
+    tab = {'calibration': Mock()}
+
+    panel.choose_calibration(tab)
+
+    panel.filedialog.askopenfilename.assert_called_once()
+    assert 'filetypes' not in panel.filedialog.askopenfilename.call_args.kwargs
+    assert panel.filedialog.askopenfilename.call_args.kwargs['initialdir'] == str(tmp_path)
+    if path:
+        tab['calibration'].set.assert_called_once_with(path)
+    else:
+        tab['calibration'].set.assert_not_called()
+
+
+def test_calculation_request_during_busy_does_not_invalidate_result():
+    from hyperio.desktop.red import REDWindow
+    window = REDWindow.__new__(REDWindow)
+    window.busy = True
+    tab = {'generation': 2, 'ct_red': {'Insert': {'mean_red': 1.0}}}
+    window.calculate_ct_mean(tab, {}, 'DICOM3.table')
+    assert tab == {'generation': 2, 'ct_red': {'Insert': {'mean_red': 1.0}}}
+
+
+def test_plan_selection_autoselects_only_matching_calibration(monkeypatch, tmp_path):
+    from unittest.mock import Mock
+    from hyperio import ct_red
+    from hyperio.red_outputs import REDOutputs
+    monkeypatch.setattr(ct_red, 'calibration_directories', lambda: [tmp_path])
+    match = tmp_path / 'DICOM3.Scanner'
+    match.write_text('not read')
+    panel = REDOutputs.__new__(REDOutputs)
+    panel.plans = [{'ct_to_ed_name': 'Scanner'}, {'ct_to_ed_name': 'Other'}]
+    tab = {'plan_box': Mock(), 'calibration': Mock(), 'manual': {'Insert': {}},
+           'ct_red': {'Insert': {}}, 'generation': 2}
+    tab['plan_box'].current.return_value = 0
+    panel.select_plan_calibration(tab)
+    tab['calibration'].set.assert_called_with(str(match))
+    tab['plan_box'].current.return_value = 1
+    panel.reset_manual(tab)
+    assert not tab['manual']
+    tab['calibration'].set.assert_called_with('')
+
+
+def test_copy_ct_mean_keeps_mode_and_rejects_out_of_range_value():
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+    from hyperio.red_outputs import REDOutputs
+
+    panel = REDOutputs.__new__(REDOutputs)
+    panel.refresh = Mock()
+    table = Mock()
+    table.identify_row.return_value = 'row'
+    table.identify_column.return_value = '#6'
+    table.item.return_value = ('Insert',)
+    tab = {'table': table, 'status': Mock(), 'manual': {'Insert': {'mode': 'filled'}},
+           'ct_red': {'Insert': {'mean_red': 1.23456}}}
+    event = SimpleNamespace(x=5, y=5)
+    panel.edit_cell(tab, event)
+    assert tab['manual']['Insert'] == {'mode': 'filled', 'red': '1.23456'}
+    panel.refresh.assert_called_once_with(tab)
+
+    tab['ct_red']['Insert']['mean_red'] = 0.001
+    panel.edit_cell(tab, event)
+    assert tab['manual']['Insert']['red'] == '1.23456'
+    assert 'Cannot copy CT mean RED' in tab['status'].set.call_args.args[0]
+
+
 @pytest.fixture
 def root():
     tk = pytest.importorskip('tkinter')
@@ -119,3 +194,40 @@ def test_manual_red_and_mode_updates_are_independent(root):
     tab['manual']['Insert']['red'] = 'invalid'
     with pytest.raises(ValueError):
         panel.prepared()
+
+
+def test_ct_mean_copy_preserves_mode_and_stale_results_are_discarded(root):
+    from types import SimpleNamespace
+    from tkinter import ttk
+    from hyperio.red_outputs import REDOutputs
+    from test_applications import plan_bytes
+    requests = []
+    panel = REDOutputs(ttk.Frame(root), lambda: None)
+    def calculate(tab, plan, calibration):
+        panel.clear_ct_red(tab)
+        requests.append(tab['generation'])
+    panel.calculate = calculate
+    panel.set_plans([dict(name='PlanC', label='PlanC', member='plan/PlanC/plan', data=plan_bytes('PlanC'))])
+    tab = panel.current()
+    tab['calibration'].set('table.DICOM3')
+    panel.request_ct_red(tab)
+    generation = requests[-1]
+    assert panel.set_ct_red(tab, generation, {'Insert': {'mean_red': 1.23456}})
+    table = tab['table']
+    row = next(row for row in table.get_children() if table.item(row, 'values')[0] == 'Insert')
+    tab['manual']['Insert'] = {'mode': 'filled'}
+    table.identify_row = lambda _: row
+    table.identify_column = lambda _: '#6'
+    panel.edit_cell(tab, SimpleNamespace(x=0, y=0))
+    assert panel.prepared()[0]['mapping']['Insert'] == {'mode': 'filled', 'red': 1.23456}
+    tab['ct_red']['Insert'] = {'mean_red': 0.001}
+    panel.edit_cell(tab, SimpleNamespace(x=0, y=0))
+    assert 'Cannot copy CT mean RED' in tab['status'].get()
+    assert tab['manual']['Insert']['red'] == '1.23456'
+    tab['calibration'].set('other.zip')
+    assert not tab['ct_red']
+    assert not panel.set_ct_red(tab, generation, {'Insert': {'mean_red': 2}})
+    panel.request_ct_red(tab)
+    generation = requests[-1]
+    tab['input'].set('another plan')
+    assert not panel.set_ct_red(tab, generation, {'Insert': {'mean_red': 2}})

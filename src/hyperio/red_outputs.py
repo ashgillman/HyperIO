@@ -1,16 +1,18 @@
 """Independent RED output tabs; each preview is rebuilt from the source bytes."""
 from .application_io import load_red_mapping, prepare_red_output
 from .core import plan_metadata
+from .ct_red import calibration_picker_directory, find_calibration
 from .desktop.common import grid_scrollable_table
 from .experiments import _positive_ed
 
 
 class REDOutputs:
-    def __init__(self, host, changed):
+    def __init__(self, host, changed, calculate=None):
         import tkinter as tk
         from tkinter import filedialog, ttk
         self.tk, self.ttk, self.filedialog = tk, ttk, filedialog
         self.changed = changed
+        self.calculate = calculate
         self.plans = []
         self.tabs = []
         self.notebook = ttk.Notebook(host)
@@ -21,11 +23,13 @@ class REDOutputs:
         tk, ttk = self.tk, self.ttk
         frame = ttk.Frame(self.notebook, padding=8)
         frame.columnconfigure(1, weight=1)
-        frame.rowconfigure(4, weight=1)
+        frame.rowconfigure(5, weight=1)
         number = len(self.tabs) + 1
         name = tk.StringVar()
         preset, status, input_plan = tk.StringVar(), tk.StringVar(), tk.StringVar()
-        tab = dict(frame=frame, name=name, preset=preset, status=status, input=input_plan, manual={})
+        calibration = tk.StringVar()
+        tab = dict(frame=frame, name=name, preset=preset, status=status, input=input_plan,
+                   calibration=calibration, manual={}, ct_red={}, generation=0)
         self.tabs.append(tab)
         ttk.Label(frame, text='Input plan').grid(row=0, column=0, sticky='w')
         combo = ttk.Combobox(frame, textvariable=input_plan, state='readonly',
@@ -44,12 +48,18 @@ class REDOutputs:
         buttons.grid(row=2, column=2)
         ttk.Button(buttons, text='Choose CSV / TSV…', command=lambda: self.choose_preset(tab)).pack(side='left')
         ttk.Button(buttons, text='Clear preset', command=lambda: preset.set('')).pack(side='left', padx=8)
-        ttk.Label(frame, textvariable=status, wraplength=1000).grid(row=3, column=0, columnspan=3, sticky='w', pady=(0, 8))
+        ttk.Label(frame, text='CT calibration').grid(row=3, column=0, sticky='w')
+        ttk.Entry(frame, textvariable=calibration, state='readonly').grid(row=3, column=1, sticky='ew', padx=8)
+        ct_buttons = ttk.Frame(frame)
+        ct_buttons.grid(row=3, column=2)
+        ttk.Button(ct_buttons, text='Choose calibration…', command=lambda: self.choose_calibration(tab)).pack(side='left')
+        ttk.Button(ct_buttons, text='Calculate CT mean RED', command=lambda: self.request_ct_red(tab)).pack(side='left', padx=8)
+        ttk.Label(frame, textvariable=status, wraplength=1000).grid(row=4, column=0, columnspan=3, sticky='w', pady=(0, 8))
         table_host = ttk.Frame(frame)
-        table_host.grid(row=4, column=0, columnspan=3, sticky='nsew')
+        table_host.grid(row=5, column=0, columnspan=3, sticky='nsew')
         table_host.columnconfigure(0, weight=1)
         table_host.rowconfigure(0, weight=1)
-        headers = ['Structure', 'Current mode', 'Current RED', 'New RED', 'Resulting mode']
+        headers = ['Structure', 'Current mode', 'Current RED', 'New RED', 'Resulting mode', 'CT mean RED']
         table = ttk.Treeview(table_host, columns=list(range(len(headers))), show='headings')
         tab['table'] = table
         for index, title in enumerate(headers):
@@ -63,6 +73,8 @@ class REDOutputs:
         name.trace_add('write', lambda *_: self.refresh(tab))
         preset.trace_add('write', lambda *_: self.refresh(tab))
         input_plan.trace_add('write', lambda *_: self.reset_manual(tab))
+        calibration.trace_add('write', lambda *_: self.clear_ct_red(tab))
+        self.select_plan_calibration(tab)
         self.refresh(tab)
 
     def remove_output(self):
@@ -82,6 +94,34 @@ class REDOutputs:
         if path:
             tab['preset'].set(path)
 
+    def choose_calibration(self, tab):
+        # Monaco uses arbitrary calibration suffixes. Older macOS Tk treats
+        # DICOM3.* as a literal extension, which can abort the native dialog.
+        path = self.filedialog.askopenfilename(title='Choose DICOM3 calibration or library ZIP',
+                                               initialdir=str(calibration_picker_directory()))
+        if path:
+            tab['calibration'].set(path)
+
+    def clear_ct_red(self, tab):
+        tab['generation'] += 1
+        tab['ct_red'] = {}
+        self.refresh(tab)
+
+    def request_ct_red(self, tab):
+        index = tab['plan_box'].current()
+        if index < 0 or not self.plans or not tab['calibration'].get():
+            tab['status'].set('Choose an input plan and CT calibration first.')
+            return
+        if self.calculate:
+            self.calculate(tab, self.plans[index], tab['calibration'].get())
+
+    def set_ct_red(self, tab, generation, result):
+        if tab not in self.tabs or tab['generation'] != generation:
+            return False
+        tab['ct_red'] = result
+        self.refresh(tab)
+        return True
+
     def set_plans(self, plans):
         self.plans = plans
         for tab in self.tabs:
@@ -91,12 +131,32 @@ class REDOutputs:
 
     def reset_manual(self, tab):
         tab['manual'].clear()
-        self.refresh(tab)
+        self.select_plan_calibration(tab)
+
+    def select_plan_calibration(self, tab):
+        index = tab['plan_box'].current()
+        plan = self.plans[index] if 0 <= index < len(self.plans) else {}
+        path = find_calibration(plan.get('ct_to_ed_name'))
+        tab['calibration'].set(str(path) if path else '')
 
     def edit_cell(self, tab, event):
         table = tab['table']
         row, column = table.identify_row(event.y), table.identify_column(event.x)
-        if not row or column not in ('#4', '#5'):
+        if not row:
+            return
+        if column == '#6':
+            values = table.item(row, 'values')
+            result = tab['ct_red'].get(values[0])
+            if result is not None:
+                try:
+                    _positive_ed(result['mean_red'])
+                except ValueError as exc:
+                    tab['status'].set(f'Cannot copy CT mean RED: {exc}')
+                    return
+                tab['manual'].setdefault(values[0], {})['red'] = str(result['mean_red'])
+                self.refresh(tab)
+            return
+        if column not in ('#4', '#5'):
             return
         box = table.bbox(row, column)
         if not box:
@@ -168,7 +228,8 @@ class REDOutputs:
                 red = value.get('red') if isinstance(value, dict) else value
                 mode = value.get('mode') if isinstance(value, dict) else ('forced' if match else None)
                 table.insert('', 'end', values=[record['name'], record['mode'], record['uniform_ed'],
-                    red if red is not None else '', mode or record['mode']],
+                    red if red is not None else '', mode or record['mode'],
+                    f"{tab['ct_red'][record['name']]['mean_red']:.4f}" if record['name'] in tab['ct_red'] else ''],
                     tags=('changed',) if match else ())
             tab['result'] = dict(member=selected['member'], name=tab['name'].get(), mapping=mapping)
             text = f'{len(changes)} structure(s) have updates.' if mapping else 'No updates: retain the source RED settings.'

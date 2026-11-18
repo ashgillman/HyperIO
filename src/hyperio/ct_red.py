@@ -3,21 +3,102 @@ from __future__ import annotations
 
 import io
 import math
-from pathlib import PurePosixPath
+import os
+import sys
+from pathlib import Path, PurePosixPath
+from zipfile import ZipFile
 
 from .core import Export, FormatError, _numbers, study_metadata
 from .contours import contour_slice
 from .dvh import _contour_footprint
 
 
-def read_calibration(path):
-    """Read an explicitly selected Monaco DICOM3 HU-to-RED table."""
-    rows = [line.strip() for line in open(path, encoding='ascii') if line.strip()]
-    if len(rows) < 4 or rows[0] != '0000100f':
+def calibration_directories():
+    """Return user calibration directories in preference order."""
+    home = Path.home()
+    if sys.platform == 'win32':
+        local = os.environ.get('LOCALAPPDATA')
+        preferred = (Path(local) if local else home / 'AppData' / 'Local') / 'HyperIO' / 'data' / 'cttoed'
+    elif sys.platform == 'darwin':
+        preferred = home / 'Library' / 'Application Support' / 'HyperIO' / 'data' / 'cttoed'
+    else:
+        xdg = os.environ.get('XDG_DATA_HOME')
+        base = Path(xdg) if xdg and Path(xdg).is_absolute() else home / '.local' / 'share'
+        preferred = base / 'hyperio' / 'data' / 'cttoed'
+    fallback = home / '.hyperio' / 'data' / 'cttoed'
+    config = home / '.config' / 'hyperio' / 'data' / 'cttoed'
+    return list(dict.fromkeys((preferred, config, fallback)))
+
+
+def find_calibration(name):
+    """Find an exact, case-sensitive DICOM3 filename in a user directory."""
+    if not name or name in ('.', '..') or '/' in name or '\\' in name:
+        return None
+    filename = f'DICOM3.{name}'
+    for directory in calibration_directories():
+        try:
+            for path in directory.iterdir():
+                if path.name == filename and path.is_file():
+                    return path
+        except OSError:
+            continue
+    return None
+
+
+def calibration_picker_directory():
+    """Use the first existing directory, or create the preferred one lazily."""
+    directories = calibration_directories()
+    for directory in directories:
+        try:
+            if directory.is_dir():
+                return directory
+        except OSError:
+            continue
+    for directory in directories:
+        try:
+            directory.mkdir(parents=True, exist_ok=True)
+            return directory
+        except OSError:
+            continue
+    return Path.home()
+
+
+def linked_study_path(export, plan):
+    patient = PurePosixPath(plan['path']).parent.parent
+    paths = [str(p.parent) for n in export.sizes if (p := PurePosixPath(n)).name == 'contournames'
+             and p.parent.parent == patient and p.parent.name.split('~', 1)[-1] == plan['studyset']]
+    if len(paths) != 1:
+        raise FormatError(f'Expected one linked studyset, found {len(paths)}')
+    return paths[0]
+
+
+def read_calibration(path, *, expected_name=None):
+    """Read a Monaco DICOM3 table, optionally selected by name from a ZIP."""
+    path = Path(path)
+    if path.suffix.lower() == '.zip' and not path.name.startswith('DICOM3.'):
+        if not expected_name:
+            raise ValueError('A recorded CT-to-ED name is required to select a curve from ZIP')
+        with ZipFile(path) as archive:
+            members = [info for info in archive.infolist() if not info.is_dir()
+                       and PurePosixPath(info.filename).name == f'DICOM3.{expected_name}']
+            if len(members) != 1:
+                raise ValueError(f'Expected one DICOM3.{expected_name} in the calibration ZIP, found {len(members)}')
+            data = archive.read(members[0])
+    else:
+        if expected_name and path.name != f'DICOM3.{expected_name}':
+            raise ValueError(f'The input studyset selects {expected_name}. Choose DICOM3.{expected_name} or a ZIP containing it.')
+        data = path.read_bytes()
+    rows = data.decode('ascii').splitlines()
+    if len(rows) < 4 or rows[0] not in {'0000100f', '00bc100f', '00d5100f'}:
         raise ValueError('Unsupported DICOM3 calibration header')
+    payload = [line.strip() for line in rows[2:] if line.strip()]
+    if payload and payload[0] == '0':
+        payload = payload[1:]
+    if len(payload) < 3:
+        raise ValueError('Incomplete DICOM3 calibration')
     try:
-        count = int(rows[1])
-        values = [float(v.strip()) for row in rows[2:] for v in row.split(',') if v.strip()]
+        count = int(payload[0])
+        values = [float(v.strip()) for row in payload[1:] for v in row.split(',')]
     except ValueError as exc:
         raise ValueError('Invalid DICOM3 calibration values') from exc
     if count < 2 or len(values) != 2 * count or not all(math.isfinite(v) for v in values):
@@ -33,8 +114,8 @@ def calculate_ct_red(source, plan, calibration_path):
 
     This samples only matching head-first supine axial CT/WC planes and
     unions WC polygons.
-    It does not model fill, layer or forced density overrides, nor infer the
-    active calibration; the caller must select the applicable table.
+    This reports CT-derived density before fill, layer or forced overrides.
+    The supplied table must match the studyset's recorded curve name.
     """
     import numpy as np
     import pydicom
@@ -42,12 +123,15 @@ def calculate_ct_red(source, plan, calibration_path):
     from pydicom.uid import ImplicitVRLittleEndian
     from shapely import union_all, intersects_xy
 
-    hu_knots, red_knots = read_calibration(calibration_path)
-    patient = PurePosixPath(plan['path']).parent.parent
-    study_path = str(patient / ('1~' + plan['studyset']))
     with Export(source) as export:
+        study_path = linked_study_path(export, plan)
         study = study_metadata(export, study_path)
+        selection = study['ct_to_ed_name']
+        if not selection:
+            raise FormatError('The linked studyset CT-to-ED selection is unavailable or ambiguous')
+        hu_knots, red_knots = read_calibration(calibration_path, expected_name=selection['value'])
         structures = study['structures']
+        structure_indices = {s['index'] for s in structures}
         if len({s['name'] for s in structures}) != len(structures):
             raise FormatError('Duplicate studyset structure names prevent unambiguous CT means')
         wc_files = [n for n in export.sizes if str(PurePosixPath(n).parent) == study_path and n.endswith('.WC')]
@@ -63,7 +147,7 @@ def calculate_ct_red(source, plan, calibration_path):
             ct_by_z[z] = name
         if not wc_files or not ct_files:
             raise FormatError('Studyset needs WC contours and cached DICOM CT slices')
-        totals = {s['index']: [] for s in structures}
+        totals = {}
         for wc_name in wc_files:
             section = contour_slice(export.read(wc_name), wc_name)
             if not section['polygons']:
@@ -82,10 +166,10 @@ def calculate_ct_red(source, plan, calibration_path):
             spacing = np.asarray(ds.PixelSpacing, dtype=float)
             if ds.get('PatientPosition') != 'HFS':
                 raise FormatError('CT mean currently supports only head-first supine images')
-            if not np.allclose(orientation, [1, 0, 0, 0, 1, 0], atol=1e-5) or not np.isclose(position[2], z, atol=0.01):
+            if not np.allclose(orientation, [1, 0, 0, 0, 1, 0], atol=1e-5) or not np.isclose(position[2], z, atol=0.01, rtol=0):
                 raise FormatError('CT and WC geometry is not matching axial geometry')
             wc_origin = np.asarray(_numbers(section['raw_header'][5], 3))
-            if not np.allclose(position, wc_origin, atol=0.01) or np.any(spacing <= 0):
+            if wc_origin.shape != (3,) or not np.allclose(position, wc_origin, atol=0.01, rtol=0) or np.any(spacing <= 0):
                 raise FormatError('CT and WC origins or spacing do not match')
             pixels = ds.pixel_array.astype(float) * float(ds.RescaleSlope) + float(ds.RescaleIntercept)
             # HFS phantom comparison: native WC (x, y, z) maps to
@@ -93,7 +177,7 @@ def calculate_ct_red(source, plan, calibration_path):
             x = position[0] + np.arange(ds.Columns) * spacing[1]
             native_z = -(position[1] + np.arange(ds.Rows) * spacing[0])
             for index in {p['structure_index'] for p in section['polygons']}:
-                if index not in totals:
+                if index not in structure_indices:
                     raise FormatError(f'Unknown WC structure index {index}')
                 repairs = []
                 geometry = union_all([_contour_footprint(p, repairs) for p in section['polygons'] if p['structure_index'] == index])
@@ -104,15 +188,16 @@ def calculate_ct_red(source, plan, calibration_path):
                 yi = np.flatnonzero((native_z >= ylo) & (native_z <= yhi))
                 xx, zz = np.meshgrid(x[xi], native_z[yi])
                 selected = pixels[np.ix_(yi, xi)][intersects_xy(geometry, xx, zz)]
-                if len(selected):
-                    totals[index].append(selected)
-    result = {}
-    for structure in structures:
-        parts = totals[structure['index']]
-        if parts:
-            values = np.concatenate(parts)
-            reds = np.interp(values, hu_knots, red_knots)
-            result[structure['name']] = {'mean_hu': float(values.mean()), 'min_hu': float(values.min()),
-                'max_hu': float(values.max()), 'mean_red': float(reds.mean()),
-                'min_red': float(reds.min()), 'max_red': float(reds.max()), 'samples': len(values)}
-    return result
+                if selected.size:
+                    reds = np.interp(selected, hu_knots, red_knots)
+                    stats = totals.setdefault(index, {'samples': 0, 'sum_hu': 0., 'sum_red': 0.,
+                        'min_hu': math.inf, 'max_hu': -math.inf, 'min_red': math.inf, 'max_red': -math.inf})
+                    stats['samples'] += selected.size
+                    for unit, values in [('hu', selected), ('red', reds)]:
+                        stats[f'sum_{unit}'] += float(values.sum())
+                        stats[f'min_{unit}'] = min(stats[f'min_{unit}'], float(values.min()))
+                        stats[f'max_{unit}'] = max(stats[f'max_{unit}'], float(values.max()))
+    for stats in totals.values():
+        for unit in ('hu', 'red'):
+            stats[f'mean_{unit}'] = stats.pop(f'sum_{unit}') / stats['samples']
+    return {s['name']: totals[s['index']] for s in structures if s['index'] in totals}

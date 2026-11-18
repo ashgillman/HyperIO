@@ -24,6 +24,7 @@ Continue the installed zzzInputOutputAGsuite patient and existing worksheet; the
 - Validate RED output from the supplied Unity `00be101a` phantom plans through Monaco load/save and recalculation; parser discovery and byte-preserving token edits have been checked, but effective density and native acceptance remain open.
 - Review the eviQ updater's manual-review records and unsupported layouts against their source snapshots before expanding parser support; validate extracted criteria and DVH overlays independently, including native Windows/macOS use and fractionation/structure mapping.
 - Smoke-test applications/ RED per-tab input selection and complete-patient folder/ZIP saving (replacement and cloned plans), plus DVH calculation/plot cursor/XLSX/CSV export on Windows and macOS with Python/Tk; confirm installed GUI launchers, native dialogs, scrolling, responsiveness and error recovery.
+  Check CT calibration selection, mean RED calculation and copying a mean into New RED on both platforms.
   Validate renamed full-plan copies through Monaco load/save and recalculation; companion files and inherited dose/checksums are copied without claiming freshness.
 - Resolve the remaining D291026AG OAR volume/mean residual by establishing Monaco's contour-boundary/rasterization convention.
   The independent review in reports/vmat-2026-10-29.md records boundary and floating-point sensitivity; changing the global include/exclude rule does not reproduce all structures.
@@ -135,7 +136,6 @@ Source: [[https://doi.org/10.1002/acm2.13641][AAPM MPPG 5.b (2022), Commissionin
 - Compare exported DVHs against Monaco for the Unity plan with a non-unit second dose scalar.
   Multiplication gave the closest match to the two reported point doses after confirming the plan isocentre z sign.
 - Identify the purpose of the trailing compressed block in the returned Unity dose file; it decodes to the same byte length as the first grid.
-- Resolve CT-to-ED table contents from clinic-level files; the supplied archive contains the selected name only.
 - Add validated beam/control-point and structure geometry APIs beyond the initial beam header and density records.
 
 * Editing and distribution

@@ -1,5 +1,6 @@
 """Tk application for RED overrides in a copy of a Monaco patient set."""
 from ..application_io import export_red_patient, load_red_plans
+from ..ct_red import calculate_ct_red
 from ..red_outputs import REDOutputs
 from .common import PlanSourceWindow, launch, show_message
 
@@ -28,8 +29,9 @@ class REDWindow(PlanSourceWindow):
         ttk.Label(status_host, textvariable=self.status, wraplength=1100).pack(fill='x', pady=(8, 0))
 
     def build_content(self, host):
-        self.red_outputs = REDOutputs(host, self.update_actions)
+        self.red_outputs = REDOutputs(host, self.update_actions, self.calculate_ct_mean)
         note = ('Double-click New RED or Resulting mode to edit a structure. Presets use exact names and force the plan-level RED. '
+                'CT mean RED is experimental and ignores overrides; double-click to copy it without changing mode. '
                 'Save writes a complete patient copy with every output tab applied. Blank output names replace the input plan in that copy. '
                 'Studyset defaults and saved dose are unchanged; dose must be recalculated after RED edits. '
                 'Native density editing remains experimental and requires Monaco load/save/recalculation review.')
@@ -53,6 +55,21 @@ class REDWindow(PlanSourceWindow):
 
     def preview(self):
         self.red_outputs.refresh(self.red_outputs.current())
+
+    def calculate_ct_mean(self, tab, plan, calibration):
+        if self.busy or not self.source:
+            return
+        self.red_outputs.clear_ct_red(tab)
+        generation = tab['generation']
+        source = self.source
+
+        def completed(result):
+            if source == self.source and self.red_outputs.set_ct_red(tab, generation, result):
+                self.status.set(f'CT-derived mean RED calculated for {len(result)} structure(s).')
+            else:
+                self.status.set('CT-derived mean RED discarded because the input changed.')
+
+        self.work(lambda: calculate_ct_red(source, plan, calibration), completed, 'Calculating CT-derived mean RED…')
 
     def save(self):
         try:

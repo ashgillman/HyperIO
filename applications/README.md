@@ -59,7 +59,8 @@ python3 applications/commissioning.py
 ```
 
 On Windows, use `py` instead of `python3` if needed.
-The RED and commissioning applications need Python with Tk support only.
+Manual RED editing and the commissioning application need Python with Tk support only.
+Calculating CT mean RED also requires numpy, shapely and pydicom.
 The DVH exporter additionally needs numpy, scipy, shapely and unlzw3, plus openpyxl for XLSX export.
 These dependencies must be available in the Python environment even though HyperIO itself need not be installed.
 
@@ -120,6 +121,8 @@ The catalogue follows [AAPM MPPG 5.b (2022)](https://doi.org/10.1002/acm2.13641)
 2. In each output tab, choose an **Input plan** using its patient ID, studyset, name and member path.
 3. Double-click **New RED** or **Resulting mode** to edit individual structures.
    Optionally choose a CSV or TSV preset containing `structure` and `red` headers to populate forced RED overrides for matching names.
+   To use CT-derived values, check the preselected calibration or choose a named `DICOM3.<curve name>` file or a ZIP containing it, then select **Calculate CT mean RED**.
+   Double-click a value in **CT mean RED** to copy it into **New RED** and set **Resulting mode** as needed.
 4. Leave **Output plan name** blank to replace that input plan in the exported copy, or enter a new name to add a cloned plan alongside it.
 5. Choose **Add output** for additional edits or variants; each tab has its own input plan, output name, preset and individual edits.
 6. Choose **Folder** or **ZIP** under **Save as**, then choose **Save patient…** and a new output path.
@@ -139,6 +142,24 @@ Changing only the resulting mode retains the current RED value.
 Manual edits take precedence over preset values, and changing the input plan clears those edits.
 **Remove output** removes the selected tab when more than one exists.
 Choosing a different source resets the tabs.
+
+CT mean RED is available for head-first supine axial studysets with matching cached DICOM CT images and native contours.
+The app selects the curve by the name recorded in the linked studyset.
+When you choose an input plan, the app looks for a matching `DICOM3.<curve name>` file in the platform's user data directory.
+
+| Platform | Preferred calibration directory |
+| --- | --- |
+| Windows | `%LOCALAPPDATA%\HyperIO\data\cttoed` (normally under `%USERPROFILE%\AppData\Local`) |
+| macOS | `~/Library/Application Support/HyperIO/data/cttoed` |
+| Linux | `$XDG_DATA_HOME/hyperio/data/cttoed` (defaults to `~/.local/share/hyperio/data/cttoed`) |
+
+It then checks `~/.config/hyperio/data/cttoed` and `~/.hyperio/data/cttoed`, in that order.
+The first matching file is preselected.
+**Choose calibration…** opens the first existing directory in this search order and creates the preferred directory when none exists and permissions allow.
+Select a calibration ZIP through the picker to use a curve from that archive.
+Use the calibration file or archive from the applicable TPS installation, since a name match cannot establish that the calibration points are identical.
+The calculation converts CT voxel centres inside the contour to RED using linear interpolation between the supplied HU points and uses the nearest endpoint outside the curve range.
+The displayed mean describes CT-derived density before plan and structure overrides.
 
 Output names must use characters supported by the native Windows encoding and valid Windows/macOS folder names.
 Two tabs cannot target the same plan path (case-insensitive).
