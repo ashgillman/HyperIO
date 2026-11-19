@@ -120,8 +120,13 @@ def calculate_ct_red(source, plan, calibration_path):
     return _calculate_ct_red(source, plan, calibration_path)
 
 
-def _calculate_ct_red(source, plan, calibration_path, *, structure_names=None, contour_repairs=None):
-    """Sample selected structures, accepting repaired footprints only with a report collector."""
+def _calculate_ct_red(source, plan, calibration_path, *, structure_names=None, contour_repairs=None,
+                      contoured_structures=None):
+    """Sample selected structures and optionally collect every name with a WC polygon.
+
+    Collect contour presence independently of the sampling selection and result.
+    Accept repaired footprints only when given a repair report collector.
+    """
     import numpy as np
     import pydicom
     from pydicom.dataset import FileMetaDataset
@@ -136,7 +141,7 @@ def _calculate_ct_red(source, plan, calibration_path, *, structure_names=None, c
             raise FormatError('The linked studyset CT-to-ED selection is unavailable or ambiguous')
         hu_knots, red_knots = read_calibration(calibration_path, expected_name=selection['value'])
         structures = [s for s in study['structures'] if structure_names is None or s['name'] in structure_names]
-        known_indices = {s['index'] for s in study['structures']}
+        known_names = {s['index']: s['name'] for s in study['structures']}
         names_by_index = {s['index']: s['name'] for s in structures}
         if len({s['name'] for s in structures}) != len(structures):
             raise FormatError('Duplicate studyset structure names prevent unambiguous CT means')
@@ -159,8 +164,10 @@ def _calculate_ct_red(source, plan, calibration_path, *, structure_names=None, c
             polygons = {}
             for record in section['polygons']:
                 index = record['structure_index']
-                if index not in known_indices:
+                if index not in known_names:
                     raise FormatError(f'{wc_name}: unknown WC structure index {index}')
+                if contoured_structures is not None:
+                    contoured_structures.add(known_names[index])
                 if index in names_by_index:
                     polygons.setdefault(index, []).append(record)
             if not polygons:
