@@ -33,6 +33,74 @@ def test_red_output_rejects_unsafe_plan_names(name):
         prepare_red_output(plan_bytes(), {}, name)
 
 
+def test_export_red_plan_copies_adds_only_new_plan_folders(tmp_path):
+    from hyperio.application_io import export_red_plan_copies
+    from hyperio.core import plan_metadata
+
+    plan = tmp_path / 'Patient' / 'plan' / 'Original'
+    plan.mkdir(parents=True)
+    (plan / 'plan').write_bytes(plan_bytes('Original'))
+    (plan / 'dose.1').write_bytes(b'saved dose')
+    (plan / 'empty').mkdir()
+    studyset = plan.parent.parent / '1~Study'
+    studyset.mkdir()
+    (studyset / 'info').write_bytes(b'studyset data')
+    second = tmp_path / 'SecondPatient' / 'plan' / 'Other'
+    second.mkdir(parents=True)
+    (second / 'plan').write_bytes(plan_bytes('Other'))
+    (second / 'dose.1').write_bytes(b'other dose')
+    (second / 'empty').mkdir()
+    member = (plan / 'plan').relative_to(tmp_path).as_posix()
+    other_member = (second / 'plan').relative_to(tmp_path).as_posix()
+    outputs = export_red_plan_copies(tmp_path, [
+        dict(member=member, name='Control', mapping={}),
+        dict(member=member, name='Forced', mapping={'Insert': 1.2}),
+        dict(member=other_member, name='Control', mapping={}),
+    ])
+    assert outputs == [plan.parent / 'Control', plan.parent / 'Forced', second.parent / 'Control']
+    assert {p.name for p in plan.parent.iterdir()} == {'Original', 'Control', 'Forced'}
+    assert (plan / 'plan').read_bytes() == plan_bytes('Original')
+    assert (studyset / 'info').read_bytes() == b'studyset data'
+    for output, dose in zip(outputs, [b'saved dose', b'saved dose', b'other dose']):
+        assert (output / 'dose.1').read_bytes() == dose
+        assert (output / 'empty').is_dir()
+        assert plan_metadata((output / 'plan').read_bytes(), 'copy')['name'] == output.name
+    record = plan_metadata((outputs[1] / 'plan').read_bytes(), 'copy')['density_overrides'][1]
+    assert (record['mode'], record['uniform_ed']) == ('forced', 1.2)
+
+    with pytest.raises(FileExistsError, match='control'):
+        export_red_plan_copies(tmp_path, [dict(member=member, name=name, mapping={})
+                                          for name in ('New', 'control')])
+    with pytest.raises(ValueError, match='new plan name'):
+        export_red_plan_copies(tmp_path, [
+            dict(member=member, name='New', mapping={}),
+            dict(member=other_member, name='', mapping={}),
+        ])
+    assert not (plan.parent / 'New').exists()
+
+
+def test_export_red_plan_copies_rolls_back_failed_publication(tmp_path, monkeypatch):
+    from hyperio.application_io import export_red_plan_copies
+
+    plan = tmp_path / 'plan' / 'Original'
+    plan.mkdir(parents=True)
+    (plan / 'plan').write_bytes(plan_bytes('Original'))
+    rename = Path.rename
+
+    def fail_second_plan(path, target):
+        if Path(target).parent.name == 'Second':
+            raise OSError('injected write failure')
+        return rename(path, target)
+
+    monkeypatch.setattr(Path, 'rename', fail_second_plan)
+    with pytest.raises(OSError, match='injected write failure'):
+        export_red_plan_copies(tmp_path, [
+            dict(member='plan/Original/plan', name=name, mapping={}) for name in ('First', 'Second')
+        ])
+    assert list(plan.parent.iterdir()) == [plan]
+    assert (plan / 'plan').read_bytes() == plan_bytes('Original')
+
+
 @pytest.mark.parametrize('source_zip', [False, True])
 @pytest.mark.parametrize('output_zip', [False, True])
 @pytest.mark.parametrize('header', [b'00d5101a', b'00be101a'])

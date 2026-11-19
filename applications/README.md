@@ -125,12 +125,13 @@ The catalogue follows [AAPM MPPG 5.b (2022)](https://doi.org/10.1002/acm2.13641)
    Double-click a value in **CT mean RED** to copy it into **New RED** and set **Resulting mode** as needed.
 4. Leave **Output plan name** blank to replace that input plan in the exported copy, or enter a new name to add a cloned plan alongside it.
 5. Choose **Add output** for additional edits or variants; each tab has its own input plan, output name, preset and individual edits.
-6. Choose **Folder** or **ZIP** under **Save as**, then choose **Save patient…** and a new output path.
+6. Choose a **Save as** mode, then choose **Save patient…**.
+   - **Folder** or **ZIP** applies every tab to a complete copy at a new output path.
+   - **Add to source folder** requires a directory input and a new plan name in every tab.
+     It adds the plan copies beside their input plans and reuses the existing studysets.
 
-Saving always applies every tab to a complete copy of the chosen source.
-All other plans, CTs, structure sets and companion files retain their original contents.
-The source patient folder or ZIP is never modified.
-The source's relative folder layout is retained, including any enclosing patient folders in an archive.
+Both modes preserve the existing plan and studyset files at the source.
+A full copy retains the relative folder layout, including any enclosing patient folders in an archive.
 The new folder receives the source folder's contents directly, without an additional wrapper folder.
 
 Each tab starts from its original input plan, so overrides do not accumulate between tabs.
@@ -165,8 +166,8 @@ Output names must use characters supported by the native Windows encoding and va
 Two tabs cannot target the same plan path (case-insensitive).
 A new name cannot collide with another existing plan in that patient.
 The same name in different patient folders remains distinct.
-Existing output folders and ZIP files are refused, and output must be outside the source patient folder.
-All edits are checked and the complete export is staged before publishing it at the selected path.
+For a full copy, choose a new path outside the source patient folder.
+All edits are checked and staged before publishing the output.
 
 ```csv
 structure,red

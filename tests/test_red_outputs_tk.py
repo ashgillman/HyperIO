@@ -133,12 +133,14 @@ def test_output_tabs_keep_inputs_presets_and_names_independent(root, tmp_path):
         panel.prepared()
 
 
-def test_red_application_saves_all_tabs_in_complete_patient(root, monkeypatch, tmp_path):
+@pytest.mark.parametrize('add_to_source', [False, True])
+def test_red_application_saves_all_tabs(root, monkeypatch, tmp_path, add_to_source):
     import time
     import tkinter as tk
     from tkinter import filedialog, messagebox
     from hyperio.gui import _launch
     from hyperio.core import plan_metadata
+    from hyperio.desktop.red import ADD_TO_SOURCE
     from test_applications import plan_bytes
     source = tmp_path / 'source'
     for name in ('PlanC', 'PlanD'):
@@ -152,7 +154,10 @@ def test_red_application_saves_all_tabs_in_complete_patient(root, monkeypatch, t
     monkeypatch.setattr(tk, 'Tk', lambda: root)
     monkeypatch.setattr(root, 'mainloop', lambda: None)
     monkeypatch.setattr(filedialog, 'askdirectory', lambda **_: str(source))
-    monkeypatch.setattr(filedialog, 'asksaveasfilename', lambda **_: str(destination))
+    def save_dialog(**_):
+        assert not add_to_source
+        return str(destination)
+    monkeypatch.setattr(filedialog, 'asksaveasfilename', save_dialog)
     monkeypatch.setattr(messagebox, 'showerror', lambda *args: pytest.fail(str(args)))
     _launch('red')
     def widgets(widget):
@@ -173,12 +178,22 @@ def test_red_application_saves_all_tabs_in_complete_patient(root, monkeypatch, t
     assert 'Save all outputs…' not in texts
     button('Choose directory…').invoke()
     until(lambda: str(button('Save patient…').cget('state')) == 'normal')
-    button('Add output').invoke()
-    # Set the new tab's output-name entry; the first tab keeps its blank name.
     notebook = next(w for w in widgets(root) if w.winfo_class() == 'TNotebook')
-    tab = root.nametowidget(notebook.select())
-    entry = next(w for w in tab.winfo_children() if w.winfo_class() == 'TEntry' and str(w.cget('state')) == 'normal')
-    entry.insert(0, 'PlanCAlt')
+
+    def name_selected_tab(name):
+        tab = root.nametowidget(notebook.select())
+        entry = next(w for w in tab.winfo_children()
+                     if w.winfo_class() == 'TEntry' and str(w.cget('state')) == 'normal')
+        entry.insert(0, name)
+
+    if add_to_source:
+        output_box = next(w for w in widgets(root)
+                          if w.winfo_class() == 'TCombobox' and ADD_TO_SOURCE in w.cget('values'))
+        output_box.set(ADD_TO_SOURCE)
+        name_selected_tab('PlanCFirst')
+        destination = source
+    button('Add output').invoke()
+    name_selected_tab('PlanCAlt')
     button('Save patient…').invoke()
     until(lambda: (destination / 'plan' / 'PlanCAlt' / 'plan').exists())
     until(lambda: str(button('Save patient…').cget('state')) == 'normal')
@@ -187,6 +202,9 @@ def test_red_application_saves_all_tabs_in_complete_patient(root, monkeypatch, t
     assert (destination / 'plan' / 'PlanD' / 'plan').read_bytes() == plan_bytes('PlanD')
     assert (destination / 'CT' / 'structures').read_bytes() == b'original contours'
     assert (source / 'plan' / 'PlanC' / 'plan').read_bytes() == plan_bytes('PlanC')
+    if add_to_source:
+        assert (source / 'plan' / 'PlanCFirst' / 'companion').read_bytes() == b'PlanC'
+        assert {path.name for path in (source / 'plan').iterdir()} == {'PlanC', 'PlanD', 'PlanCFirst', 'PlanCAlt'}
 
 
 def test_manual_red_and_mode_updates_are_independent(root):

@@ -1,10 +1,11 @@
-"""Headless RED editing and complete patient export workflows.
+"""Headless RED editing, plan cloning and patient export workflows.
 
 Density edits target only the observed plan table, preserving all other bytes.
 They remain experimental native edits; they do not update dose or study defaults.
 """
 from __future__ import annotations
 
+from contextlib import ExitStack
 import csv
 import re
 import shutil
@@ -140,6 +141,73 @@ def load_red_plans(source):
                 except (FormatError, ValueError, UnicodeError, OSError):
                     plan['ct_to_ed_name'] = None
     return plans
+
+
+def export_red_plan_copies(source, edits):
+    """Add named plan copies beside their input plans in a directory export.
+
+    Each edit supplies a source member, a new plan name and a RED mapping.
+    Companions are copied as-is, including any saved dose and checksums.
+    """
+    source = Path(source)
+    if not source.is_dir():
+        raise ValueError('Adding plans requires a patient directory')
+    if not edits:
+        raise ValueError('Provide at least one plan variant')
+    occupied = {}
+    prepared = {}
+    with Export(source) as export:
+        for edit in edits:
+            member = edit['member']
+            member_path = PurePosixPath(member)
+            original = source / member_path.parent
+            plan_root = original.parent
+            if member not in export.sizes or member_path.name != 'plan' or plan_root.name != 'plan':
+                raise ValueError(f'Not a native plan member: {member}')
+            name = edit.get('name')
+            if not name:
+                raise ValueError('Adding to the source folder requires a new plan name for each output.')
+            validate_output_name(name)
+            if plan_root not in occupied:
+                occupied[plan_root] = {path.name.casefold() for path in plan_root.iterdir()}
+            key = name.casefold()
+            if key in occupied[plan_root]:
+                raise FileExistsError(f'Output plan already exists: {plan_root / name}')
+            edited, _, _ = prepare_red_output(export.read(member), edit['mapping'], name)
+            prepared[plan_root / name] = original, edited
+            occupied[plan_root].add(key)
+
+    with ExitStack() as staging:
+        workdirs = {}
+        staged = {}
+        for target, (original, edited) in prepared.items():
+            plan_root = target.parent
+            if plan_root not in workdirs:
+                temporary = tempfile.TemporaryDirectory(prefix='.hyperio-red-', dir=plan_root.parent)
+                workdirs[plan_root] = Path(staging.enter_context(temporary))
+            staged_plan = workdirs[plan_root] / target.name
+            shutil.copytree(original, staged_plan, copy_function=shutil.copyfile)
+            (staged_plan / 'plan').write_bytes(edited)
+            staged[target] = staged_plan
+
+        created = []
+        try:
+            for target in staged:
+                if any(path.name.casefold() == target.name.casefold() for path in target.parent.iterdir()):
+                    raise FileExistsError(f'Output plan already exists: {target}')
+                target.mkdir()
+                created.append(target)
+            for target, staged_plan in staged.items():
+                for child in staged_plan.iterdir():
+                    if child.name != 'plan':
+                        child.rename(target / child.name)
+                # Publish the native plan record last, after its companions.
+                (staged_plan / 'plan').rename(target / 'plan')
+        except Exception:
+            for target in created:
+                shutil.rmtree(target)
+            raise
+    return created
 
 
 def export_red_patient(source, edits, destination, *, zipped=False):
