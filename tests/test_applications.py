@@ -101,6 +101,63 @@ def test_export_red_plan_copies_rolls_back_failed_publication(tmp_path, monkeypa
     assert (plan / 'plan').read_bytes() == plan_bytes('Original')
 
 
+@pytest.mark.parametrize('mode', ['alongside', 'folder', 'zip'])
+def test_red_copies_can_clear_approval_and_omit_saved_dose(tmp_path, mode):
+    from hyperio.application_io import export_red_patient, export_red_plan_copies
+    from hyperio.core import Export
+
+    source = tmp_path / 'source'
+    plan_root = source / 'plan'
+    original = plan_root / 'Original'
+    original.mkdir(parents=True)
+    approved = b'0003104f\r\n1\r\n0\r\n0\r\nnotes\r\n'
+    dose_files = {'dose.1': b'plan dose', 'tel.1.dose.2': b'beam dose', 'RxA.xlog': b'completed'}
+    companions = {'plan_comment': approved, 'tel.1': b'beam settings', 'checksum.1': b'checksums'}
+    for name, data in {**dose_files, **companions, 'plan': plan_bytes('Original')}.items():
+        (original / name).write_bytes(data)
+
+    edits = [
+        dict(member='plan/Original/plan', name='Control', mapping={}, clear_approval=True),
+        dict(member='plan/Original/plan', name='Edited', mapping={'Insert': 1.2}, clear_approval=True,
+             omit_saved_dose=True),
+    ]
+    if mode == 'alongside':
+        export_red_plan_copies(source, edits)
+        destination = source
+    else:
+        destination = tmp_path / ('patient.zip' if mode == 'zip' else 'patient')
+        export_red_patient(source, edits, destination, zipped=(mode == 'zip'))
+    with Export(destination) as export:
+        assert export.read('plan/Original/plan_comment') == approved
+        for name in ('Control', 'Edited'):
+            prefix = f'plan/{name}/'
+            assert export.read(prefix + 'plan_comment') == approved.replace(b'\r\n1\r\n', b'\r\n0\r\n', 1)
+            for filename in ('tel.1', 'checksum.1'):
+                assert export.read(prefix + filename) == companions[filename]
+        for filename, content in dose_files.items():
+            assert export.read('plan/Original/' + filename) == content
+            assert export.read('plan/Control/' + filename) == content
+            assert 'plan/Edited/' + filename not in export.sizes
+    assert (original / 'plan_comment').read_bytes() == approved
+    assert (original / 'dose.1').read_bytes() == dose_files['dose.1']
+
+
+def test_red_plan_copies_reject_unknown_approval_format_before_publishing(tmp_path):
+    from hyperio.application_io import export_red_plan_copies
+    from hyperio.core import FormatError
+
+    original = tmp_path / 'plan' / 'Original'
+    original.mkdir(parents=True)
+    (original / 'plan').write_bytes(plan_bytes('Original'))
+    (original / 'plan_comment').write_bytes(b'ffffffff\n1\n')
+    with pytest.raises(FormatError, match='unsupported plan approval record'):
+        export_red_plan_copies(tmp_path, [
+            dict(member='plan/Original/plan', name='New', mapping={}, clear_approval=True)
+        ])
+    assert list(original.parent.iterdir()) == [original]
+    assert (original / 'plan_comment').read_bytes() == b'ffffffff\n1\n'
+
+
 @pytest.mark.parametrize('source_zip', [False, True])
 @pytest.mark.parametrize('output_zip', [False, True])
 @pytest.mark.parametrize('header', [b'00d5101a', b'00be101a'])

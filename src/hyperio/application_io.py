@@ -143,11 +143,37 @@ def load_red_plans(source):
     return plans
 
 
+def _saved_calculation_member(name):
+    base = PurePosixPath(name).name.lower()
+    return base.startswith('dose.') or '.dose.' in base or base.endswith('.xlog')
+
+
+def _ignore_saved_calculation(directory, names):
+    return [name for name in names if _saved_calculation_member(name) and (Path(directory) / name).is_file()]
+
+
+def _cleared_plan_approval(export, plan_dir):
+    """Clear the approval flag in the observed native plan_comment profile."""
+    replacements = {}
+    for member in export.sizes:
+        path = PurePosixPath(member)
+        if path.parent != plan_dir or not re.fullmatch(r'(?:rx\d+_)?plan_comment', path.name, re.I):
+            continue
+        lines = export.read(member).splitlines(keepends=True)
+        # PlanCheck reads the second record as the approval Boolean.
+        if len(lines) < 2 or lines[0].strip() != b'0003104f' or lines[1].strip() not in (b'0', b'1'):
+            raise FormatError(f'{member}: unsupported plan approval record')
+        lines[1] = lines[1].replace(b'1', b'0', 1)
+        replacements[member] = b''.join(lines)
+    return replacements
+
+
 def export_red_plan_copies(source, edits):
     """Add named plan copies beside their input plans in a directory export.
 
     Each edit supplies a source member, a new plan name and a RED mapping.
-    Companions are copied as-is, including any saved dose and checksums.
+    Set clear_approval to clear supported approval records, or omit_saved_dose
+    to exclude saved dose payloads and calculation logs.
     """
     source = Path(source)
     if not source.is_dir():
@@ -174,20 +200,24 @@ def export_red_plan_copies(source, edits):
             if key in occupied[plan_root]:
                 raise FileExistsError(f'Output plan already exists: {plan_root / name}')
             edited, _, _ = prepare_red_output(export.read(member), edit['mapping'], name)
-            prepared[plan_root / name] = original, edited
+            approvals = _cleared_plan_approval(export, member_path.parent) if edit.get('clear_approval') else {}
+            prepared[plan_root / name] = original, edited, approvals, edit.get('omit_saved_dose')
             occupied[plan_root].add(key)
 
     with ExitStack() as staging:
         workdirs = {}
         staged = {}
-        for target, (original, edited) in prepared.items():
+        for target, (original, edited, approvals, omit_saved_dose) in prepared.items():
             plan_root = target.parent
             if plan_root not in workdirs:
                 temporary = tempfile.TemporaryDirectory(prefix='.hyperio-red-', dir=plan_root.parent)
                 workdirs[plan_root] = Path(staging.enter_context(temporary))
             staged_plan = workdirs[plan_root] / target.name
-            shutil.copytree(original, staged_plan, copy_function=shutil.copyfile)
+            ignore = _ignore_saved_calculation if omit_saved_dose else None
+            shutil.copytree(original, staged_plan, copy_function=shutil.copyfile, ignore=ignore)
             (staged_plan / 'plan').write_bytes(edited)
+            for member, data in approvals.items():
+                (staged_plan / PurePosixPath(member).name).write_bytes(data)
             staged[target] = staged_plan
 
         created = []
@@ -215,7 +245,7 @@ def export_red_patient(source, edits, destination, *, zipped=False):
 
     Each edit supplies a source member, optional output name and RED mapping.
     A blank name replaces that source plan only in the exported patient copy.
-    Clone all plan companion files without interpreting or recalculating them.
+    The clear_approval and omit_saved_dose options match export_red_plan_copies.
     """
     source, destination = Path(source), Path(destination)
     if destination.exists() or destination.is_symlink():
@@ -259,6 +289,8 @@ def export_red_patient(source, edits, destination, *, zipped=False):
             if target != path.parent and (key in existing or key in occupied):
                 raise ValueError(f'Output plan already exists in source: {target}')
             edited, _, _ = prepare_red_output(data, edit['mapping'], name)
+            replacements = _cleared_plan_approval(export, path.parent) if edit.get('clear_approval') else {}
+            replacements[member] = edited
             prefix = str(path.parent) + '/'
             for directory in source_directories:
                 if directory == str(path.parent) or directory.startswith(prefix):
@@ -266,7 +298,10 @@ def export_red_patient(source, edits, destination, *, zipped=False):
             for original in export.sizes:
                 if original.startswith(prefix):
                     output = str(target / PurePosixPath(original).relative_to(path.parent))
-                    members[output] = (original, edited if original == member else None)
+                    if edit.get('omit_saved_dose') and _saved_calculation_member(original):
+                        members.pop(output, None)
+                    else:
+                        members[output] = original, replacements.get(original)
         # Stage the complete export before publishing it under the selected name.
         with tempfile.TemporaryDirectory(prefix='.hyperio-red-', dir=destination.parent) as temporary:
             staged = Path(temporary) / 'patient'
