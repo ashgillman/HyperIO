@@ -4,6 +4,9 @@ HyperIO is a Python toolkit for medical physicists working with Elekta Monaco ex
 Use it to review saved plans, compare calculation settings, and prepare research and commissioning cases.
 It can inspect native Monaco patient folders and ZIP archives directly.
 
+> [!WARNING]
+> This project was developed with AI tools and is not yet comprehensively validated. The outputs should not be trusted.
+
 ## Key capabilities
 
 - **Plan review.** Inspect saved dose grid and Monte Carlo settings, beam information, density overrides, optimisation objectives and dose goals.
