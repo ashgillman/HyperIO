@@ -45,7 +45,9 @@ Run the desktop launchers from `.venv\Scripts\` on Windows or `.venv/bin/` on ma
 | `hyperio-red-overrides` | [Prepare RED override variants](applications/README.md#red-overrides) |
 | `hyperio-commissioning` | [Build a commissioning worksheet and stage plans](applications/README.md#mppg-5b-commissioning-worksheet) |
 
-To inspect an export from an activated virtual environment:
+HyperIO interacts directly with the Monaco internal stored files. Access them from your installation, something like `FocalData/installation/1~Clinic/<Patient ID>`. You should copy them out to a safe location to prevent any modification into the live environment.
+
+Then, to inspect a plan:
 
 ```sh
 hyperio inspect "/path/to/monaco-export.zip"
@@ -63,3 +65,4 @@ hyperio check "/path/to/monaco-export.zip" examples/common-settings.json
   See the [validation record](docs/validation.md).
 
 See the [desktop guide](applications/README.md), the [MPPG 5.b plan setup guide](docs/mppg5b-plan-set.md), and the [native format notes](docs/format-notes.md).
+The [code architecture guide](docs/architecture.md) maps the main workflows to their Python modules and classes.
