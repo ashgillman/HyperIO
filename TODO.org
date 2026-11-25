@@ -47,7 +47,6 @@ Coordinate contour/dose items with the ongoing DVH correction before implementat
 - Expose plan-scoped native dose-payload inventory/provenance through the library, extracting filename classification and bounded header sampling from scripts/research_baseline.py, reusing export/snapshot infrastructure, explicitly distinguishing prefix hashes from full-file hashes, and keeping presence/association separate from interpreted dose and freshness.
 - Add optional unique case-insensitive snapshot correspondence with collision rejection, retaining exact-path comparison by default and reporting original paths plus content changes.
 - Add optional beam/dose visibility metadata reading if needed by callers; keep visibility distinct from treatment/calculation inclusion.
-- Document Python submodule entry points for the existing blank-CT, depot and validation-suite functions; clarify their fixture/experimental scope and avoid advertising retired candidate helpers as supported workflows.
 
 * Commissioning plan generation and dose-analysis use case
 The software should support generating the plan data for a commissioning test suite, calculating it in Monaco, and comparing returned calculated data against measured data.
