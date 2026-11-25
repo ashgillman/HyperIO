@@ -1,7 +1,7 @@
 # HyperIO
 
-HyperIO is a Python toolkit for medical physicists working with Elekta Monaco exports.
-Use it to review saved plans, compare calculation settings, and prepare research and commissioning cases.
+HyperIO is a Python toolkit for medical physicists working with Elekta Monaco internal plan data.
+It can be used to review saved plans, compare calculation settings, and prepare research and commissioning cases.
 It can inspect native Monaco patient folders and ZIP archives directly.
 
 > [!WARNING]
